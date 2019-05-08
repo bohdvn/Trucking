@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
-@Table(name = "address")
+@Table(name = "address",catalog = "trucking")
 public class Address implements Transformable {
 
     @Id
@@ -44,6 +44,7 @@ public class Address implements Transformable {
     @Override
     public AddressDto transform() {
         return AddressDto.builder()
+                .withId(this.id)
                 .withCity(this.city)
                 .withStreet(this.street)
                 .withBuilding(this.building)

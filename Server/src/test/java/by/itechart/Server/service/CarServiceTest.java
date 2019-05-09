@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.Collection;
+import java.util.Optional;
 
 @DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -21,7 +22,7 @@ import java.util.Collection;
 public class CarServiceTest {
     @Resource
     private EntityManagerFactory entityManagerFactory;
-    protected EntityManager entityManager;
+    private EntityManager entityManager;
 
     @Resource
     private CarService carService;
@@ -44,7 +45,7 @@ public class CarServiceTest {
 
     @Test
     public void testGetOne() {
-        Car car=carService.getOne(1);
+        Optional<Car> car=carService.findById(1);
         Assert.assertNotNull(car);
     }
 }

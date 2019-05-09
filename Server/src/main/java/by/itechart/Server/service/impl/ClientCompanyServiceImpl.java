@@ -6,6 +6,7 @@ import by.itechart.Server.service.ClientCompanyService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClientCompanyServiceImpl implements ClientCompanyService {
@@ -26,9 +27,7 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public ClientCompany getOne(int id) {
-        return clientCompanyRepository.getOne(id);
-    }
+    public Optional<ClientCompany> findById(int id) { return clientCompanyRepository.findById(id); }
 
     @Override
     public void delete(ClientCompany clientCompany) {

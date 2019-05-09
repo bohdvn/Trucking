@@ -15,7 +15,7 @@ class UserComponent extends React.Component{
         role:'',
         login:'',
         password:'',
-        addressDto:'',
+        address:'',
     };
 
     constructor(props){
@@ -41,6 +41,8 @@ class UserComponent extends React.Component{
         let item = {...this.state.item};
         item[name] = value;
         this.setState({item});
+        console.log(this.state);
+        // console.log(this.props.children);
     }
 
     async handleSubmit(event) {
@@ -138,7 +140,7 @@ class UserComponent extends React.Component{
                                     <label htmlFor="addressField">Адрес</label>
                                 </td>
                                 <td>
-                                    <AddressFields id="addressFields" address={item.addressDto||''}/>
+                                    {item.address?<AddressFields id="addressFields" changeState={this.handleChange.bind(this)} address={item.address}/>:null}
                                 </td>
                             </tr>
 

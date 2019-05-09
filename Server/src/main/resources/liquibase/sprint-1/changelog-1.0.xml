@@ -217,4 +217,14 @@
                 schemaName="trucking"
                 tableName="address"/>
     </changeSet>
+
+    <changeSet author="aliaksandr.yalutsin" id="11">
+        <renameColumn
+                catalogName="trucking"
+                columnDataType="varchar(255)"
+                newColumnName="longitude"
+                oldColumnName="longtitude"
+                schemaName="trucking"
+                tableName="address"/>
+    </changeSet>
 </databaseChangeLog>

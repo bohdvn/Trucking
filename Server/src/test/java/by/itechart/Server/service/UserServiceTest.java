@@ -21,7 +21,7 @@ import java.util.Collection;
 public class UserServiceTest {
     @Resource
     private EntityManagerFactory entityManagerFactory;
-    protected EntityManager entityManager;
+    private EntityManager entityManager;
 
     @Resource
     private UserService userService;

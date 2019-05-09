@@ -15,7 +15,7 @@ class UserComponent extends React.Component{
         role:'',
         login:'',
         password:'',
-        addressDto:'',
+        address:'',
     };
 
     constructor(props){
@@ -41,21 +41,22 @@ class UserComponent extends React.Component{
         let item = {...this.state.item};
         item[name] = value;
         this.setState({item});
+        console.log(this.state);
     }
 
     async handleSubmit(event) {
         event.preventDefault();
-        const {item} = this.state;
+        const {user} = this.state;
 
         await fetch('/user', {
-            method: (item.id) ? 'PUT' : 'POST',
+            method: (user.id) ? 'PUT' : 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(item),
+            body: JSON.stringify(user),
         });
-        this.props.history.push('/users');
+        this.props.history.push('/user');
     }
 
     render(){
@@ -138,7 +139,7 @@ class UserComponent extends React.Component{
                                     <label htmlFor="addressField">Адрес</label>
                                 </td>
                                 <td>
-                                    <AddressFields id="addressFields" address={item.addressDto||''}/>
+                                    {item.address?<AddressFields id="addressFields" changeState={this.handleChange.bind(this)} address={item.address}/>:null}
                                 </td>
                             </tr>
 

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 
 public class UserDto {
+    private int id;
 
     private String name;
 
@@ -13,11 +14,19 @@ public class UserDto {
 
     private String passportNumber;
 
+    private String passportIssued;
+
     private LocalDate dateOfBirth;
+
+    private String email;
+
+    private int role;
 
     private String login;
 
     private String password;
+
+    private AddressDto address;
 
     private UserDto(){}
 
@@ -27,6 +36,11 @@ public class UserDto {
 
     public class Builder {
         private Builder() {
+        }
+
+        public Builder withId(final int id) {
+            UserDto.this.id = id;
+            return this;
         }
 
         public Builder withName(final String name) {
@@ -49,8 +63,18 @@ public class UserDto {
             return this;
         }
 
+        public Builder withPassportIssued(final String passportIssued) {
+            UserDto.this.passportIssued = passportIssued;
+            return this;
+        }
+
         public Builder withDateOfBirth(final LocalDate dateOfBirth) {
             UserDto.this.dateOfBirth = dateOfBirth;
+            return this;
+        }
+
+        public Builder withRole(final int role) {
+            UserDto.this.role = role;
             return this;
         }
 
@@ -59,14 +83,32 @@ public class UserDto {
             return this;
         }
 
+        public Builder withEmail(final String email) {
+            UserDto.this.email = email;
+            return this;
+        }
+
         public Builder withPassword(final String password) {
             UserDto.this.password = password;
+            return this;
+        }
+
+        public Builder withAddressDto(final AddressDto addressDto) {
+            UserDto.this.address = addressDto;
             return this;
         }
 
         public UserDto build() {
             return UserDto.this;
         }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -117,11 +159,43 @@ public class UserDto {
         this.login = login;
     }
 
+    public int getRole() {
+        return role;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
+
     public String getPassword() {
         return password;
     }
 
     public void setPassword(final String password) {
         this.password = password;
+    }
+
+    public String getPassportIssued() {
+        return passportIssued;
+    }
+
+    public void setPassportIssued(final String passportIssued) {
+        this.passportIssued = passportIssued;
+    }
+
+    public AddressDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(final AddressDto address) {
+        this.address = address;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(final String email) {
+        this.email = email;
     }
 }

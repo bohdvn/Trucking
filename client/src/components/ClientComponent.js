@@ -12,14 +12,16 @@ class ClientComponent extends React.Component{
                 <h1>Клиент</h1>
                 <div className="form-data">
                     <table>
-                        <tr>
-                            <td>
-                                <label htmlFor="nameInput">Название</label>
-                            </td>
-                            <td>
-                                <input className="form-table-input" id="nameInput" type="text"/>
-                            </td>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <label htmlFor="nameInput">Название</label>
+                                </td>
+                                <td>
+                                    <input className="form-table-input" id="nameInput" type="text"/>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
                 <input className="form-submit" type="submit"/>

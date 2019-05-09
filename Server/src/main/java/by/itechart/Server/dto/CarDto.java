@@ -3,6 +3,7 @@ package by.itechart.Server.dto;
 import by.itechart.Server.entity.Car;
 
 public class CarDto {
+    private int id;
 
     private Car.CarType carType;
 
@@ -20,6 +21,11 @@ public class CarDto {
 
     public class Builder {
         private Builder() {
+        }
+
+        public Builder withId(final int id) {
+            CarDto.this.id = id;
+            return this;
         }
 
         public Builder withCarType(final Car.CarType carType) {
@@ -77,5 +83,13 @@ public class CarDto {
 
     public void setStatus(final Car.Status status) {
         this.status = status;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

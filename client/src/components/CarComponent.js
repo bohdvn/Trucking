@@ -27,13 +27,12 @@ class CarComponent extends React.Component {
         let car = {...this.state.car};
         car[name] = value;
         this.setState({car});
-        console.log(this.state);
     }
 
     async handleSubmit(event) {
         event.preventDefault();
         const {car} = this.state;
-        await fetch('/car/', {
+        await fetch( '/car/', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',

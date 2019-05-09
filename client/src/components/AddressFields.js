@@ -1,11 +1,12 @@
 import React from 'react';
-import "../styles.css"
+import Container from "reactstrap/es/Container";
+import FormGroup from "reactstrap/es/FormGroup";
+import {Input, Label} from "reactstrap";
 
 class  AddressFields extends React.Component{
 
     constructor(props){
         super(props);
-        console.log(props);
         this.state={
             address:props.address,
         };
@@ -19,79 +20,50 @@ class  AddressFields extends React.Component{
         let address = {...this.state.address};
         address[name] = value;
         this.setState({address});
-        this.props.changeState(event);
+        const state =this.state;
+        this.props.changeState(state);
     }
 
     render() {
         const {address} =this.state;
-        console.log(address);
         return(
-            <div>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <label htmlFor="cityInput">Город</label>
-                        </td>
-                        <td>
-                            <input className="form-table-input" name="city" id="cityInput"
-                                    value={address.city||''}
-                                   onChange={this.handleChange} type="text"/>
-                        </td>
-                    </tr>
+            <Container>
+                <FormGroup>
+                    <Label for="city">Город</Label>
+                    <Input type="text" name="city" id="city" value={address.city || ''}
+                       onChange={this.handleChange} autoComplete="city"/>
+                </FormGroup>
 
-                    <tr>
-                        <td>
-                            <label htmlFor="streetInput">Улица</label>
-                        </td>
-                        <td>
-                            <input className="form-table-input" name="street"  id="streetInput"
-                                   value={address.street||''} onChange={this.handleChange} type="text"/>
-                        </td>
-                    </tr>
+                <FormGroup>
+                    <Label for="street">Улица</Label>
+                    <Input type="text" name="street" id="street" value={address.street || ''}
+                           onChange={this.handleChange} autoComplete="street"/>
+                </FormGroup>
 
-                    <tr>
-                        <td>
-                            <label htmlFor="houseInput">Дом</label>
-                        </td>
-                        <td>
-                            <input className="form-table-input" name="building" id="buildingInput"
-                                   value={address.building||''} onChange={this.handleChange} type="number" min="1"/>
-                        </td>
-                    </tr>
+                <FormGroup>
+                    <Label for="building">Дом</Label>
+                    <Input type="number" name="building" id="building" value={address.building || ''}
+                           onChange={this.handleChange} autoComplete="building" min="1"/>
+                </FormGroup>
 
-                    <tr>
-                        <td>
-                            <label htmlFor="flatInput">Квартира</label>
-                        </td>
-                        <td>
-                            <input className="form-table-input" name="flat" id="flatInput"
-                                   value={address.flat||''} onChange={this.handleChange} type="number" min="1"/>
-                        </td>
-                    </tr>
+                <FormGroup>
+                    <Label for="flat">Квартира</Label>
+                    <Input type="number" name="flat" id="flat" value={address.flat || ''}
+                           onChange={this.handleChange} autoComplete="flat" min="1"/>
+                </FormGroup>
 
-                    <tr>
-                        <td>
-                            <label htmlFor="longitudeInput">Долгота</label>
-                        </td>
-                        <td>
-                            <input className="form-table-input" name="longitude" id="longitudeInput"
-                                   value={address.longitude||''} onChange={this.handleChange} type="text"/>
-                        </td>
-                    </tr>
+                <FormGroup>
+                    <Label for="longitude">Долгота</Label>
+                    <Input type="text" name="longitude" id="longitude" value={address.longitude || ''}
+                           onChange={this.handleChange} autoComplete="longitude"/>
+                </FormGroup>
 
-                    <tr>
-                        <td>
-                            <label htmlFor="longitudeInput">Широта</label>
-                        </td>
-                        <td>
-                            <input className="form-table-input" name="latitude" id="latitudeInput"
-                                   value={address.latitude||''} onChange={this.handleChange} type="text"/>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+                <FormGroup>
+                    <Label for="latitude">Широта</Label>
+                    <Input type="text" name="latitude" id="latitude" value={address.latitude || ''}
+                           onChange={this.handleChange} autoComplete="latitude"/>
+                </FormGroup>
+            </Container>
         );
     }
 }

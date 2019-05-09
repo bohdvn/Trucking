@@ -25,8 +25,8 @@ public class ClientCompany implements Transformable {
      * One clientCompany can be in different waybills.
      */
     @OneToMany(fetch = FetchType.LAZY,
-            mappedBy = "clientCompany",
-            cascade =  CascadeType.ALL)
+            mappedBy = "clientCompany")
+           // cascade =  CascadeType.ALL)
     private List<WayBill> waybills = new ArrayList<>();
 
     @Override

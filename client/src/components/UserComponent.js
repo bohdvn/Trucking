@@ -42,22 +42,21 @@ class UserComponent extends React.Component{
         item[name] = value;
         this.setState({item});
         console.log(this.state);
-        // console.log(this.props.children);
     }
 
     async handleSubmit(event) {
         event.preventDefault();
-        const {item} = this.state;
+        const {user} = this.state;
 
         await fetch('/user', {
-            method: (item.id) ? 'PUT' : 'POST',
+            method: (user.id) ? 'PUT' : 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(item),
+            body: JSON.stringify(user),
         });
-        this.props.history.push('/users');
+        this.props.history.push('/user');
     }
 
     render(){

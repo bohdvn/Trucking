@@ -52,6 +52,7 @@ public class Car implements Transformable {
     @Override
     public CarDto transform() {
         return CarDto.builder()
+                .withId(this.id)
                 .withCarType(this.carType)
                 .withConsumption(this.consumption)
                 .withName(this.name)

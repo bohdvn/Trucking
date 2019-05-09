@@ -1,60 +1,94 @@
 import React from 'react';
 import "../styles.css"
+import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
 
-class CarComponent extends React.Component{
+class CarComponent extends React.Component {
+    emptyCar={
+        id:'',
+        carType: '',
+        name: '',
+        consumption: '',
+        status: '',
+    };
+
     constructor(props){
         super(props);
+        this.state = {
+            car: this.emptyCar
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    render(){
-        return(
-            <div className="form-register">
+    handleChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        let car = {...this.state.car};
+        car[name] = value;
+        this.setState({car});
+        console.log(this.state);
+    }
+
+    async handleSubmit(event) {
+        event.preventDefault();
+        const {car} = this.state;
+        await fetch('/car/', {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(car),
+        });
+        this.props.history.push('/cars');
+    }
+
+    async componentDidMount() {
+        if (this.props.match.params.id !== 'create') {
+            const newCar = await (await fetch(`/car/${this.props.match.params.id}`)).json();
+            this.setState({car: newCar});
+        }
+    }
+
+    render() {
+        const {car}=this.state;
+        return (
+            <Container>
                 <h1>Авто</h1>
-                <div className="form-data">
-                    <table>
-                        <tr>
-                           <td>
-                               <label htmlFor="nameInput">Название</label>
-                           </td>
-                           <td>
-                               <input className="form-table-input" id="nameInput" type="text"/>
-                           </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <label htmlFor="consumptionInput">Расход топлива</label>
-                            </td>
-                            <td>
-                                <input className="form-table-input" id="consumptionInput" type="number" min="0"/>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <label htmlFor="typeSelect">Тип</label>
-                            </td>
-                            <td>
-                                <select className="form-table-input" id="typeSelect">
-                                    //TODO: fulfill with car's type array
-                                </select>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>
-                                <label htmlFor="statusSelect">Статус</label>
-                            </td>
-                            <td>
-                                <select className="form-table-input" id="statusSelect">
-                                    //TODO: fulfill with car's status array
-                                </select>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                <input className="form-submit" type="submit" value="Сохранить"/>
-            </div>
+                <Form onSubmit={this.handleSubmit}>
+                    <FormGroup>
+                        <Label for="name">Название</Label>
+                        <Input type="text" name="name" id="name" value={car.name || ''}
+                               onChange={this.handleChange} autoComplete="name"/>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="consumption">Расход топлива</Label>
+                        <Input type="number" name="consumption" id="consumption" value={car.consumption || ''}
+                               onChange={this.handleChange} autoComplete="consumption"/>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="nameInput">Тип</Label>
+                        <Input type="select" name="carType" id="carType" value={car.carType || ''}
+                               onChange={this.handleChange} autoComplete="carType">
+                            <option value="TILT">Крытый кузов</option>
+                            <option value="FRIDGE">Рефрежератор</option>
+                            <option value="TANKER">Автоцистерна</option>
+                        </Input>
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="nameInput">Статус</Label>
+                        <Input type="select" name="status" id="status" value={car.status || ''}
+                               onChange={this.handleChange} autoComplete="status">
+                            <option value="AVAILABLE">Доступно</option>
+                            <option value="UNAVAILABLE">Недоступно</option>
+                        </Input>
+                    </FormGroup>
+                    <FormGroup>
+                        <Button color="primary" type="submit">Сохранить</Button>{' '}
+                    </FormGroup>
+                </Form>
+            </Container>
         );
     }
 }

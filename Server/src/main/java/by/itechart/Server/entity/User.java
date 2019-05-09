@@ -3,6 +3,7 @@ package by.itechart.Server.entity;
 import by.itechart.Server.dto.UserDto;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
@@ -36,9 +37,18 @@ public class User implements Transformable{
     @Column(name = "passport_number")
     private String passportNumber;
 
+    @NotNull(message = "Passport issued cannot be null")
+    @Size(min = 2, max = 45, message = "Passport number must be between 2 and 45 characters")
+    @Column(name = "passport_issued")
+    private String passportIssued;
+
     @Past(message = "Wrong date of birth")
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
+
+    @Email
+    @Column(name = "email")
+    private String email;
 
     @Size(min = 2, max = 45, message = "Login number must be between 2 and 45 characters")
     @Column(name = "login")
@@ -56,8 +66,7 @@ public class User implements Transformable{
      * One user can have only one address.
      */
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "address")
     private Address address;
     /**
      * One manager can check several invoices.
@@ -89,13 +98,18 @@ public class User implements Transformable{
     @Override
     public UserDto transform() {
         return UserDto.builder()
+                .withId(this.id)
                 .withDateOfBirth(this.dateOfBirth)
                 .withLogin(this.login)
                 .withPassword(this.password)
                 .withName(this.name)
                 .withPassportNumber(this.passportNumber)
+                .withPassportIssued(this.passportIssued)
                 .withPatronymic(this.patronymic)
                 .withSurname(this.surname)
+                .withRole(this.role.ordinal())
+                .withEmail(this.email)
+                .withAddressDto(this.address.transform())
                 .build();
     }
 
@@ -137,6 +151,22 @@ public class User implements Transformable{
 
     public void setPassportNumber(final String passportNumber) {
         this.passportNumber = passportNumber;
+    }
+
+    public String getPassportIssued() {
+        return passportIssued;
+    }
+
+    public void setPassportIssued(String passportIssued) {
+        this.passportIssued = passportIssued;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public LocalDate getDateOfBirth() {
@@ -193,6 +223,14 @@ public class User implements Transformable{
 
     public void setIssuedByDispatcherToInvoices(List<Invoice> issuedByDispatcherToInvoices) {
         this.issuedByDispatcherToInvoices = issuedByDispatcherToInvoices;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(final String email) {
+        this.email = email;
     }
 
     @Override

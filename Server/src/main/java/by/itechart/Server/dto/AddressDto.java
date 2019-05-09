@@ -1,6 +1,7 @@
 package by.itechart.Server.dto;
 
 public class AddressDto {
+    private int id;
 
     private String city;
 
@@ -23,6 +24,11 @@ public class AddressDto {
 
     public class Builder {
         private Builder() {
+        }
+
+        public Builder withId(final int id) {
+            AddressDto.this.id = id;
+            return this;
         }
 
         public Builder withCity(final String city) {
@@ -58,6 +64,14 @@ public class AddressDto {
         public AddressDto build() {
             return AddressDto.this;
         }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(final int id) {
+        this.id = id;
     }
 
     public String getCity() {

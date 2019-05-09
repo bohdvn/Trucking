@@ -5,6 +5,7 @@ import by.itechart.Server.repository.AddressRepository;
 import by.itechart.Server.service.AddressService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,7 +17,18 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
+    public void save(Address address) { addressRepository.save(address); }
+
+    @Override
+    public List<Address> findAll() {
+        return addressRepository.findAll();
+    }
+
+    @Override
     public Optional<Address> findById(int id) {
         return addressRepository.findById(id);
     }
+
+    @Override
+    public void deleteById(int id) { addressRepository.deleteById(id);}
 }

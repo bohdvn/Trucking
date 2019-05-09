@@ -6,6 +6,7 @@ import by.itechart.Server.service.CarService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CarServiceImpl implements CarService {
@@ -26,9 +27,7 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public Car getOne(int id) {
-        return carRepository.getOne(id);
-    }
+    public Optional<Car> findById(int id) { return carRepository.findById(id); }
 
     @Override
     public void delete(Car car) {

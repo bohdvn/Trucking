@@ -6,6 +6,7 @@ import by.itechart.Server.service.ProductService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -26,14 +27,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product getOne(int id) {
-        return productRepository.getOne(id);
-    }
-
-    @Override
-    public void delete(Product product) {
-        productRepository.delete(product);
-    }
+    public Optional<Product> findById(int id) { return  productRepository.findById(id);}
 
     @Override
     public void deleteById(int id) {

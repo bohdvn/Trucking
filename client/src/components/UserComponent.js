@@ -1,9 +1,10 @@
 import React from 'react';
 import AddressFields from "./AddressFields";
-import '../styles.css';
+import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
+
 
 class UserComponent extends React.Component{
-    emptyItem = {
+    emptyUser = {
         id:'',
         surname: '',
         name: '',
@@ -15,13 +16,13 @@ class UserComponent extends React.Component{
         role:'',
         login:'',
         password:'',
-        address:'',
+        address:'{}',
     };
 
     constructor(props){
         super(props);
         this.state = {
-            item: this.emptyItem
+            user: this.emptyUser
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -29,8 +30,8 @@ class UserComponent extends React.Component{
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            const user = await (await fetch(`/user/${this.props.match.params.id}`)).json();
-            this.setState({item: user});
+            const newUser = await (await fetch(`/user/${this.props.match.params.id}`)).json();
+            this.setState({user: newUser});
         }
     }
 
@@ -38,152 +39,126 @@ class UserComponent extends React.Component{
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        let item = {...this.state.item};
-        item[name] = value;
-        this.setState({item});
-        console.log(this.state);
+        let user = {...this.state.user};
+        user[name] = value;
+        this.setState({user});
     }
+
+    changeAddressFields(value){
+        let user = {...this.state.user};
+        user['address'] = value.address;
+        this.setState({user});
+    };
 
     async handleSubmit(event) {
         event.preventDefault();
         const {user} = this.state;
 
-        await fetch('/user', {
-            method: (user.id) ? 'PUT' : 'POST',
+        await fetch('/user/', {
+            method:'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(user),
         });
+
+        await fetch('/address/', {
+            method:'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(user.address),
+        });
         this.props.history.push('/user');
     }
 
     render(){
-        const {item} = this.state;
+        const {user} = this.state;
         return(
-            <div className="form-register">
+            <Container className="col-3">
                 <h1>Пользователь</h1>
-                <div className="form-data">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <label htmlFor="surnameInput">Фамилия<sup>*</sup></label>
-                                </td>
-                                <td>
-                                    <input className="form-table-input" name="surname" id="surnameInput"
-                                           type="text" onChange={this.handleChange} value={item.surname||''} required/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="nameInput">Имя</label>
-                                </td>
-                                <td>
-                                    <input className="form-table-input" name="name" id="nameInput"
-                                           value={item.name||''} type="text" onChange={this.handleChange}/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="patronymicInput">Отчество</label>
-                                </td>
-                                <td>
-                                    <input className="form-table-input" name="patronymic" value={item.patronymic||''}
-                                           id="patronymicInput" type="text" onChange={this.handleChange}/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <label htmlFor="passportNumberInput">Номер паспорта</label>
-                                </td>
-                                <td>
-                                    <input className="form-table-input" name="passportNumber" value={item.passportNumber||''}
-                                           id="passportNumberInput" type="text" onChange={this.handleChange}/>
-                                </td>
-                            </tr>
+                <Form onSubmit={this.handleSubmit}>
+                    <FormGroup>
+                        <Label for="surname">Фамилия</Label>
+                        <Input type="text" name="surname" id="surname" value={user.surname || ''}
+                               onChange={this.handleChange} autoComplete="surname"/>
+                    </FormGroup>
 
-                            <tr>
-                                <td>
-                                    <label htmlFor="passportIssuedInput">Паспорт выдан</label>
-                                </td>
-                                <td>
-                                    <input className="form-table-input" name="passportIssued" value={item.passportIssued||''}
-                                           id="passportIssuedInput" type="text" onChange={this.handleChange}/>
-                                </td>
-                            </tr>
+                    <FormGroup>
+                        <Label for="name">Имя</Label>
+                        <Input type="text" name="name" id="name" value={user.name || ''}
+                               onChange={this.handleChange} autoComplete="name"/>
+                    </FormGroup>
 
-                            <tr>
-                                <td>
-                                    <label htmlFor="dateInput">Дата рождения</label>
-                                </td>
-                                <td>
-                                    <input className="form-table-input" id="dateInput" name="birthDate"
-                                           defaultValue={item.birthDate||''} type="date" onChange={this.handleChange}/>
-                                </td>
-                            </tr>
+                    <FormGroup>
+                        <Label for="patronymic">Отчество</Label>
+                        <Input type="text" name="patronymic" id="patronymic" value={user.patronymic || ''}
+                               onChange={this.handleChange} autoComplete="patronymic"/>
+                    </FormGroup>
 
-                            <tr>
-                                <td>
-                                    <label htmlFor="emailInput">Email</label>
-                                </td>
-                                <td>
-                                    <input className="form-table-input" name="email" id="emailInput"
-                                           value={item.email||''} type="email" onChange={this.handleChange}/>
-                                </td>
-                            </tr>
+                    <FormGroup>
+                        <Label for="passportNumber">Номер паспорта</Label>
+                        <Input type="text" name="passportNumber" id="passportNumber" value={user.passportNumber || ''}
+                               onChange={this.handleChange} autoComplete="passportNumber"/>
+                    </FormGroup>
 
-                            <tr>
-                                <td>
-                                    <label htmlFor="addressField">Адрес</label>
-                                </td>
-                                <td>
-                                    {item.address?<AddressFields id="addressFields" changeState={this.handleChange.bind(this)} address={item.address}/>:null}
-                                </td>
-                            </tr>
+                    <FormGroup>
+                        <Label for="passportIssued">Паспорт выдан</Label>
+                        <Input type="text" name="passportIssued" id="passportIssued" value={user.passportIssued || ''}
+                               onChange={this.handleChange} autoComplete="passportIssued"/>
+                    </FormGroup>
 
-                            <tr>
-                                <td>
-                                    <label htmlFor="roleSelect">Роль</label>
-                                </td>
-                                <td>
-                                    <select className="form-table-input" name="role" id="roleSelect"
-                                            value={item.role||''} onChange={this.handleChange}>
-                                        <option value="0">Системный администратор</option>
-                                        <option value="1">Администратор</option>
-                                        <option value="2">Менеджер</option>
-                                        <option value="3">Диспетчер</option>
-                                        <option value="4">Водитель</option>
-                                        <option value="5">Владелец</option>
-                                    </select>
-                                </td>
-                            </tr>
+                    <FormGroup>
+                        <Label for="birthDate">Дата рождения</Label>
+                        <Input type="date" name="birthDate" id="birthDate" value={user.birthDate || ''}
+                               onChange={this.handleChange} autoComplete="birthDate"/>
+                    </FormGroup>
 
-                            <tr>
-                                <td>
-                                    <label htmlFor="loginInput">Логин</label>
-                                </td>
-                                <td>
-                                    <input className="form-table-input" name="login" id="loginInput"
-                                           value={item.login||''} type="text" onChange={this.handleChange}/>
-                                </td>
-                            </tr>
+                    <FormGroup>
+                        <Label for="email">Email</Label>
+                        <Input type="email" name="email" id="email" value={user.email || ''}
+                               onChange={this.handleChange} autoComplete="email"/>
+                    </FormGroup>
 
-                            <tr>
-                                <td>
-                                    <label htmlFor="passInput">Пароль</label>
-                                </td>
-                                <td>
-                                    <input className="form-table-input" name="password" id="passInput"
-                                           value={item.password||''} type="password" onChange={this.handleChange}/>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <input className="form-submit" type="submit" value="Сохранить"/>
-            </div>
+                    <FormGroup>
+                        {user.address?<AddressFields
+                            name="address"
+                            id="addressFields"
+                            changeState={this.changeAddressFields.bind(this)}
+                            address={user.address}/>:null}
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label for="role">Роль</Label>
+                        <Input type="select" name="role" id="role" value={user.role || ''}
+                               onChange={this.handleChange} autoComplete="role">
+                            <option value="0">Системный администратор</option>
+                            <option value="1">Администратор</option>
+                            <option value="2">Менеджер</option>
+                            <option value="3">Диспетчер</option>
+                            <option value="4">Водитель</option>
+                            <option value="5">Владелец</option>
+                        </Input>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label for="login">Логин</Label>
+                        <Input type="text" name="login" id="login" value={user.login || ''}
+                               onChange={this.handleChange} autoComplete="login"/>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label for="password">Пароль</Label>
+                        <Input type="password" name="password" id="password" value={user.password || ''}
+                               onChange={this.handleChange} autoComplete="password"/>
+                    </FormGroup>
+                    <FormGroup>
+                        <Button color="primary" type="submit">Сохранить</Button>{' '}
+                    </FormGroup>
+                </Form>
+            </Container>
         );
     }
 }

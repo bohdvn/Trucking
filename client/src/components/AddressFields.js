@@ -7,6 +7,7 @@ class  AddressFields extends React.Component{
 
     constructor(props){
         super(props);
+        console.log(this.props.address);
         this.state={
             address:props.address,
         };

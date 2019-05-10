@@ -61,11 +61,14 @@ public class Product implements Transformable {
     @Override
     public ProductDto transform() {
         return ProductDto.builder()
+                .withId(this.id)
                 .withAmount(this.amount)
                 .withName(this.name)
                 .withPrice(this.price)
                 .withStatus(this.status)
                 .withType(this.type)
+                .withInvoiceId(this.invoice.getId())
+                .withActOfLossId(this.actOfLoss.getId())
                 .build();
     }
 

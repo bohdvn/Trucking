@@ -1,6 +1,5 @@
 package by.itechart.Server.service.impl;
 
-import by.itechart.Server.dto.UserDto;
 import by.itechart.Server.entity.User;
 import by.itechart.Server.repository.UserRepository;
 import by.itechart.Server.service.UserService;

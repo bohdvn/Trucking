@@ -3,6 +3,7 @@ package by.itechart.Server.dto;
 import by.itechart.Server.entity.Product;
 
 public class ProductDto {
+    private int id;
 
     private String name;
 
@@ -14,6 +15,10 @@ public class ProductDto {
 
     private Product.Status status;
 
+    private int invoiceId;
+
+    private int actOfLossId;
+
     private ProductDto(){}
 
     public static Builder builder() {
@@ -22,6 +27,21 @@ public class ProductDto {
 
     public class Builder {
         private Builder() {
+        }
+
+        public Builder withId(final int id) {
+            ProductDto.this.id = id;
+            return this;
+        }
+
+        public Builder withInvoiceId(final int invoiceId) {
+            ProductDto.this.invoiceId = invoiceId;
+            return this;
+        }
+
+        public Builder withActOfLossId(final int actOfLossId) {
+            ProductDto.this.actOfLossId = actOfLossId;
+            return this;
         }
 
         public Builder withName(final String name) {
@@ -92,5 +112,29 @@ public class ProductDto {
 
     public void setStatus(final Product.Status status) {
         this.status = status;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(final int id) {
+        this.id = id;
+    }
+
+    public int getInvoiceId() {
+        return invoiceId;
+    }
+
+    public void setInvoiceId(final int invoiceId) {
+        this.invoiceId = invoiceId;
+    }
+
+    public int getActOfLossId() {
+        return actOfLossId;
+    }
+
+    public void setActOfLossId(final int actOfLossId) {
+        this.actOfLossId = actOfLossId;
     }
 }

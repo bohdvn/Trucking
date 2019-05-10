@@ -1,6 +1,8 @@
 import React from 'react';
 import AddressFields from "./AddressFields";
 import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 
 class UserComponent extends React.Component{
@@ -13,10 +15,20 @@ class UserComponent extends React.Component{
         passportIssued:'',
         birthDate: '',
         email: '',
-        role:'',
+        role:'0',
         login:'',
         password:'',
-        address:'{}',
+        address:'',
+    };
+
+    address={
+        id: '',
+        city: '',
+        street: '',
+        building: '',
+        flat: '',
+        latitude: '',
+        longitude: ''
     };
 
     constructor(props){
@@ -32,6 +44,12 @@ class UserComponent extends React.Component{
         if (this.props.match.params.id !== 'create') {
             const newUser = await (await fetch(`/user/${this.props.match.params.id}`)).json();
             this.setState({user: newUser});
+            console.log(this.state);
+        }
+        else{
+            const user=this.state.user;
+            user['address']=this.address;
+            this.setState({user});
         }
     }
 
@@ -42,6 +60,7 @@ class UserComponent extends React.Component{
         let user = {...this.state.user};
         user[name] = value;
         this.setState({user});
+        console.log(this.state);
     }
 
     changeAddressFields(value){
@@ -63,14 +82,7 @@ class UserComponent extends React.Component{
             body: JSON.stringify(user),
         });
 
-        await fetch('/address/', {
-            method:'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user.address),
-        });
+
         this.props.history.push('/user');
     }
 
@@ -112,7 +124,7 @@ class UserComponent extends React.Component{
 
                     <FormGroup>
                         <Label for="birthDate">Дата рождения</Label>
-                        <Input type="date" name="birthDate" id="birthDate" value={user.birthDate || ''}
+                        <Input type="date" name="birthDate" id="birthDate" value={user.birthDate||''}
                                onChange={this.handleChange} autoComplete="birthDate"/>
                     </FormGroup>
 

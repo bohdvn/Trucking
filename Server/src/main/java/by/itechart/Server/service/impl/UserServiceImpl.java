@@ -3,9 +3,10 @@ package by.itechart.Server.service.impl;
 import by.itechart.Server.entity.User;
 import by.itechart.Server.repository.UserRepository;
 import by.itechart.Server.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,8 +23,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     @Override

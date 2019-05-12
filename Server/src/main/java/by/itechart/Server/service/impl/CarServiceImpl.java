@@ -3,6 +3,9 @@ package by.itechart.Server.service.impl;
 import by.itechart.Server.entity.Car;
 import by.itechart.Server.repository.CarRepository;
 import by.itechart.Server.service.CarService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,13 +20,13 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public void save(Car car) {
+    public void save(final Car car) {
         carRepository.save(car);
     }
 
     @Override
-    public List<Car> findAll() {
-        return carRepository.findAll();
+    public Page<Car> findAll(Pageable pageable) {
+        return carRepository.findAll(pageable);
     }
 
     @Override

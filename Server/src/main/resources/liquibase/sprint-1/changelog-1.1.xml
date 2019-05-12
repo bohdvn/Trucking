@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="aliaksandr.yakutsin" id="1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="status" tableName="client_company"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="client_company">
+            <column name="status" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="aliaksandr.yakutsin" id="2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="type" tableName="client_company"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="client_company">
+            <column name="type" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="aliaksandr.yakutsin" id="5">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="act_of_loss_id" tableName="product"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="product">
+            <column name="act_of_loss_id" type="int"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

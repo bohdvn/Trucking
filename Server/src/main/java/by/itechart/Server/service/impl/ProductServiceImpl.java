@@ -3,6 +3,8 @@ package by.itechart.Server.service.impl;
 import by.itechart.Server.entity.Product;
 import by.itechart.Server.repository.ProductRepository;
 import by.itechart.Server.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +24,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAll() {
-        return productRepository.findAll();
+    public Page<Product> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     @Override

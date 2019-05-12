@@ -13,7 +13,7 @@ class UserComponent extends React.Component{
         patronymic: '',
         passportNumber:'',
         passportIssued:'',
-        birthDate: '',
+        dateOfBirth: '',
         email: '',
         role:'0',
         login:'',
@@ -27,8 +27,6 @@ class UserComponent extends React.Component{
         street: '',
         building: '',
         flat: '',
-        latitude: '',
-        longitude: ''
     };
 
     constructor(props){
@@ -83,7 +81,7 @@ class UserComponent extends React.Component{
         });
 
 
-        this.props.history.push('/user');
+        this.props.history.push('/users/1');
     }
 
     render(){
@@ -123,9 +121,9 @@ class UserComponent extends React.Component{
                     </FormGroup>
 
                     <FormGroup>
-                        <Label for="birthDate">Дата рождения</Label>
-                        <Input type="date" name="birthDate" id="birthDate" value={user.birthDate||''}
-                               onChange={this.handleChange} autoComplete="birthDate"/>
+                        <Label for="dateOfBirth">Дата рождения</Label>
+                        <Input type="date" name="dateOfBirth" id="birthDate" value={user.dateOfBirth||''}
+                               onChange={this.handleChange} autoComplete="dateOfBirth"/>
                     </FormGroup>
 
                     <FormGroup>

@@ -4,6 +4,9 @@ import by.itechart.Server.dto.CarDto;
 import by.itechart.Server.entity.Car;
 import by.itechart.Server.entity.User;
 import by.itechart.Server.service.CarService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +25,12 @@ public class CarController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<?> create(@RequestBody Car car){
+    public ResponseEntity<?> edit(final @RequestBody Car car){
+        carService.save(car);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+    @PostMapping("")
+    public ResponseEntity<?> create(final @RequestBody Car car){
         carService.save(car);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -41,10 +49,10 @@ public class CarController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<CarDto>> getAll() {
-        List<Car> cars = carService.findAll();
-        List<CarDto> carsDto = cars.stream().map(Car::transform).collect(Collectors.toList());
+    @GetMapping("/list")
+    public ResponseEntity<Page<CarDto>> getAll(Pageable pageable) {
+        Page<Car> cars = carService.findAll(pageable);
+        Page<CarDto> carsDto = new PageImpl<>(cars.stream().map(Car::transform).collect(Collectors.toList()));
         return cars.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                new ResponseEntity<>(carsDto,
                        HttpStatus.OK);

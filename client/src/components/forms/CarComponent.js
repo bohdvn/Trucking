@@ -40,7 +40,7 @@ class CarComponent extends React.Component {
             },
             body: JSON.stringify(car),
         });
-        this.props.history.push('/cars');
+        this.props.history.push('/cars/1');
     }
 
     async componentDidMount() {

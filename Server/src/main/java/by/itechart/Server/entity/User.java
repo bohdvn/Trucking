@@ -44,7 +44,7 @@ public class User implements Transformable{
 
     @Past(message = "Wrong date of birth")
     @Column(name = "date_of_birth")
-    private LocalDate birthDate;
+    private LocalDate dateOfBirth;
 
     @Email
     @Column(name = "email")
@@ -99,7 +99,7 @@ public class User implements Transformable{
     public UserDto transform() {
         return UserDto.builder()
                 .withId(this.id)
-                .withDateOfBirth(this.birthDate)
+                .withDateOfBirth(this.dateOfBirth)
                 .withLogin(this.login)
                 .withPassword(this.password)
                 .withName(this.name)
@@ -169,12 +169,12 @@ public class User implements Transformable{
         this.role = role;
     }
 
-    public LocalDate getBirthDate() {
-        return birthDate;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setBirthDate(final LocalDate birthDate) {
-        this.birthDate = birthDate;
+    public void setDateOfBirth(final LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public String getLogin() {
@@ -243,7 +243,7 @@ public class User implements Transformable{
                 Objects.equals(patronymic, user.patronymic) &&
                 Objects.equals(surname, user.surname) &&
                 Objects.equals(passportNumber, user.passportNumber) &&
-                Objects.equals(birthDate, user.birthDate) &&
+                Objects.equals(dateOfBirth, user.dateOfBirth) &&
                 Objects.equals(login, user.login) &&
                 Objects.equals(password, user.password) &&
                 role == user.role &&
@@ -255,7 +255,7 @@ public class User implements Transformable{
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, patronymic, surname, passportNumber, birthDate, login, password, role, address, checkedByManagerInvoices, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices);
+        return Objects.hash(id, name, patronymic, surname, passportNumber, dateOfBirth, login, password, role, address, checkedByManagerInvoices, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices);
     }
 
     @Override
@@ -266,7 +266,7 @@ public class User implements Transformable{
                 ", patronymic='" + patronymic + '\'' +
                 ", surname='" + surname + '\'' +
                 ", passportNumber='" + passportNumber + '\'' +
-                ", birthDate=" + birthDate +
+                ", dateOfBirth=" + dateOfBirth +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +

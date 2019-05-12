@@ -2,12 +2,7 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.AddressDto;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Objects;
 
@@ -65,6 +60,8 @@ public class Address implements Transformable {
     public void setCity(final String city) {
         this.city = city;
     }
+
+    public String getCity() { return city; }
 
     public String getStreet() {
         return street;

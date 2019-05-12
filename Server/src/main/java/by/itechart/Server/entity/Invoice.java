@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "invoice")
@@ -92,10 +93,17 @@ public class Invoice implements Transformable {
     @Override
     public InvoiceDto transform() {
         return InvoiceDto.builder()
+                .withId(this.id)
                 .withDateOfCheck(this.dateOfCheck)
                 .withDateOfIssue(this.dateOfIssue)
                 .withNumber(this.number)
                 .withStatus(this.status)
+                .withCarName(this.car.getName())
+                .withDriverFullName(this.driver.getName() + " " + this.driver.getPatronymic() + " " + this.driver.getSurname())
+                .withDispathcerFromFullName(this.dispatcherFrom.getName() + " " + this.dispatcherFrom.getPatronymic() + " " + this.dispatcherFrom.getSurname())
+                .withDispatcherToFullName(this.dispatcherTo.getName() + " " + this.dispatcherTo.getPatronymic() + " " + this.dispatcherTo.getSurname())
+                .withManagerFullName(this.manager.getName() + " " + this.manager.getPatronymic() + " " + this.manager.getSurname())
+                .withProducts(this.products.stream().map(Product::transform).collect(Collectors.toList()))
                 .build();
     }
 

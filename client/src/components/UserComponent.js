@@ -1,7 +1,7 @@
 import React from 'react';
 import AddressFields from "./AddressFields";
 import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
-import DatePicker from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
 
 

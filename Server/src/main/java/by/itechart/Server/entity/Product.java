@@ -43,8 +43,9 @@ public class Product implements Transformable {
     /**
      * Several products may be in the same actOfLoss.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "actOfLoss_id")
+    @ManyToOne(fetch = FetchType.LAZY,
+    cascade = CascadeType.ALL)
+    @JoinColumn(name = "act_of_loss_id")
     private ActOfLoss actOfLoss;
 
     @Enumerated
@@ -67,8 +68,6 @@ public class Product implements Transformable {
                 .withPrice(this.price)
                 .withStatus(this.status)
                 .withType(this.type)
-                .withInvoiceId(this.invoice.getId())
-                .withActOfLossId(this.actOfLoss.getId())
                 .build();
     }
 

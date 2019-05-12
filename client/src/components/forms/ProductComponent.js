@@ -4,14 +4,11 @@ import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
 
 class ProductComponent extends React.Component{
     emptyProduct={
-        id:'',
-        name:'',
-        amount:'',
-        type:'',
-        price:'',
-        status:'REGISTERED',
-        actOfLossId:'',
-        invoiceId:''
+        name: '',
+        type: '',
+        amount: '',
+        price: '',
+        status: 'REGISTERED'
     };
     constructor(props){
         super(props);

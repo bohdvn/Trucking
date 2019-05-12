@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="arina.suhorukova">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(45)"/>
+            <column name="surname" type="varchar(45)"/>
+            <column name="patronymic" type="varchar(45)"/>
+            <column name="passport_number" type="varchar(45)"/>
+            <column name="passport_issued" type="varchar(150)"/>
+            <column name="date_of_birth" type="date"/>
+            <column name="login" type="varchar(45)"/>
+            <column name="password" type="varchar(45)"/>
+            <column name="user_role" type="int"/>
+            <column name="address" type="int"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="user"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2" author="arina.suhorukova">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="address"/>
+            </not>
+        </preConditions>
+        <createTable tableName="address">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="city" type="varchar(150)"/>
+            <column name="street" type="varchar(150)"/>
+            <column name="building" type="int"/>
+            <column name="flat" type="int"/>
+            <column name="latitude" type="varchar(255)"/>
+            <column name="longitude" type="varchar(255)"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="address"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="arina.suhorukova">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="checkpoint"/>
+            </not>
+        </preConditions>
+        <createTable tableName="checkpoint">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(45)"/>
+            <column name="latitude" type="varchar(255)"/>
+            <column name="longitude" type="varchar(255)"/>
+            <column name="date" type="date"/>
+            <column name="waybill_id" type="int"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="checkpoint"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="4" author="arina.suhorukova">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="wayBill"/>
+            </not>
+        </preConditions>
+        <createTable tableName="wayBill">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="int"/>
+            <column name="client_company_id" type="int"/>
+            <column name="address_from" type="int"/>
+            <column name="address_to" type="int"/>
+            <column name="invoice_id" type="int"/>
+            <column name="date_from" type="date"/>
+            <column name="date_to" type="date"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="waybill"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5" author="arina.suhorukova">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="client_company"/>
+            </not>
+        </preConditions>
+        <createTable tableName="client_company">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(150)"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="client_company"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="6" author="arina.suhorukova">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="car"/>
+            </not>
+        </preConditions>
+        <createTable tableName="car">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(150)"/>
+            <column name="car_type" type="int"/>
+            <column name="consumption" type="int"/>
+            <column name="status" type="int"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="car"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="7" author="arina.suhorukova">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="invoice"/>
+            </not>
+        </preConditions>
+        <createTable tableName="invoice">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="status" type="int"/>
+            <column name="number" type="varchar(45)"/>
+            <column name="date_of_issue" type="date"/>
+            <column name="driver_id" type="int"/>
+            <column name="car_id" type="int"/>
+            <column name="dispatcher_from_id" type="int"/>
+            <column name="date_of_check" type="date"/>
+            <column name="manager_id" type="int"/>
+            <column name="dispatcher_to_id" type="int"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="invoice"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="8" author="arina.suhorukova">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="product"/>
+            </not>
+        </preConditions>
+        <createTable tableName="product">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(45)"/>
+            <column name="type" type="varchar(150)"/>
+            <column name="amount" type="int"/>
+            <column name="price" type="int"/>
+            <column name="invoice_id" type="int"/>
+            <column name="status" type="int"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="product"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="9" author="arina.suhorukova">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="act_of_loss"/>
+            </not>
+        </preConditions>
+        <createTable tableName="act_of_loss">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="amount" type="int"/>
+            <column name="product_id" type="int"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="act_of_loss"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="aliaksandr.yalutsin" id="10">
+        <addColumn
+                catalogName="trucking"
+                   schemaName="trucking"
+                   tableName="user">
+            <column name="email" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="aliaksandr.yalutsin" id="11">
+        <renameColumn
+                catalogName="trucking"
+                columnDataType="varchar(255)"
+                newColumnName="longitude"
+                oldColumnName="longtitude"
+                schemaName="trucking"
+                tableName="address"/>
+    </changeSet>
+
+    <changeSet author="aliaksandr.yalutsin" id="11">
+        <renameColumn
+                catalogName="trucking"
+                columnDataType="varchar(255)"
+                newColumnName="longitude"
+                oldColumnName="longtitude"
+                schemaName="trucking"
+                tableName="address"/>
+    </changeSet>
+</databaseChangeLog>

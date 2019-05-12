@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.util.Collection;
+import java.util.Optional;
 
 @DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,7 +45,7 @@ public class UserServiceTest {
 
     @Test
     public void testGetOne() {
-        User user=userService.getOne(1);
+        Optional<User> user=userService.findById(1);
         Assert.assertNotNull(user);
     }
 }

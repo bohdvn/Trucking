@@ -21,6 +21,24 @@ public class ClientCompany implements Transformable {
     @Column(name = "name")
     private String name;
 
+    @Enumerated
+    @NotNull(message = "Status cannot be null")
+    @Column(name="type")
+    private Type type;
+
+    @Enumerated
+    @NotNull(message = "Status cannot be null")
+    @Column(name="status")
+    private Status status;
+
+    public enum Type{
+        LEGAL,INDIVIDUAL
+    }
+
+    public enum Status{
+        ACTIVE,BLOCKED
+    }
+
     /**
      * One clientCompany can be in different waybills.
      */
@@ -32,6 +50,9 @@ public class ClientCompany implements Transformable {
     @Override
     public ClientCompanyDto transform() {
         return ClientCompanyDto.builder()
+                .withId(this.id)
+                .withName(this.name)
+                .withName(this.name)
                 .withName(this.name)
                 .build();
     }
@@ -58,6 +79,22 @@ public class ClientCompany implements Transformable {
 
     public void setWaybills(List<WayBill> waybills) {
         this.waybills = waybills;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(final Type type) {
+        this.type = type;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(final Status status) {
+        this.status = status;
     }
 
     @Override

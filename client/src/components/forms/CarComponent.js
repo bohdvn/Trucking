@@ -40,7 +40,7 @@ class CarComponent extends React.Component {
             },
             body: JSON.stringify(car),
         });
-        this.props.history.push('/cars/1');
+        this.props.history.push('/cars');
     }
 
     async componentDidMount() {
@@ -67,8 +67,8 @@ class CarComponent extends React.Component {
                                onChange={this.handleChange} autoComplete="consumption"/>
                     </FormGroup>
                     <FormGroup>
-                        <Label for="nameInput">Тип</Label>
-                        <Input type="select" name="carType" id="carType" value={car.carType}
+                        <Label for="carType">Тип</Label>
+                        <Input type="select" name="carType" id="carType" value={car.carType||''}
                                onChange={this.handleChange} autoComplete="carType">
                             <option value="TILT">Крытый кузов</option>
                             <option value="FRIDGE">Рефрежератор</option>
@@ -76,8 +76,8 @@ class CarComponent extends React.Component {
                         </Input>
                     </FormGroup>
                     <FormGroup>
-                        <Label for="nameInput">Статус</Label>
-                        <Input type="select" name="status" id="status" value={car.status}
+                        <Label for="status">Статус</Label>
+                        <Input type="select" name="status" id="status" value={car.status||''}
                                onChange={this.handleChange} autoComplete="status">
                             <option value="AVAILABLE">Доступно</option>
                             <option value="UNAVAILABLE">Недоступно</option>

@@ -6,6 +6,7 @@ import CarComponent from "./components/forms/CarComponent";
 import CarListComponent from "./components/pages/CarListComponent";
 import UserListComponent from "./components/pages/UserListComponent";
 import ProductComponent from "./components/forms/ProductComponent";
+import ClientComponent from "./components/forms/ClientComponent";
 
 class App extends React.Component {
     render() {
@@ -17,6 +18,7 @@ class App extends React.Component {
                     <Route path="/product/:id" component={ProductComponent}/>
                     <Route path="/cars" component={CarListComponent}/>
                     <Route path="/users" component={UserListComponent}/>
+                    <Route path="/client/:id" component={ClientComponent}/>
                 </Router>
             </div>
         );

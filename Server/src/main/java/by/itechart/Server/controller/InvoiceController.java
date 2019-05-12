@@ -3,6 +3,8 @@ package by.itechart.Server.controller;
 import by.itechart.Server.dto.InvoiceDto;
 import by.itechart.Server.entity.Invoice;
 import by.itechart.Server.service.InvoiceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,14 +22,18 @@ public class InvoiceController {
         this.invoiceService=invoiceService;
     }
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(InvoiceController.class);
+
     @PutMapping("/")
     public ResponseEntity<?> create(@RequestBody Invoice invoice){
+        LOGGER.info("REST request. Path:/invoice method: POST. invoice: {}", invoice);
         invoiceService.save(invoice);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id){
+        LOGGER.info("REST request. Path:/invoice/{} method: GET.", id);
         Optional<Invoice> invoice = invoiceService.findById(id);
         return invoice.isPresent()?
                 ResponseEntity.ok().body(invoice.get().transform()):
@@ -36,16 +42,19 @@ public class InvoiceController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> remove(@PathVariable("id") int id){
+        LOGGER.info("REST request. Path:/invoice/{} method: DELETE.", id);
         invoiceService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<InvoiceDto>> getAll() {
+        LOGGER.info("REST request. Path:/invoice method: GET.");
         List<Invoice> invoices = invoiceService.findAll();
-        List<InvoiceDto> carsDto = invoices.stream().map(Invoice::transform).collect(Collectors.toList());
+        List<InvoiceDto> invoicesDto = invoices.stream().map(Invoice::transform).collect(Collectors.toList());
+        LOGGER.info("Return invoiceList.size:{}", invoicesDto.size());
         return invoices.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(carsDto,
+                new ResponseEntity<>(invoicesDto,
                         HttpStatus.OK);
     }
 }

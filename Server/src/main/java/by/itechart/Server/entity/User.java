@@ -44,7 +44,7 @@ public class User implements Transformable{
 
     @Past(message = "Wrong date of birth")
     @Column(name = "date_of_birth")
-    private LocalDate dateOfBirth;
+    private LocalDate birthDate;
 
     @Email
     @Column(name = "email")
@@ -65,7 +65,7 @@ public class User implements Transformable{
     /**
      * One user can have only one address.
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     @JoinColumn(name = "address")
     private Address address;
     /**
@@ -99,7 +99,7 @@ public class User implements Transformable{
     public UserDto transform() {
         return UserDto.builder()
                 .withId(this.id)
-                .withDateOfBirth(this.dateOfBirth)
+                .withDateOfBirth(this.birthDate)
                 .withLogin(this.login)
                 .withPassword(this.password)
                 .withName(this.name)
@@ -169,12 +169,12 @@ public class User implements Transformable{
         this.role = role;
     }
 
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setDateOfBirth(final LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setBirthDate(final LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     public String getLogin() {
@@ -243,7 +243,7 @@ public class User implements Transformable{
                 Objects.equals(patronymic, user.patronymic) &&
                 Objects.equals(surname, user.surname) &&
                 Objects.equals(passportNumber, user.passportNumber) &&
-                Objects.equals(dateOfBirth, user.dateOfBirth) &&
+                Objects.equals(birthDate, user.birthDate) &&
                 Objects.equals(login, user.login) &&
                 Objects.equals(password, user.password) &&
                 role == user.role &&
@@ -255,7 +255,7 @@ public class User implements Transformable{
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, patronymic, surname, passportNumber, dateOfBirth, login, password, role, address, checkedByManagerInvoices, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices);
+        return Objects.hash(id, name, patronymic, surname, passportNumber, birthDate, login, password, role, address, checkedByManagerInvoices, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices);
     }
 
     @Override
@@ -266,7 +266,7 @@ public class User implements Transformable{
                 ", patronymic='" + patronymic + '\'' +
                 ", surname='" + surname + '\'' +
                 ", passportNumber='" + passportNumber + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
+                ", birthDate=" + birthDate +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +

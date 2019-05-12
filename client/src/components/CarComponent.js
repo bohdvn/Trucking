@@ -1,14 +1,13 @@
 import React from 'react';
-import "../styles.css"
 import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
 
 class CarComponent extends React.Component {
     emptyCar={
         id:'',
-        carType: '',
+        carType: 'TILT',
         name: '',
         consumption: '',
-        status: '',
+        status: 'AVAILABLE',
     };
 
     constructor(props){
@@ -33,7 +32,7 @@ class CarComponent extends React.Component {
     async handleSubmit(event) {
         event.preventDefault();
         const {car} = this.state;
-        await fetch('/car/', {
+        await fetch( '/car/', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -54,7 +53,7 @@ class CarComponent extends React.Component {
     render() {
         const {car}=this.state;
         return (
-            <Container>
+            <Container className="col-3">
                 <h1>Авто</h1>
                 <Form onSubmit={this.handleSubmit}>
                     <FormGroup>
@@ -69,7 +68,7 @@ class CarComponent extends React.Component {
                     </FormGroup>
                     <FormGroup>
                         <Label for="nameInput">Тип</Label>
-                        <Input type="select" name="carType" id="carType" value={car.carType || ''}
+                        <Input type="select" name="carType" id="carType" value={car.carType}
                                onChange={this.handleChange} autoComplete="carType">
                             <option value="TILT">Крытый кузов</option>
                             <option value="FRIDGE">Рефрежератор</option>
@@ -78,7 +77,7 @@ class CarComponent extends React.Component {
                     </FormGroup>
                     <FormGroup>
                         <Label for="nameInput">Статус</Label>
-                        <Input type="select" name="status" id="status" value={car.status || ''}
+                        <Input type="select" name="status" id="status" value={car.status}
                                onChange={this.handleChange} autoComplete="status">
                             <option value="AVAILABLE">Доступно</option>
                             <option value="UNAVAILABLE">Недоступно</option>

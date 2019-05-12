@@ -5,6 +5,9 @@ import by.itechart.Server.entity.Product;
 import by.itechart.Server.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,12 +50,12 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<ProductDto>> getAll() {
+    @GetMapping("/list")
+    public ResponseEntity<Page<ProductDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/product method: GET.");
-        List<Product> products = productService.findAll();
-        List<ProductDto> productsDto = products.stream().map(Product::transform).collect(Collectors.toList());
-        LOGGER.info("Return productList.size:{}", productsDto.size());
+        Page<Product> products = productService.findAll(pageable);
+        Page<ProductDto> productsDto = new PageImpl<>(products.stream().map(Product::transform).collect(Collectors.toList()));
+        LOGGER.info("Return productList.size:{}", productsDto.getNumber());
         return products.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(productsDto, HttpStatus.OK);
     }

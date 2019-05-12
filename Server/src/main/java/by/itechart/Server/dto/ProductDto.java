@@ -15,10 +15,6 @@ public class ProductDto {
 
     private Product.Status status;
 
-    private int invoiceId;
-
-    private int actOfLossId;
-
     private ProductDto(){}
 
     public static Builder builder() {
@@ -34,15 +30,7 @@ public class ProductDto {
             return this;
         }
 
-        public Builder withInvoiceId(final int invoiceId) {
-            ProductDto.this.invoiceId = invoiceId;
-            return this;
-        }
 
-        public Builder withActOfLossId(final int actOfLossId) {
-            ProductDto.this.actOfLossId = actOfLossId;
-            return this;
-        }
 
         public Builder withName(final String name) {
             ProductDto.this.name = name;
@@ -122,19 +110,4 @@ public class ProductDto {
         this.id = id;
     }
 
-    public int getInvoiceId() {
-        return invoiceId;
-    }
-
-    public void setInvoiceId(final int invoiceId) {
-        this.invoiceId = invoiceId;
-    }
-
-    public int getActOfLossId() {
-        return actOfLossId;
-    }
-
-    public void setActOfLossId(final int actOfLossId) {
-        this.actOfLossId = actOfLossId;
-    }
 }

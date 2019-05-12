@@ -44,8 +44,6 @@ public class Address implements Transformable {
                 .withStreet(this.street)
                 .withBuilding(this.building)
                 .withFlat(this.flat)
-                .withLatitude(this.latitude)
-                .withLongtitude(this.longitude)
                 .build();
     }
 

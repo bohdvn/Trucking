@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles.css';
 import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
 
 
@@ -37,6 +36,7 @@ class ProductComponent extends React.Component{
         let product = {...this.state.product};
         product[name] = value;
         this.setState({product});
+        console.log(this.state);
     }
 
     async handleSubmit(event) {

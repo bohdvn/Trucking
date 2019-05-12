@@ -1,18 +1,22 @@
 import React from 'react';
 import {Router, Route} from 'react-router'
 import createBrowserHistory  from './helpers/history';
-import UserComponent from "./components/UserComponent";
-import CarComponent from "./components/CarComponent";
-import ProductComponent from "./components/ProductComponent";
+import UserComponent from "./components/forms/UserComponent";
+import CarComponent from "./components/forms/CarComponent";
+import CarListComponent from "./components/pages/CarListComponent";
+import UserListComponent from "./components/pages/UserListComponent";
+import ProductComponent from "./components/forms/ProductComponent";
 
 class App extends React.Component {
     render() {
         return (
             <div>
                 <Router history={createBrowserHistory}>
-                    <Route path="/users/:id" component={UserComponent}/>
-                    <Route path="/cars/:id" component={CarComponent}/>
-                    <Route path="/products/:id" component={ProductComponent}/>
+                    <Route path="/user/:id" component={UserComponent}/>
+                    <Route path="/car/:id" component={CarComponent}/>
+                    <Route path="/product/:id" component={ProductComponent}/>
+                    <Route path="/cars" component={CarListComponent}/>
+                    <Route path="/users" component={UserListComponent}/>
                 </Router>
             </div>
         );

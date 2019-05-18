@@ -52,7 +52,7 @@ public class UserController {
                 new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
     @Transactional
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<?> create(@RequestBody User user){
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         User existingUser = userService.findByEmailIgnoreCase(user.getEmail());

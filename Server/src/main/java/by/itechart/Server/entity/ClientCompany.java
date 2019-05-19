@@ -22,7 +22,7 @@ public class ClientCompany implements Transformable {
     private String name;
 
     @Enumerated
-    @NotNull(message = "Status cannot be null")
+    @NotNull(message = "Type cannot be null")
     @Column(name="type")
     private Type type;
 

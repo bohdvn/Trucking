@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="dmitry.gorlach" id="1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="is_enabled" tableName="user"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="user">
+            <column name="is_enabled" type="tinyint"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="dmitry.gorlach" id="2">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="confirmation_token"/>
+            </not>
+        </preConditions>
+        <createTable tableName="confirmation_token">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="confirmation_token" type="varchar(200)"/>
+            <column name="date" type="timestamp"/>
+            <column name="user_id" type="int"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="confirmation_token"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

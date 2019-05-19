@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -44,10 +45,13 @@ public class UserController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getPage(Pageable pageable) {
-        LOGGER.info("REST request. Path:/user method: GET.");
+    public ResponseEntity<Page<UserDto>> getAll(Pageable pageable) {
+        LOGGER.info("REST request. Path:/product method: GET.");
         Page<User> users = userService.findAll(pageable);
-        Page<UserDto> usersDto = new PageImpl<>(users.stream().map(User::transform).collect(Collectors.toList()));
+        Page<UserDto> usersDto = new PageImpl<>(users.stream().map(User::transform)
+                .sorted(Comparator.comparing(UserDto :: getSurname))
+                .collect(Collectors.toList()), pageable, users.getTotalElements());
+        LOGGER.info("Return userList.size:{}", usersDto.getNumber());
         return users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(usersDto, HttpStatus.OK);
     }

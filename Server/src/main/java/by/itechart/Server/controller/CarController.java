@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -60,10 +61,11 @@ public class CarController {
     public ResponseEntity<Page<CarDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/car method: GET.");
         Page<Car> cars = carService.findAll(pageable);
-        Page<CarDto> carsDto = new PageImpl<>(cars.stream().map(Car::transform).collect(Collectors.toList()));
+        Page<CarDto> carsDto = new PageImpl<>(cars.stream().map(Car::transform)
+                .sorted(Comparator.comparing(CarDto :: getStatus))
+                .collect(Collectors.toList()), pageable, cars.getTotalElements());
         LOGGER.info("Return carList.size:{}", carsDto.getNumber());
         return cars.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(carsDto,
-                        HttpStatus.OK);
+                new ResponseEntity<>(carsDto, HttpStatus.OK);
     }
 }

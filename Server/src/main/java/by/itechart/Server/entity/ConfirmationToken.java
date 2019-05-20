@@ -2,7 +2,6 @@ package by.itechart.Server.entity;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.UUID;
 
 @Entity
 @Table(name = "confirmation_token")
@@ -29,7 +28,7 @@ public class ConfirmationToken {
     public ConfirmationToken(User user){
         this.user = user;
         createDate = new Date();
-        confirmationToken = UUID.randomUUID().toString();
+        confirmationToken = String.valueOf(Math.random());
     }
 
     public Integer getId() {

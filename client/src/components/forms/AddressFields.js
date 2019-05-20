@@ -3,13 +3,13 @@ import Container from "reactstrap/es/Container";
 import FormGroup from "reactstrap/es/FormGroup";
 import {Input, Label} from "reactstrap";
 
-class  AddressFields extends React.Component{
+class AddressFields extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         console.log(this.props.address);
-        this.state={
-            address:props.address,
+        this.state = {
+            address: props.address,
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -21,18 +21,18 @@ class  AddressFields extends React.Component{
         let address = {...this.state.address};
         address[name] = value;
         this.setState({address});
-        const state =this.state;
+        const state = this.state;
         this.props.changeState(state);
     }
 
     render() {
-        const {address} =this.state;
-        return(
+        const {address} = this.state;
+        return (
             <Container>
                 <FormGroup>
                     <Label for="city">Город</Label>
                     <Input type="text" name="city" id="city" value={address.city || ''}
-                       onChange={this.handleChange} autoComplete="city"/>
+                           onChange={this.handleChange} autoComplete="city"/>
                 </FormGroup>
 
                 <FormGroup>

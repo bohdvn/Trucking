@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Button, ButtonGroup, Container, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
@@ -22,10 +22,10 @@ class CarListComponent extends React.Component {
         super(props);
         this.state = {
             cars: [],
-            activePage:1,
+            activePage: 1,
             totalPages: null,
-            itemsCountPerPage:null,
-            totalItemsCount:null
+            itemsCountPerPage: null,
+            totalItemsCount: null
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
@@ -36,9 +36,10 @@ class CarListComponent extends React.Component {
         axios.get(`/car/list?page=${page}&size=1`, {
             proxy: {
                 host: 'http://localhost',
-                port: 8080}
+                port: 8080
+            }
         })
-            .then( response => {
+            .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
@@ -59,7 +60,7 @@ class CarListComponent extends React.Component {
             );
     }
 
-    componentDidMount () {
+    componentDidMount() {
         this.fetchURL(this.state.activePage)
     }
 
@@ -100,10 +101,6 @@ class CarListComponent extends React.Component {
             this.setState({cars: updateCars});
         });
     }
-
-
-
-
 
 
     render() {

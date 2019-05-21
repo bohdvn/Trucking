@@ -37,11 +37,11 @@ public class ProductServiceTest {
         productService.save(ProductUtil.createProduct());
     }
 
-    @Test
-    public void testFindAll() {
-        Collection<Product> products = productService.findAll();
-        Assert.assertTrue(products.size() > 0);
-    }
+//    @Test
+//    public void testFindAll() {
+//        Collection<Product> products = productService.findAll();
+//        Assert.assertTrue(products.size() > 0);
+//    }
 
     @Test
     public void testGetOne() {

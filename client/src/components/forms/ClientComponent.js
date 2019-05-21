@@ -2,15 +2,15 @@ import React from 'react';
 import "../../styles.css";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 
-class ClientComponent extends React.Component{
-    emptyClient={
-        id:'',
+class ClientComponent extends React.Component {
+    emptyClient = {
+        id: '',
         name: '',
         type: 'LEGAL',
         status: 'ACTIVE',
     };
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             client: this.emptyClient
@@ -32,7 +32,7 @@ class ClientComponent extends React.Component{
     async handleSubmit(event) {
         event.preventDefault();
         const {client} = this.state;
-        await fetch( '/client/', {
+        await fetch('/client/', {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -51,7 +51,7 @@ class ClientComponent extends React.Component{
     }
 
     render() {
-        const {client}=this.state;
+        const {client} = this.state;
         return (
             <Container className="col-3">
                 <h1>Клиент</h1>
@@ -63,7 +63,7 @@ class ClientComponent extends React.Component{
                     </FormGroup>
                     <FormGroup>
                         <Label for="type">Тип</Label>
-                        <Input type="select" name="type" id="type" value={client.type||''}
+                        <Input type="select" name="type" id="type" value={client.type || ''}
                                onChange={this.handleChange} autoComplete="type">
                             <option value="INDIVIDUAL">Физическое лицо</option>
                             <option value="LEGAL">Юридическое лицо</option>
@@ -71,7 +71,7 @@ class ClientComponent extends React.Component{
                     </FormGroup>
                     <FormGroup>
                         <Label for="status">Статус</Label>
-                        <Input type="select" name="status" id="status" value={client.status||''}
+                        <Input type="select" name="status" id="status" value={client.status || ''}
                                onChange={this.handleChange} autoComplete="status">
                             <option value="ACTIVE">Активен</option>
                             <option value="BLOCKED">Заблокирован</option>

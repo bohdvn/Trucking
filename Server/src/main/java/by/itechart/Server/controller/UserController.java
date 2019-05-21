@@ -46,7 +46,7 @@ public class UserController {
 
     @GetMapping("/list")
     public ResponseEntity<Page<UserDto>> getAll(Pageable pageable) {
-        LOGGER.info("REST request. Path:/product method: GET.");
+        LOGGER.info("REST request. Path:/user method: GET.");
         Page<User> users = userService.findAll(pageable);
         Page<UserDto> usersDto = new PageImpl<>(users.stream().map(User::transform)
                 .sorted(Comparator.comparing(UserDto :: getSurname))

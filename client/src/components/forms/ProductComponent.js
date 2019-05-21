@@ -18,8 +18,8 @@ class ProductComponent extends React.Component {
             formErrors: {name: '', type: '', price: '', amount: ''},
             nameValid: false,
             typeValid: false,
-            priceValid: false,
-            amountValid: false,
+            priceValid: true,
+            amountValid: true,
             formValid: false
         };
         this.handleChange = this.handleChange.bind(this);

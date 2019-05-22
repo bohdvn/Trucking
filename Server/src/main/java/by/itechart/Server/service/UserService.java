@@ -18,4 +18,8 @@ public interface UserService {
     void delete(User user);
 
     void deleteById(int id);
+
+    boolean existsByLogin(String login);
+
+    boolean existsByEmail(String email);
 }

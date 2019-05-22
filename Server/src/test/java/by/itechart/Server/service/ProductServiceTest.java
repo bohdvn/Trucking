@@ -37,12 +37,6 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void testFindAll() {
-//        Collection<Product> products = productService.findAll();
-//        Assert.assertTrue(products.size() > 0);
-    }
-
-    @Test
     public void testGetOne() {
         Optional<Product> product=productService.findById(1);
         Assert.assertNotNull(product);

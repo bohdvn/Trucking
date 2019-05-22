@@ -1,27 +1,27 @@
 import React from 'react';
 import AddressFields from "./AddressFields";
-import { Button, Container, Form, FormGroup, Input, Label } from 'reactstrap';
+import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 
 import "react-datepicker/dist/react-datepicker.css";
 
 
-class UserComponent extends React.Component{
+class UserComponent extends React.Component {
     emptyUser = {
-        id:'',
+        id: '',
         surname: '',
         name: '',
         patronymic: '',
-        passportNumber:'',
-        passportIssued:'',
+        passportNumber: '',
+        passportIssued: '',
         dateOfBirth: '',
         email: '',
-        role:'0',
-        login:'',
-        password:'',
-        address:'',
+        role: '0',
+        login: '',
+        password: '',
+        address: '',
     };
 
-    address={
+    address = {
         id: '',
         city: '',
         street: '',
@@ -29,7 +29,7 @@ class UserComponent extends React.Component{
         flat: '',
     };
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             user: this.emptyUser
@@ -44,9 +44,9 @@ class UserComponent extends React.Component{
             this.setState({user: newUser});
             console.log(this.state);
         }
-        else{
-            const user=this.state.user;
-            user['address']=this.address;
+        else {
+            const user = this.state.user;
+            user['address'] = this.address;
             this.setState({user});
         }
     }
@@ -61,7 +61,7 @@ class UserComponent extends React.Component{
         console.log(this.state);
     }
 
-    changeAddressFields(value){
+    changeAddressFields(value) {
         let user = {...this.state.user};
         user['address'] = value.address;
         this.setState({user});
@@ -72,7 +72,7 @@ class UserComponent extends React.Component{
         const {user} = this.state;
 
         await fetch('/user/', {
-            method:'PUT',
+            method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -84,9 +84,9 @@ class UserComponent extends React.Component{
         this.props.history.push('/users/1');
     }
 
-    render(){
+    render() {
         const {user} = this.state;
-        return(
+        return (
             <Container className="col-3">
                 <h1>Пользователь</h1>
                 <Form onSubmit={this.handleSubmit}>
@@ -122,7 +122,7 @@ class UserComponent extends React.Component{
 
                     <FormGroup>
                         <Label for="dateOfBirth">Дата рождения</Label>
-                        <Input type="date" name="dateOfBirth" id="birthDate" value={user.dateOfBirth||''}
+                        <Input type="date" name="dateOfBirth" id="birthDate" value={user.dateOfBirth || ''}
                                onChange={this.handleChange} autoComplete="dateOfBirth"/>
                     </FormGroup>
 
@@ -133,11 +133,11 @@ class UserComponent extends React.Component{
                     </FormGroup>
 
                     <FormGroup>
-                        {user.address?<AddressFields
+                        {user.address ? <AddressFields
                             name="address"
                             id="addressFields"
                             changeState={this.changeAddressFields.bind(this)}
-                            address={user.address}/>:null}
+                            address={user.address}/> : null}
                     </FormGroup>
 
                     <FormGroup>

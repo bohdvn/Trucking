@@ -18,10 +18,10 @@ class ProductListComponent extends React.Component {
         super(props);
         this.state = {
             products: [],
-            activePage:0,
+            activePage: 0,
             totalPages: null,
-            itemsCountPerPage:null,
-            totalItemsCount:null
+            itemsCountPerPage: null,
+            totalItemsCount: null
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
@@ -32,9 +32,10 @@ class ProductListComponent extends React.Component {
         axios.get(`/product/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
-                port: 8080}
+                port: 8080
+            }
         })
-            .then( response => {
+            .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
@@ -55,7 +56,7 @@ class ProductListComponent extends React.Component {
             );
     }
 
-    componentDidMount () {
+    componentDidMount() {
         this.fetchURL(this.state.activePage)
     }
 
@@ -75,7 +76,8 @@ class ProductListComponent extends React.Component {
                 <td>{this.productStatusMap[product.status]}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/product/" + product.id}>Редактировать</Button>
+                        <Button size="sm" color="primary" tag={Link}
+                                to={"/product/" + product.id}>Редактировать</Button>
                         <Button size="sm" color="danger" onClick={() => this.remove(product.id)}>Удалить</Button>
                     </ButtonGroup>
                 </td>

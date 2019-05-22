@@ -7,7 +7,7 @@ import Pagination from "react-js-pagination";
 
 class UserListComponent extends React.Component {
 
-    userRoles=[
+    userRoles = [
         'Системный администратор',
         'Администратор',
         'Менеджер',
@@ -22,8 +22,8 @@ class UserListComponent extends React.Component {
             users: [],
             activePage:0,
             totalPages: null,
-            itemsCountPerPage:null,
-            totalItemsCount:null
+            itemsCountPerPage: null,
+            totalItemsCount: null
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
@@ -34,9 +34,10 @@ class UserListComponent extends React.Component {
         axios.get(`/user/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
-                port: 8080}
+                port: 8080
+            }
         })
-            .then( response => {
+            .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
@@ -57,7 +58,7 @@ class UserListComponent extends React.Component {
             );
     }
 
-    componentDidMount () {
+    componentDidMount() {
         this.fetchURL(this.state.activePage)
     }
 

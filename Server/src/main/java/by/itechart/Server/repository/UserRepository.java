@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
+
     Page<User> findAll(Pageable pageable);
 
     Optional<User> findByLoginOrEmail(String login, String email);
@@ -17,4 +18,6 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     boolean existsByLogin(String login);
 
     boolean existsByEmail(String email);
+
+    User findByEmailIgnoreCase(String email);
 }

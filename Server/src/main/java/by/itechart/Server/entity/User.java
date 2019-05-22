@@ -86,6 +86,9 @@ public class User implements Transformable{
     @OneToMany( mappedBy = "dispatcherTo", cascade = CascadeType.ALL)
     private List<Invoice> issuedByDispatcherToInvoices;
 
+    @Column(name = "is_enabled")
+    private Boolean isEnabled;
+
     public enum Role {
         SYSADMIN,
         ADMIN,
@@ -111,6 +114,19 @@ public class User implements Transformable{
                 .withEmail(this.email)
                 .withAddressDto(this.address.transform())
                 .build();
+    }
+
+    public User() {
+        super();
+        this.isEnabled=false;
+    }
+
+    public Boolean getEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        isEnabled = enabled;
     }
 
     public Integer getId() {
@@ -243,19 +259,22 @@ public class User implements Transformable{
                 Objects.equals(patronymic, user.patronymic) &&
                 Objects.equals(surname, user.surname) &&
                 Objects.equals(passportNumber, user.passportNumber) &&
+                Objects.equals(passportIssued, user.passportIssued) &&
                 Objects.equals(dateOfBirth, user.dateOfBirth) &&
+                Objects.equals(email, user.email) &&
                 Objects.equals(login, user.login) &&
                 Objects.equals(password, user.password) &&
                 role == user.role &&
                 Objects.equals(address, user.address) &&
                 Objects.equals(checkedByManagerInvoices, user.checkedByManagerInvoices) &&
                 Objects.equals(issuedByDispatcherFromInvoices, user.issuedByDispatcherFromInvoices) &&
-                Objects.equals(issuedByDispatcherToInvoices, user.issuedByDispatcherToInvoices);
+                Objects.equals(issuedByDispatcherToInvoices, user.issuedByDispatcherToInvoices) &&
+                Objects.equals(isEnabled, user.isEnabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, patronymic, surname, passportNumber, dateOfBirth, login, password, role, address, checkedByManagerInvoices, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices);
+        return Objects.hash(id, name, patronymic, surname, passportNumber, passportIssued, dateOfBirth, email, login, password, role, address, checkedByManagerInvoices, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices, isEnabled);
     }
 
     @Override
@@ -266,7 +285,9 @@ public class User implements Transformable{
                 ", patronymic='" + patronymic + '\'' +
                 ", surname='" + surname + '\'' +
                 ", passportNumber='" + passportNumber + '\'' +
+                ", passportIssued='" + passportIssued + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
+                ", email='" + email + '\'' +
                 ", login='" + login + '\'' +
                 ", password='" + password + '\'' +
                 ", role=" + role +
@@ -274,6 +295,7 @@ public class User implements Transformable{
                 ", checkedByManagerInvoices=" + checkedByManagerInvoices +
                 ", issuedByDispatcherFromInvoices=" + issuedByDispatcherFromInvoices +
                 ", issuedByDispatcherToInvoices=" + issuedByDispatcherToInvoices +
+                ", isEnabled=" + isEnabled +
                 '}';
     }
 }

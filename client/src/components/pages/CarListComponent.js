@@ -22,7 +22,7 @@ class CarListComponent extends React.Component {
         super(props);
         this.state = {
             cars: [],
-            activePage: 1,
+            activePage:0,
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null
@@ -33,7 +33,7 @@ class CarListComponent extends React.Component {
     }
 
     fetchURL(page) {
-        axios.get(`/car/list?page=${page}&size=1`, {
+        axios.get(`/car/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
@@ -52,8 +52,11 @@ class CarListComponent extends React.Component {
                     const results = response.data.content;
                     console.log(this.state);
 
+                    if (results != null){
                     this.setState({cars: results});
                     console.log(results);
+                    }
+
                     console.log(this.state.activePage);
                     console.log(this.state.itemsCountPerPage);
                 }
@@ -66,8 +69,8 @@ class CarListComponent extends React.Component {
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
-        this.setState({activePage: pageNumber})
-        this.fetchURL(pageNumber)
+        this.setState({activePage: pageNumber});
+        this.fetchURL(pageNumber-1)
     }
 
     populateRowsWithData = () => {
@@ -127,14 +130,13 @@ class CarListComponent extends React.Component {
 
                     <div className="d-flex justify-content-center">
                         <Pagination
-                            hideNavigation
                             activePage={this.state.activePage}
                             itemsCountPerPage={this.state.itemsCountPerPage}
                             totalItemsCount={this.state.totalItemsCount}
-                            pageRangeDisplayed={10}
                             itemClass='page-item'
                             linkClass='btn btn-light'
                             onChange={this.handlePageChange}
+
                         />
                     </div>
                 </Container>

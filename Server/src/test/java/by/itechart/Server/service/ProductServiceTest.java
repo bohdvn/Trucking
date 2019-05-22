@@ -13,7 +13,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import java.util.Collection;
 import java.util.Optional;
 
 @DirtiesContext
@@ -36,12 +35,6 @@ public class ProductServiceTest {
     public void testSave() {
         productService.save(ProductUtil.createProduct());
     }
-
-//    @Test
-//    public void testFindAll() {
-//        Collection<Product> products = productService.findAll();
-//        Assert.assertTrue(products.size() > 0);
-//    }
 
     @Test
     public void testGetOne() {

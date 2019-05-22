@@ -9,4 +9,5 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <include file="src/main/resources/liquibase/sprint-1/changelog-1.x-cumulative.xml"/>
+    <include file="src/main/resources/liquibase/sprint-2/changelog-2.x-cumulative.xml"/>
 </databaseChangeLog>

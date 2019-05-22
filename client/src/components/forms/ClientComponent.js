@@ -13,7 +13,10 @@ class ClientComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            client: this.emptyClient
+            client: this.emptyClient,
+            formErrors: {name: ''},
+            nameValid: false,
+            formValid: false
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,8 +28,33 @@ class ClientComponent extends React.Component {
         const name = target.name;
         let client = {...this.state.client};
         client[name] = value;
-        this.setState({client});
-        console.log(this.state);
+        this.setState({client},
+            () => {
+                this.validateField(name, value)
+            });
+    }
+
+    validateField(fieldName, value) {
+        let fieldValidationErrors = this.state.formErrors;
+        let nameValid = this.state.nameValid;
+        switch (fieldName) {
+            case 'name':
+                nameValid = value.length >= 2 && value.length <= 150;
+                fieldValidationErrors.name = nameValid ? '' : ' введено неверно';
+                break;
+            default:
+                break;
+        }
+        this.setState({
+            formErrors: fieldValidationErrors,
+            nameValid: nameValid
+        }, this.validateForm);
+    }
+
+    validateForm() {
+        this.setState({
+            formValid: this.state.nameValid
+        });
     }
 
     async handleSubmit(event) {
@@ -60,6 +88,8 @@ class ClientComponent extends React.Component {
                         <Label for="name">Имя/название</Label>
                         <Input type="text" name="name" id="name" value={client.name || ''}
                                onChange={this.handleChange} autoComplete="name"/>
+                        <p className={'error-message'}>{(this.state.formErrors.name === '') ? ''
+                            : 'Имя/название' + this.state.formErrors.name}</p>
                     </FormGroup>
                     <FormGroup>
                         <Label for="type">Тип</Label>
@@ -78,7 +108,8 @@ class ClientComponent extends React.Component {
                         </Input>
                     </FormGroup>
                     <FormGroup>
-                        <Button color="primary" type="submit">Сохранить</Button>{' '}
+                        <Button color="primary" type="submit"
+                                disabled={!this.state.formValid}>Сохранить</Button>{' '}
                     </FormGroup>
                 </Form>
             </Container>

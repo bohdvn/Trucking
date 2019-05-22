@@ -47,12 +47,6 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    public void findAll() {
-        Mockito.when(productRepository.findAll()).thenReturn(Arrays.asList(product));
-//        assertEquals(Arrays.asList(product),productService.findAll());
-    }
-
-    @Test
     public void findById() {
         Optional<Product> optional=Optional.of(product);
         Mockito.when(productRepository.findById(anyInt())).thenReturn(optional);

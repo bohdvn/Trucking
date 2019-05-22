@@ -1,3 +1,6 @@
+.error-message{
+    color: red;
+}
 .form-data{
     display: table;
     margin: auto;

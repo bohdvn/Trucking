@@ -74,7 +74,7 @@ class ClientComponent extends React.Component {
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
             const newClient = await (await fetch(`/client/${this.props.match.params.id}`)).json();
-            this.setState({client: newClient});
+            this.setState({client: newClient, nameValid: true, formValid: true});
         }
     }
 

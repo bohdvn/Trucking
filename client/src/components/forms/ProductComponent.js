@@ -78,13 +78,11 @@ class ProductComponent extends React.Component {
                 fieldValidationErrors.type = typeValid ? '' : ' введен неверно';
                 break;
             case 'amount':
-                amountValid = value.match(/^[1-9]([0-9]*?)$/i);
-                amountValid = amountValid ? true : false;
+                amountValid = !!value.match(/^[1-9]([0-9]*?)$/i);
                 fieldValidationErrors.amount = amountValid ? '' : ' введено неверно';
                 break;
             case 'price':
-                priceValid = value.match(/^[1-9]([0-9]*?)$/i);
-                priceValid = priceValid ? true : false;
+                priceValid = !!value.match(/^[1-9]([0-9]*?)$/i);
                 fieldValidationErrors.price = priceValid ? '' : ' введена неверно';
                 break;
             default:

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,7 +29,7 @@ public class ProductController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductController.class);
 
     @PutMapping("/")
-    public ResponseEntity<?> create(@RequestBody Product product){
+    public ResponseEntity<?> create(@Valid @RequestBody Product product){
         LOGGER.info("REST request. Path:/product method: POST. product: {}", product);
         productService.save(product);
         return new ResponseEntity<>(HttpStatus.CREATED);

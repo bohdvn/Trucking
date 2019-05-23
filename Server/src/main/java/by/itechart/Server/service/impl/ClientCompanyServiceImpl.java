@@ -3,9 +3,10 @@ package by.itechart.Server.service.impl;
 import by.itechart.Server.entity.ClientCompany;
 import by.itechart.Server.repository.ClientCompanyRepository;
 import by.itechart.Server.service.ClientCompanyService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,9 +23,7 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public List<ClientCompany> findAll() {
-        return clientCompanyRepository.findAll();
-    }
+    public Page<ClientCompany> findAll(Pageable pageable) { return null; }
 
     @Override
     public Optional<ClientCompany> findById(int id) { return clientCompanyRepository.findById(id); }

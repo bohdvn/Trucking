@@ -3,6 +3,7 @@ import {Button, ButtonGroup, Container, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
+import Input from "reactstrap/es/Input";
 
 
 class CarListComponent extends React.Component {
@@ -75,6 +76,7 @@ class CarListComponent extends React.Component {
     populateRowsWithData = () => {
         const cars = this.state.cars.map(car => {
             return <tr key={car.id}>
+                <td><Input type="checkbox" id="selected_cars" name="selected_cars" value={car.id}/></td>
                 <td style={{whiteSpace: 'nowrap'}}>{car.name}</td>
                 <td>{this.carTypeMap[car.carType]}</td>
                 <td>{car.consumption}</td>

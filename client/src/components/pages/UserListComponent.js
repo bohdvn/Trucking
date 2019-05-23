@@ -105,7 +105,7 @@ class UserListComponent extends React.Component {
             <div>
                 <Container fluid>
                     <div className="float-right">
-                        <Button color="success" tag={Link} to="/car/create">Добавить</Button>
+                        <Button color="success" tag={Link} to="/user/create">Добавить</Button>
                     </div>
                     <Table className="mt-4">
                         <thead>

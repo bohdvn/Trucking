@@ -15,26 +15,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.validation.Valid;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,11 +38,17 @@ public class UserController {
     private ConfirmationTokenService confirmationTokenService;
     private EmailSenderService emailSenderService;
     private UserService userService;
+
+    public UserController() {
+
+    }
+
     public UserController(UserService userService, ConfirmationTokenService confirmationTokenService, EmailSenderService emailSenderService) {
         this.userService = userService;
         this.confirmationTokenService = confirmationTokenService;
         this.emailSenderService = emailSenderService;
     }
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -68,7 +67,7 @@ public class UserController {
         LOGGER.info("REST request. Path:/user method: GET.");
         Page<User> users = userService.findAll(pageable);
         Page<UserDto> usersDto = new PageImpl<>(users.stream().map(User::transform)
-                .sorted(Comparator.comparing(UserDto :: getSurname))
+                .sorted(Comparator.comparing(UserDto::getSurname))
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
         LOGGER.info("Return userList.size:{}", usersDto.getNumber());
         return users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
@@ -77,10 +76,10 @@ public class UserController {
 
     @Transactional
     @PostMapping("")
-    public ResponseEntity<?> create(@RequestBody User user){
+    public ResponseEntity<?> create(@Valid @RequestBody User user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         User existingUser = userService.findByEmailIgnoreCase(user.getEmail());
-        if(existingUser != null){
+        if (existingUser != null) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
                     .body("Error. This email already exists!");
@@ -90,9 +89,9 @@ public class UserController {
             confirmationTokenService.save(confirmationToken);
             String message = String.format("Hello, %s! To confirm your account, " +
                             "please visit next link: http://localhost:8080/user/confirm-account/%s",
-                            user.getName(), confirmationToken.getConfirmationToken());
+                    user.getName(), confirmationToken.getConfirmationToken());
 
-            emailSenderService.sendEmail(user.getEmail(),"Complete Registration!", message);
+            emailSenderService.sendEmail(user.getEmail(), "Complete Registration!", message);
             LOGGER.info("Success.Confirmation email was sent.");
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -105,7 +104,7 @@ public class UserController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<?> edit(@RequestBody User user){
+    public ResponseEntity<?> edit(@Valid @RequestBody User user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         userService.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -116,7 +115,7 @@ public class UserController {
         ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken);
         if (token != null) {
             User user = userService.findByEmailIgnoreCase(token.getUser().getEmail());
-            if(!user.getEnabled()) {
+            if (!user.getEnabled()) {
                 user.setEnabled(true);
                 userService.save(user);
                 LOGGER.info("Users field isEnabled was change.");

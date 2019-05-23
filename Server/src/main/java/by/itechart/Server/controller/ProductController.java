@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,9 @@ public class ProductController {
     public ResponseEntity<Page<ProductDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/product method: GET.");
         Page<Product> products = productService.findAll(pageable);
-        Page<ProductDto> productsDto = new PageImpl<>(products.stream().map(Product::transform).collect(Collectors.toList()));
+        Page<ProductDto> productsDto = new PageImpl<>(products.stream().map(Product::transform)
+                .sorted(Comparator.comparing(ProductDto :: getName))
+                .collect(Collectors.toList()), pageable, products.getTotalElements());
         LOGGER.info("Return productList.size:{}", productsDto.getNumber());
         return products.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(productsDto, HttpStatus.OK);

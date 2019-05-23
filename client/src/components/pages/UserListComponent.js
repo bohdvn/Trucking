@@ -20,7 +20,7 @@ class UserListComponent extends React.Component {
         super(props);
         this.state = {
             users: [],
-            activePage: 1,
+            activePage:0,
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null
@@ -31,7 +31,7 @@ class UserListComponent extends React.Component {
     }
 
     fetchURL(page) {
-        axios.get(`/user/list?page=${page}&size=3`, {
+        axios.get(`/user/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
@@ -64,14 +64,14 @@ class UserListComponent extends React.Component {
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
-        this.setState({activePage: pageNumber})
-        this.fetchURL(pageNumber)
+        this.setState({activePage: pageNumber});
+        this.fetchURL(pageNumber-1)
     }
 
     populateRowsWithData = () => {
         const users = this.state.users.map(user => {
             return <tr key={user.id}>
-                <td style={{whiteSpace: 'nowrap'}}>`${user.surname} ${user.name} ${user.patronymic}</td>
+                <td style={{whiteSpace: 'nowrap'}}>{user.surname} {user.name} {user.patronymic}</td>
                 <td>{this.userRoles[user.role]}</td>
                 <td>{user.dateOfBirth}</td>
                 <td>{user.login}</td>

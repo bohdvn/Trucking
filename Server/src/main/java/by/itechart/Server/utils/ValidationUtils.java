@@ -1,27 +1,25 @@
 package by.itechart.Server.utils;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import java.util.Set;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ValidationUtils {
-    private static final ValidatorFactory factory;
-    private static final Validator validator;
-    static {
-        factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
     /**
-     * Validate some element
+     * Get map with field names and error messages
      *
-     * @param element element we want to validate
+     * @param exception exception in non valid element
+     * @return errors map
      */
-    public static <T> void  validate(final T element){
-        Set<ConstraintViolation<T>> violations = validator.validate(element);
-        for (ConstraintViolation<T> violation : violations) {
-            //do something
-        }
+    public static Map<String, String> getErrorsMap(MethodArgumentNotValidException exception) {
+        Map<String, String> errors = new HashMap<>();
+        exception.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
 }

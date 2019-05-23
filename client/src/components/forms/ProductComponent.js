@@ -57,9 +57,25 @@ class ProductComponent extends React.Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(product),
+            body: JSON.stringify(product)
+        }).then(resp => {
+            if (resp.status === 400) {
+                return resp.json();
+            }
+            else {
+                this.props.history.push('/products');
+                return null;
+            }
+        }).then(data => {
+            if (data) {
+                let s = '';
+                for (const k in data) {
+                    s += data[k] + '\n';
+                }
+                alert(s);
+            }
         });
-        this.props.history.push('/products');
+
     }
 
     validateField(fieldName, value) {
@@ -74,17 +90,15 @@ class ProductComponent extends React.Component {
                 fieldValidationErrors.name = nameValid ? '' : ' введено неверно';
                 break;
             case 'type':
-                typeValid = value.length >= 1 && value.length <= 150;
+                typeValid = value.length >= 2 && value.length <= 150;
                 fieldValidationErrors.type = typeValid ? '' : ' введен неверно';
                 break;
             case 'amount':
-                amountValid = value.match(/^[1-9]([0-9]*?)$/i);
-                amountValid = amountValid ? true : false;
+                amountValid = !!value.match(/^[1-9]([0-9]*?)$/i);
                 fieldValidationErrors.amount = amountValid ? '' : ' введено неверно';
                 break;
             case 'price':
-                priceValid = value.match(/^[1-9]([0-9]*?)$/i);
-                priceValid = priceValid ? true : false;
+                priceValid = !!value.match(/^[1-9]([0-9]*?)$/i);
                 fieldValidationErrors.price = priceValid ? '' : ' введена неверно';
                 break;
             default:

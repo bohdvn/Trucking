@@ -46,8 +46,7 @@ class CarComponent extends React.Component {
                 fieldValidationErrors.name = nameValid ? '' : ' введено неверно';
                 break;
             case 'consumption':
-                consumptionValid = value.match(/^[1-9]([0-9]*?)$/i);
-                consumptionValid = consumptionValid ? true : false;
+                consumptionValid = !!value.match(/^[1-9]([0-9]*?)$/i);
                 fieldValidationErrors.consumption = consumptionValid ? '' : ' введен неверно';
                 break;
             default:
@@ -76,9 +75,24 @@ class CarComponent extends React.Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(car),
+            body: JSON.stringify(car)
+        }).then(resp => {
+            if (resp.status === 400) {
+                return resp.json();
+            }
+            else {
+                this.props.history.push('/cars');
+                return null;
+            }
+        }).then(data => {
+            if (data) {
+                let s = '';
+                for (const k in data) {
+                    s += data[k] + '\n';
+                }
+                alert(s);
+            }
         });
-        this.props.history.push('/cars');
     }
 
     async componentDidMount() {

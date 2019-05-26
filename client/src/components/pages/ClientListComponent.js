@@ -5,21 +5,22 @@ import axios from 'axios';
 import Pagination from "react-js-pagination";
 
 
-class UserListComponent extends React.Component {
+class ClientListComponent extends React.Component {
 
-    userRoles = [
-        'Системный администратор',
-        'Администратор',
-        'Менеджер',
-        'Диспетчер',
-        'Водитель',
-        'Владелец'
-    ];
+    clientTypeMap = {
+        'INDIVIDUAL': 'Физическое лицо',
+        'LEGAL': 'Юридическое лицо'
+    };
+
+    clientStatusMap = {
+        'ACTIVE': 'Активен',
+        'BLOCKED': 'Заблокирован'
+    };
 
     constructor(props) {
         super(props);
         this.state = {
-            users: [],
+            clients: [],
             activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
@@ -31,7 +32,7 @@ class UserListComponent extends React.Component {
     }
 
     fetchURL(page) {
-        axios.get(`/user/list?page=${page}&size=5`, {
+        axios.get(`/client/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
@@ -50,8 +51,11 @@ class UserListComponent extends React.Component {
                     const results = response.data.content;
                     console.log(this.state);
 
-                    this.setState({users: results});
-                    console.log(results);
+                    if (results != null) {
+                        this.setState({clients: results});
+                        console.log(results);
+                    }
+
                     console.log(this.state.activePage);
                     console.log(this.state.itemsCountPerPage);
                 }
@@ -69,35 +73,33 @@ class UserListComponent extends React.Component {
     }
 
     populateRowsWithData = () => {
-        const users = this.state.users.map(user => {
-            return <tr key={user.id}>
-                <td style={{whiteSpace: 'nowrap'}}><Link
-                    to={"/user/" + user.id}>{user.surname} {user.name} {user.patronymic}</Link></td>
-                <td>{this.userRoles[user.role]}</td>
-                <td>{user.dateOfBirth}</td>
-                <td>{user.login}</td>
+        const clients = this.state.clients.map(client => {
+            return <tr key={client.id}>
+                <td style={{whiteSpace: 'nowrap'}}><Link to={"/client/" + client.id}>{client.name}</Link></td>
+                <td>{this.clientTypeMap[client.type]}</td>
+                <td>{this.clientStatusMap[client.status]}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/user/" + user.id}>Редактировать</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(user.id)}>Удалить</Button>
+                        <Button size="sm" color="primary" tag={Link} to={"/client/" + client.id}>Редактировать</Button>
+                        <Button size="sm" color="danger" onClick={() => this.remove(client.id)}>Удалить</Button>
                     </ButtonGroup>
                 </td>
             </tr>
         });
 
-        return users
+        return clients
     };
 
     async remove(id) {
-        await fetch(`/user/${id}`, {
+        await fetch(`/client/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         }).then(() => {
-            let updateUsers = [...this.state.users].filter(i => i.id !== id);
-            this.setState({users: updateUsers});
+            let updateClients = [...this.state.clients].filter(i => i.id !== id);
+            this.setState({clients: updateClients});
         });
     }
 
@@ -107,15 +109,14 @@ class UserListComponent extends React.Component {
             <div>
                 <Container fluid>
                     <div className="float-right">
-                        <Button color="success" tag={Link} to="/user/create">Добавить</Button>
+                        <Button color="success" tag={Link} to="/client/create">Добавить</Button>
                     </div>
                     <Table className="mt-4">
                         <thead>
                         <tr>
-                            <th width="40%">Имя</th>
-                            <th width="15%">Роль</th>
-                            <th width="15%">Дата рождения</th>
-                            <th>Логин</th>
+                            <th width="20%">Название</th>
+                            <th width="20%">Тип</th>
+                            <th>Статус</th>
                             <th width="10%"></th>
                         </tr>
                         </thead>
@@ -126,14 +127,13 @@ class UserListComponent extends React.Component {
 
                     <div className="d-flex justify-content-center">
                         <Pagination
-                            hideNavigation
                             activePage={this.state.activePage}
                             itemsCountPerPage={this.state.itemsCountPerPage}
                             totalItemsCount={this.state.totalItemsCount}
-                            pageRangeDisplayed={10}
                             itemClass='page-item'
                             linkClass='btn btn-light'
                             onChange={this.handlePageChange}
+
                         />
                     </div>
                 </Container>
@@ -142,4 +142,4 @@ class UserListComponent extends React.Component {
     }
 }
 
-export default UserListComponent;
+export default ClientListComponent;

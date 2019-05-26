@@ -10,7 +10,7 @@ class CarListComponent extends React.Component {
     carTypeMap = {
         'TILT': 'Крытый кузов',
         'TANKER': 'Автоцистерна',
-        'FRIDGE': 'Рефрежератор'
+        'FRIDGE': 'Рефрижератор'
     };
 
     carStatusMap = {
@@ -22,7 +22,7 @@ class CarListComponent extends React.Component {
         super(props);
         this.state = {
             cars: [],
-            activePage:0,
+            activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null
@@ -52,9 +52,9 @@ class CarListComponent extends React.Component {
                     const results = response.data.content;
                     console.log(this.state);
 
-                    if (results != null){
-                    this.setState({cars: results});
-                    console.log(results);
+                    if (results != null) {
+                        this.setState({cars: results});
+                        console.log(results);
                     }
 
                     console.log(this.state.activePage);
@@ -70,13 +70,13 @@ class CarListComponent extends React.Component {
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber-1)
+        this.fetchURL(pageNumber - 1)
     }
 
     populateRowsWithData = () => {
         const cars = this.state.cars.map(car => {
             return <tr key={car.id}>
-                <td style={{whiteSpace: 'nowrap'}}>{car.name}</td>
+                <td style={{whiteSpace: 'nowrap'}}><Link to={"/car/" + car.id}>{car.name}</Link></td>
                 <td>{this.carTypeMap[car.carType]}</td>
                 <td>{car.consumption}</td>
                 <td>{this.carStatusMap[car.status]}</td>

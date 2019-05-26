@@ -39,18 +39,10 @@ public class UserController {
     private EmailSenderService emailSenderService;
     private UserService userService;
 
-    public UserController() {
-
-    }
-
     public UserController(UserService userService, ConfirmationTokenService confirmationTokenService, EmailSenderService emailSenderService) {
         this.userService = userService;
         this.confirmationTokenService = confirmationTokenService;
         this.emailSenderService = emailSenderService;
-    }
-
-    public UserController(UserService userService) {
-        this.userService = userService;
     }
 
     @GetMapping("/{id}")

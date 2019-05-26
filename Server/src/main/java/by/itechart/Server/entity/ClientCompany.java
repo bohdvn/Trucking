@@ -52,8 +52,8 @@ public class ClientCompany implements Transformable {
         return ClientCompanyDto.builder()
                 .withId(this.id)
                 .withName(this.name)
-                .withName(this.name)
-                .withName(this.name)
+                .withType(this.type)
+                .withStatus(this.status)
                 .build();
     }
 

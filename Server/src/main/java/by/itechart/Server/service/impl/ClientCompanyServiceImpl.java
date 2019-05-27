@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,7 +23,7 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public Page<ClientCompany> findAll(Pageable pageable) { return null; }
+    public Page<ClientCompany> findAll(Pageable pageable) { return clientCompanyRepository.findAll(pageable); }
 
     @Override
     public Optional<ClientCompany> findById(int id) {

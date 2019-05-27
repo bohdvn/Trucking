@@ -27,7 +27,7 @@ class UserListComponent extends React.Component {
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
-        this.remove = this.remove.bind(this);
+        this.removeChecked = this.removeChecked.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
@@ -85,6 +85,13 @@ class UserListComponent extends React.Component {
     populateRowsWithData = () => {
         const users = this.state.users.map(user => {
             return <tr key={user.id}>
+                <td><Input
+                    type="checkbox"
+                    id={user.id || ''}
+                    name="selected_users"
+                    value={user.id || ''}
+                    checked={user.value || ''}
+                    onChange={this.handleChange}/></td>
                 <td style={{whiteSpace: 'nowrap'}}><Link
                     to={"/user/" + user.id}>{user.surname} {user.name} {user.patronymic}</Link></td>
                 <td>{this.userRoles[user.role]}</td>
@@ -177,6 +184,7 @@ class UserListComponent extends React.Component {
                     </div>
                 </Container>
             </div>
+            </form>
         );
     }
 }

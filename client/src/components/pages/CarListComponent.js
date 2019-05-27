@@ -90,7 +90,6 @@ class CarListComponent extends React.Component {
     populateRowsWithData = () => {
         const cars = this.state.cars.map(car => {
             return <tr key={car.id}>
-                <td style={{whiteSpace: 'nowrap'}}><Link to={"/car/" + car.id}>{car.name}</Link></td>
                 <td><Input
                     type="checkbox"
                     id={car.id || ''}
@@ -98,6 +97,7 @@ class CarListComponent extends React.Component {
                     value={car.id || ''}
                     checked={car.value || ''}
                     onChange={this.handleChange}/></td>
+                <td style={{whiteSpace: 'nowrap'}}><Link to={"/car/" + car.id}>{car.name}</Link></td>
                 <td style={{whiteSpace: 'nowrap'}}>{car.name}</td>
                 <td>{this.carTypeMap[car.carType]}</td>
                 <td>{car.consumption}</td>
@@ -124,6 +124,28 @@ class CarListComponent extends React.Component {
         }).then(() => {
             let updateCars = [...this.state.cars].filter(i => i.id !== id);
             this.setState({cars: updateCars});
+            this.handlePageChange(0);
+        });
+    }
+
+    async removeChecked() {
+        const selectedCars = Array.apply(null,
+            document.cars.selected_cars).filter(function (el) {
+            return el.checked === true
+        }).map(function (el) {
+            return el.value
+        });
+        console.log(selectedCars);
+        await fetch(`/car/${selectedCars}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            let updateCars = [...this.state.cars].filter(car => !car.value);
+            this.setState({cars: updateCars});
+            this.handlePageChange(0);
         });
     }
 

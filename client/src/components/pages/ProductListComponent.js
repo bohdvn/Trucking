@@ -25,7 +25,7 @@ class ProductListComponent extends React.Component {
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
-        this.remove = this.remove.bind(this);
+        this.removeChecked = this.removeChecked.bind(this);
         this.handleChange = this.handleChange.bind(this);
     }
 
@@ -90,7 +90,7 @@ class ProductListComponent extends React.Component {
                     value={product.id || ''}
                     checked={product.value || ''}
                     onChange={this.handleChange}/></td>
-                <td style={{whiteSpace: 'nowrap'}}>{product.name}</td>
+                <td style={{whiteSpace: 'nowrap'}}><Link to={"/product/" + product.id}>{product.name}</Link></td>
                 <td>{product.amount}</td>
                 <td>{product.type}</td>
                 <td>{product.price}</td>

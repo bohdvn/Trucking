@@ -53,10 +53,14 @@ public class ClientCompanyController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> remove(@PathVariable("id") int id){
-        LOGGER.info("REST request. Path:/client/{} method: DELETE.", id);
-        clientCompanyService.deleteById(id);
+    @DeleteMapping("/{selectedClients}")
+    public ResponseEntity<?> remove(@PathVariable("selectedClients") String selectedClients ) {
+        LOGGER.info("REST request. Path:/client/{} method: DELETE.", selectedClients);
+        final String delimeter = ",";
+        final String[] clientsId = selectedClients.split(delimeter);
+        for (String id : clientsId) {
+            clientCompanyService.deleteById(Integer.valueOf(id));
+        }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

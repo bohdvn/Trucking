@@ -13,6 +13,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.util.Collection;
 import java.util.Optional;
 
 @DirtiesContext
@@ -38,8 +39,8 @@ public class ClientCompanyServiceTest {
 
     @Test
     public void testFindAll() {
-       // Collection<ClientCompany> clientCompanies = clientCompanyService.findAll();
-      //  Assert.assertTrue(clientCompanies.size() > 0);
+        Collection<ClientCompany> clientCompanies = clientCompanyService.findAll();
+        Assert.assertTrue(clientCompanies.size() > 0);
     }
 
     @Test

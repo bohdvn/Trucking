@@ -31,7 +31,14 @@ public class ClientCompanyController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientCompanyController.class);
 
     @PutMapping("/")
-    public ResponseEntity<?> create(@Valid @RequestBody ClientCompany clientCompany){
+    public ResponseEntity<?> edit(@Valid @RequestBody ClientCompany clientCompany) {
+        LOGGER.info("REST request. Path:/client method: POST. client: {}", clientCompany);
+        clientCompanyService.save(clientCompany);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("")
+    public ResponseEntity<?> create(@Valid @RequestBody ClientCompany clientCompany) {
         LOGGER.info("REST request. Path:/client method: POST. client: {}", clientCompany);
         clientCompanyService.save(clientCompany);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -52,8 +59,6 @@ public class ClientCompanyController {
         clientCompanyService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
 
     @GetMapping("/list")
     public ResponseEntity<Page<ClientCompanyDto>> getAll(Pageable pageable) {

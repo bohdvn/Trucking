@@ -85,14 +85,8 @@ class UserListComponent extends React.Component {
     populateRowsWithData = () => {
         const users = this.state.users.map(user => {
             return <tr key={user.id}>
-                <td><Input
-                    type="checkbox"
-                    id={user.id || ''}
-                    name="selected_users"
-                    value={user.id || ''}
-                    checked={user.value || ''}
-                    onChange={this.handleChange}/></td>
-                <td style={{whiteSpace: 'nowrap'}}>{user.surname} {user.name} {user.patronymic}</td>
+                <td style={{whiteSpace: 'nowrap'}}><Link
+                    to={"/user/" + user.id}>{user.surname} {user.name} {user.patronymic}</Link></td>
                 <td>{this.userRoles[user.role]}</td>
                 <td>{user.dateOfBirth}</td>
                 <td>{user.login}</td>
@@ -143,6 +137,7 @@ class UserListComponent extends React.Component {
         });
     }
 
+
     render() {
         return (
             <form name="users">
@@ -160,8 +155,8 @@ class UserListComponent extends React.Component {
                             <th></th>
                             <th width="40%">Имя</th>
                             <th width="15%">Роль</th>
-                            <th width="15%">Расход топлива</th>
-                            <th>Статус</th>
+                            <th width="15%">Дата рождения</th>
+                            <th>Логин</th>
                             <th width="10%"></th>
                         </tr>
                         </thead>
@@ -182,7 +177,6 @@ class UserListComponent extends React.Component {
                     </div>
                 </Container>
             </div>
-            </form>
         );
     }
 }

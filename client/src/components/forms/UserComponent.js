@@ -95,7 +95,7 @@ class UserComponent extends React.Component {
 
         switch (fieldName) {
             case 'name':
-                nameValid = value.length >= 2 && value.length <= 150;
+                nameValid = value.length >= 1 && value.length <= 150;
                 fieldValidationErrors.name = nameValid ? '' : ' введено неверно';
                 break;
             case 'surname':
@@ -193,7 +193,7 @@ class UserComponent extends React.Component {
         const {user} = this.state;
 
         await fetch('/user/', {
-            method: 'PUT',
+            method: user.id ? 'PUT':'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'

@@ -11,10 +11,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,12 +43,6 @@ public class ProductServiceImplTest {
 
     @Test
     public void save() {
-    }
-
-    @Test
-    public void findAll() {
-        Mockito.when(productRepository.findAll()).thenReturn(Arrays.asList(product));
-//        assertEquals(Arrays.asList(product),productService.findAll());
     }
 
     @Test

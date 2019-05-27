@@ -3,12 +3,15 @@ package by.itechart.Server.controller;
 import by.itechart.Server.dto.AddressDto;
 import by.itechart.Server.entity.Address;
 import by.itechart.Server.service.AddressService;
+import by.itechart.Server.utils.ValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,7 +26,7 @@ public class AddressController {
     private static final Logger LOGGER = LoggerFactory.getLogger(AddressController.class);
 
     @PutMapping("/")
-    public ResponseEntity<?> create(@RequestBody Address address){
+    public ResponseEntity<?> create(@Valid @RequestBody Address address){
         LOGGER.info("REST request. Path:/address method: POST. address: {}", address);
         addressService.save(address);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -53,5 +56,11 @@ public class AddressController {
         return address.isPresent()?
                 ResponseEntity.ok().body(address.get().transform()):
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        return new ResponseEntity<>(ValidationUtils.getErrorsMap(ex), HttpStatus.BAD_REQUEST);
     }
 }

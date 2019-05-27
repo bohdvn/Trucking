@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
@@ -18,23 +18,25 @@ class ProductListComponent extends React.Component {
         super(props);
         this.state = {
             products: [],
-            activePage:0,
+            activePage: 0,
             totalPages: null,
-            itemsCountPerPage:null,
-            totalItemsCount:null
+            itemsCountPerPage: null,
+            totalItemsCount: null
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.remove = this.remove.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     fetchURL(page) {
         axios.get(`/product/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
-                port: 8080}
+                port: 8080
+            }
         })
-            .then( response => {
+            .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
@@ -55,7 +57,7 @@ class ProductListComponent extends React.Component {
             );
     }
 
-    componentDidMount () {
+    componentDidMount() {
         this.fetchURL(this.state.activePage)
     }
 
@@ -65,9 +67,29 @@ class ProductListComponent extends React.Component {
         this.fetchURL(pageNumber-1)
     }
 
+    handleChange = e => {
+        const id = e.target.id;
+        this.setState(prevState => {
+            return {
+                products: prevState.products.map(
+                    product => (product.id === +id ? {
+                        ...product, value: !product.value
+                    } : product)
+                )
+            }
+        })
+    };
+
     populateRowsWithData = () => {
         const products = this.state.products.map(product => {
             return <tr key={product.id}>
+                <td><Input
+                    type="checkbox"
+                    id={product.id || ''}
+                    name="selected_products"
+                    value={product.id || ''}
+                    checked={product.value || ''}
+                    onChange={this.handleChange}/></td>
                 <td style={{whiteSpace: 'nowrap'}}>{product.name}</td>
                 <td>{product.amount}</td>
                 <td>{product.type}</td>
@@ -93,21 +115,48 @@ class ProductListComponent extends React.Component {
                 'Content-Type': 'application/json'
             }
         }).then(() => {
-            let updateProducts = [...this.state.product].filter(i => i.id !== id);
+            let updateProducts = [...this.state.products].filter(i => i.id !== id);
             this.setState({products: updateProducts});
+            this.handlePageChange(0);
+        });
+    }
+
+    async removeChecked() {
+        const selectedProducts = Array.apply(null,
+            document.products.selected_products).filter(function (el) {
+            return el.checked === true
+        }).map(function (el) {
+            return el.value
+        });
+        console.log(selectedProducts);
+        await fetch(`/product/${selectedProducts}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            let updateProducts = [...this.state.products].filter(product => !product.value);
+            this.setState({products: updateProducts});
+            this.handlePageChange(0);
         });
     }
 
     render() {
         return (
+            <form name="products">
             <div>
                 <Container fluid>
                     <div className="float-right">
+                        <ButtonGroup>
                         <Button color="success" tag={Link} to="/product/create">Добавить</Button>
+                        <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
+                        </ButtonGroup>
                     </div>
                     <Table className="mt-4">
                         <thead>
                         <tr>
+                            <th></th>
                             <th width="20%">Наименование</th>
                             <th width="20%">Количество</th>
                             <th width="20%">Тип</th>
@@ -133,6 +182,7 @@ class ProductListComponent extends React.Component {
                     </div>
                 </Container>
             </div>
+            </form>
         );
     }
 }

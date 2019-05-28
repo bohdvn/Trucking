@@ -16,15 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Comparator;
@@ -100,6 +92,17 @@ public class UserController {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         userService.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{selectedUsers}")
+    public ResponseEntity<?> remove(@PathVariable("selectedUsers") String selectedUsers ) {
+        LOGGER.info("REST request. Path:/user/{} method: DELETE.", selectedUsers);
+        final String delimeter = ",";
+        final String[] usersId = selectedUsers.split(delimeter);
+        for (String id : usersId) {
+            userService.deleteById(Integer.valueOf(id));
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/confirm-account/{confirmationToken}")

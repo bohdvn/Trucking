@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 public class ClientCompanyController {
     private ClientCompanyService clientCompanyService;
 
-    public ClientCompanyController(ClientCompanyService clientCompanyService) {
-        this.clientCompanyService = clientCompanyService;
+    public ClientCompanyController(ClientCompanyService clientCompanyService){
+        this.clientCompanyService=clientCompanyService;
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientCompanyController.class);
@@ -45,18 +45,22 @@ public class ClientCompanyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOne(@PathVariable("id") int id) {
+    public ResponseEntity<?> getOne(@PathVariable("id") int id){
         LOGGER.info("REST request. Path:/client/{} method: GET.", id);
         Optional<ClientCompany> clientCompany = clientCompanyService.findById(id);
-        return clientCompany.isPresent() ?
-                ResponseEntity.ok().body(clientCompany.get().transform()) :
+        return clientCompany.isPresent()?
+                ResponseEntity.ok().body(clientCompany.get().transform()):
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> remove(@PathVariable("id") int id) {
-        LOGGER.info("REST request. Path:/client/{} method: DELETE.", id);
-        clientCompanyService.deleteById(id);
+    @DeleteMapping("/{selectedClients}")
+    public ResponseEntity<?> remove(@PathVariable("selectedClients") String selectedClients ) {
+        LOGGER.info("REST request. Path:/client/{} method: DELETE.", selectedClients);
+        final String delimeter = ",";
+        final String[] clientsId = selectedClients.split(delimeter);
+        for (String id : clientsId) {
+            clientCompanyService.deleteById(Integer.valueOf(id));
+        }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -65,7 +69,7 @@ public class ClientCompanyController {
         LOGGER.info("REST request. Path:/client method: GET.");
         Page<ClientCompany> clientCompanies = clientCompanyService.findAll(pageable);
         Page<ClientCompanyDto> clientCompaniesDto = new PageImpl<>(clientCompanies.stream().map(ClientCompany::transform)
-                .sorted(Comparator.comparing(ClientCompanyDto::getName))
+                .sorted(Comparator.comparing(ClientCompanyDto :: getName))
                 .collect(Collectors.toList()), pageable, clientCompanies.getTotalElements());
         LOGGER.info("Return clientCompanyList.size:{}", clientCompaniesDto.getNumber());
         return clientCompanies.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :

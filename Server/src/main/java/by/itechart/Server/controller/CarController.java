@@ -53,10 +53,14 @@ public class CarController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> remove(@PathVariable("id") int id) {
-        LOGGER.info("REST request. Path:/car/{} method: DELETE.", id);
-        carService.deleteById(id);
+    @DeleteMapping("/{selectedCars}")
+    public ResponseEntity<?> remove(@PathVariable("selectedCars") String selectedCars ) {
+        LOGGER.info("REST request. Path:/car/{} method: DELETE.", selectedCars);
+       final String delimeter = ",";
+       final String[] carsId = selectedCars.split(delimeter);
+        for (String id : carsId) {
+            carService.deleteById(Integer.valueOf(id));
+        }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

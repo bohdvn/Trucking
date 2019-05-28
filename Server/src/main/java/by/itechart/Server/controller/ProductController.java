@@ -53,10 +53,14 @@ public class ProductController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> remove(@PathVariable("id") int id) {
-        LOGGER.info("REST request. Path:/product/{} method: DELETE.", id);
-        productService.deleteById(id);
+    @DeleteMapping("/{selectedProducts}")
+    public ResponseEntity<?> remove(@PathVariable("selectedProducts") String selectedProducts ) {
+        LOGGER.info("REST request. Path:/product/{} method: DELETE.", selectedProducts);
+        final String delimeter = ",";
+        final String[] productsId = selectedProducts.split(delimeter);
+        for (String id : productsId) {
+            productService.deleteById(Integer.valueOf(id));
+        }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

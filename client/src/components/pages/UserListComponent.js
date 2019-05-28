@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
@@ -20,14 +20,15 @@ class UserListComponent extends React.Component {
         super(props);
         this.state = {
             users: [],
-            activePage: 0,
+            activePage:0,
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
-        this.remove = this.remove.bind(this);
+        this.removeChecked = this.removeChecked.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
     fetchURL(page) {
@@ -65,12 +66,32 @@ class UserListComponent extends React.Component {
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber - 1)
+        this.fetchURL(pageNumber-1)
     }
+
+    handleChange = e => {
+        const id = e.target.id;
+        this.setState(prevState => {
+            return {
+                users: prevState.users.map(
+                    user => (user.id === +id ? {
+                        ...user, value: !user.value
+                    } : user)
+                )
+            }
+        })
+    };
 
     populateRowsWithData = () => {
         const users = this.state.users.map(user => {
             return <tr key={user.id}>
+                <td><Input
+                    type="checkbox"
+                    id={user.id || ''}
+                    name="selected_users"
+                    value={user.id || ''}
+                    checked={user.value || ''}
+                    onChange={this.handleChange}/></td>
                 <td style={{whiteSpace: 'nowrap'}}><Link
                     to={"/user/" + user.id}>{user.surname} {user.name} {user.patronymic}</Link></td>
                 <td>{this.userRoles[user.role]}</td>
@@ -98,20 +119,47 @@ class UserListComponent extends React.Component {
         }).then(() => {
             let updateUsers = [...this.state.users].filter(i => i.id !== id);
             this.setState({users: updateUsers});
+            this.handlePageChange(0);
+        });
+    }
+
+    async removeChecked() {
+        const selectedUsers = Array.apply(null,
+            document.users.selected_users).filter(function (el) {
+            return el.checked === true
+        }).map(function (el) {
+            return el.value
+        });
+        console.log(selectedUsers);
+        await fetch(`/user/${selectedUsers}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+                let updateUsers = [...this.state.users].filter(user => !user.value);
+                this.setState({users: updateUsers});
+                this.handlePageChange(0);
         });
     }
 
 
     render() {
         return (
+            <form name="users">
             <div>
                 <Container fluid>
                     <div className="float-right">
+                        <ButtonGroup>
                         <Button color="success" tag={Link} to="/user/create">Добавить</Button>
+                            <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
+                        </ButtonGroup>
                     </div>
                     <Table className="mt-4">
                         <thead>
                         <tr>
+                            <th></th>
                             <th width="40%">Имя</th>
                             <th width="15%">Роль</th>
                             <th width="15%">Дата рождения</th>
@@ -126,11 +174,9 @@ class UserListComponent extends React.Component {
 
                     <div className="d-flex justify-content-center">
                         <Pagination
-                            hideNavigation
                             activePage={this.state.activePage}
                             itemsCountPerPage={this.state.itemsCountPerPage}
                             totalItemsCount={this.state.totalItemsCount}
-                            pageRangeDisplayed={10}
                             itemClass='page-item'
                             linkClass='btn btn-light'
                             onChange={this.handlePageChange}
@@ -138,6 +184,7 @@ class UserListComponent extends React.Component {
                     </div>
                 </Container>
             </div>
+            </form>
         );
     }
 }

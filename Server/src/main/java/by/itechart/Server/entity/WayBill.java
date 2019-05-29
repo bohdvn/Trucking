@@ -21,9 +21,6 @@ public class WayBill implements Transformable {
     @Column(name = "status")
     private Status status;
 
-    @Column(name = "name")
-    private String name;
-
     /**
      * Several wayBills can be issued for one clientCompany.
      */
@@ -36,7 +33,7 @@ public class WayBill implements Transformable {
      */
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "address_from_id")
+    @JoinColumn(name = "address_from")
     private Address addressFrom;
 
     /**
@@ -44,7 +41,7 @@ public class WayBill implements Transformable {
      */
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "address_to_id")
+    @JoinColumn(name = "address_to")
     private Address addressTo;
 
     /**
@@ -85,6 +82,9 @@ public class WayBill implements Transformable {
                 .withDateFrom(this.dateFrom)
                 .withDateTo(this.dateTo)
                 .withStatus(this.status)
+                .withAddressFrom(this.addressFrom.transform())
+                .withAddressTo(this.addressTo.transform())
+                .withInvoice(this.invoice.transform())
                 .build();
     }
 
@@ -167,7 +167,6 @@ public class WayBill implements Transformable {
         WayBill wayBill = (WayBill) o;
         return Objects.equals(id, wayBill.id) &&
                 Objects.equals(status, wayBill.status) &&
-                Objects.equals(name, wayBill.name) &&
                 Objects.equals(clientCompany, wayBill.clientCompany) &&
                 Objects.equals(addressFrom, wayBill.addressFrom) &&
                 Objects.equals(addressTo, wayBill.addressTo) &&
@@ -179,7 +178,7 @@ public class WayBill implements Transformable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, name, clientCompany, addressFrom, addressTo, invoice, dateFrom, dateTo, checkpoints);
+        return Objects.hash(id, status,  clientCompany, addressFrom, addressTo, invoice, dateFrom, dateTo, checkpoints);
     }
 
     @Override
@@ -187,7 +186,6 @@ public class WayBill implements Transformable {
         return "WayBill{" +
                 "id=" + id +
                 ", status=" + status +
-                ", name='" + name + '\'' +
                 ", clientCompany=" + clientCompany +
                 ", addressFrom=" + addressFrom +
                 ", addressTo=" + addressTo +

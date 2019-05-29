@@ -12,6 +12,12 @@ public class WayBillDto {
 
     private LocalDate dateTo;
 
+    private AddressDto addressFrom;
+
+    private AddressDto addressTo;
+
+    private InvoiceDto invoice;
+
     private WayBillDto(){}
 
     public static Builder builder() {
@@ -34,6 +40,21 @@ public class WayBillDto {
 
         public Builder withDateTo(final LocalDate dateTo) {
             WayBillDto.this.dateTo = dateTo;
+            return this;
+        }
+
+        public Builder withAddressFrom(final AddressDto addressFrom) {
+            WayBillDto.this.addressFrom = addressFrom;
+            return this;
+        }
+
+        public Builder withAddressTo(final AddressDto addressTo) {
+            WayBillDto.this.addressTo = addressTo;
+            return this;
+        }
+
+        public Builder withInvoice(final InvoiceDto invoice) {
+            WayBillDto.this.invoice = invoice;
             return this;
         }
 
@@ -64,5 +85,29 @@ public class WayBillDto {
 
     public void setDateTo(final LocalDate dateTo) {
         this.dateTo = dateTo;
+    }
+
+    public AddressDto getAddressFrom() {
+        return addressFrom;
+    }
+
+    public void setAddressFrom(AddressDto addressFrom) {
+        this.addressFrom = addressFrom;
+    }
+
+    public AddressDto getAddressTo() {
+        return addressTo;
+    }
+
+    public void setAddressTo(AddressDto addressTo) {
+        this.addressTo = addressTo;
+    }
+
+    public InvoiceDto getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(InvoiceDto invoice) {
+        this.invoice = invoice;
     }
 }

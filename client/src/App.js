@@ -9,6 +9,7 @@ import UserListComponent from "./components/pages/UserListComponent";
 import ProductComponent from "./components/forms/ProductComponent";
 import ClientComponent from "./components/forms/ClientComponent";
 import ClientListComponent from "./components/pages/ClientListComponent";
+import WaybillListComponent from "./components/pages/WaybillListComponent";
 
 class App extends React.Component {
     render() {
@@ -23,6 +24,7 @@ class App extends React.Component {
                     <Route path="/products" component={ProductListComponent}/>
                     <Route path="/client/:id" component={ClientComponent}/>
                     <Route path="/clients" component={ClientListComponent}/>
+                    <Route path="/waybills" component={WaybillListComponent}/>
                 </Router>
             </div>
         );

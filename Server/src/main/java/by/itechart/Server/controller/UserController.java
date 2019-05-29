@@ -3,9 +3,7 @@ package by.itechart.Server.controller;
 import by.itechart.Server.dto.UserDto;
 import by.itechart.Server.entity.ConfirmationToken;
 import by.itechart.Server.entity.User;
-import by.itechart.Server.security.JwtAuthenticationResponse;
-import by.itechart.Server.security.JwtTokenProvider;
-import by.itechart.Server.security.LoginRequest;
+import by.itechart.Server.security.*;
 import by.itechart.Server.service.ConfirmationTokenService;
 import by.itechart.Server.service.EmailSenderService;
 import by.itechart.Server.service.UserService;
@@ -17,6 +15,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -57,6 +56,7 @@ public class UserController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id){
         LOGGER.info("REST request. Path:/user{} method: GET.", id);
@@ -66,8 +66,9 @@ public class UserController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<Page<UserDto>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<UserDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
         Page<User> users = userService.findAll(pageable);
         Page<UserDto> usersDto = new PageImpl<>(users.stream().map(User::transform)
@@ -77,6 +78,8 @@ public class UserController {
         return users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @Transactional
     @PostMapping("")
     public ResponseEntity<?> create(@RequestBody User user){
@@ -87,19 +90,22 @@ public class UserController {
                     .status(HttpStatus.FORBIDDEN)
                     .body("Error. This email already exists!");
         } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userService.save(user);
-            ConfirmationToken confirmationToken = new ConfirmationToken(user);
-            confirmationTokenService.save(confirmationToken);
-            String message = String.format("Hello, %s! To confirm your account, " +
-                            "please visit next link: http://localhost:8080/user/confirm-account/%s",
-                            user.getName(), confirmationToken.getConfirmationToken());
-
-            emailSenderService.sendEmail(user.getEmail(),"Complete Registration!", message);
+//            ConfirmationToken confirmationToken = new ConfirmationToken(user);
+//            confirmationTokenService.save(confirmationToken);
+//            String message = String.format("Hello, %s! To confirm your account, " +
+//                            "please visit next link: http://localhost:8080/user/confirm-account/%s",
+//                            user.getName(), confirmationToken.getConfirmationToken());
+//
+//            emailSenderService.sendEmail(user.getEmail(),"Complete Registration!", message);
             LOGGER.info("Success.Confirmation email was sent.");
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('SYSADMIN')")
+    @Transactional
     @PutMapping("/")
     public ResponseEntity<?> edit(@RequestBody User user){
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
@@ -141,8 +147,9 @@ public class UserController {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
         String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
+        JwtAuthenticationResponse response=new JwtAuthenticationResponse(jwt);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
     }
 }

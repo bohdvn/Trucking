@@ -1,5 +1,7 @@
 import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
+import {ACCESS_TOKEN,ROLE} from '../../constants/auth';
+import {login} from '../../utils/APIUtils';
 
 class LoginForm extends React.Component {
     loginRequest = {
@@ -26,25 +28,37 @@ class LoginForm extends React.Component {
         console.log(this.state);
     }
 
-    async handleSubmit(event) {
+    handleSubmit(event) {
         event.preventDefault();
         const {loginRequest} = this.state;
-        await fetch( '/user/login', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginRequest),
-        });
-        this.props.history.push('/users');
+        login('/user/login', loginRequest)
+            .then(response =>
+                response.json().then(json => {
+                    console.log(response.status);
+                    if (!response.ok) {
+                        return Promise.reject(json);
+                    }
+                    return json;
+                })
+            )
+            .then(data => {
+                console.log(data);
+                const token=data.accessToken;
+                localStorage.setItem(ACCESS_TOKEN, token);
+                const authDataEncrypted=token.split('.')[1];
+                const authDataDecrypted=JSON.parse(window.atob(authDataEncrypted));
+                const role=authDataDecrypted.roles[0].authority;
+                this.props.setRole(role);
+                console.log(role);
+                this.props.history.push('/home');
+            });
     }
 
     render() {
-        const {loginRequest} =this.state;
+        const {loginRequest} = this.state;
         return (
             <Container className="col-3">
-                <Form>
+                <Form onSubmit={this.handleSubmit}>
                     <h1>Вход</h1>
                     <FormGroup>
                         <Label for="loginOrEmail">Логин/email</Label>

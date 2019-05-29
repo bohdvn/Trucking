@@ -59,9 +59,9 @@ public class AddressController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(final MethodArgumentNotValidException ex){
-        return ValidationUtils.getErrorMap(ex);
-    }
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public Map<String, String> handleValidationExceptions(final MethodArgumentNotValidException ex){
+//        return ValidationUtils.getErrorMap(ex);
+//    }
 }

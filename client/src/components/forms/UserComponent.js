@@ -3,6 +3,9 @@ import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 
 import "react-datepicker/dist/react-datepicker.css";
+import {ACCESS_TOKEN} from "../../constants/auth";
+import {ROLES} from '../../constants/userConstants';
+import {getUserById, saveUser} from "../../utils/APIUtils";
 
 
 class UserComponent extends React.Component {
@@ -40,8 +43,19 @@ class UserComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            const newUser = await (await fetch(`/user/${this.props.match.params.id}`)).json();
-            this.setState({user: newUser});
+            getUserById(`/user/${this.props.match.params.id}`)
+                .then(response =>
+                    response.json().then(json => {
+                        console.log(response.status);
+                        if (!response.ok) {
+                            return Promise.reject(json);
+                        }
+                        return json;
+                    })
+                )
+                .then(newUser=>{
+                    this.setState({user: newUser});
+                });
             console.log(this.state);
         }
         else {
@@ -67,21 +81,13 @@ class UserComponent extends React.Component {
         this.setState({user});
     };
 
-    async handleSubmit(event) {
+    handleSubmit(event) {
         event.preventDefault();
         const {user} = this.state;
 
-        await fetch('/user/', {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user),
+        saveUser(user).then(()=>{
+            this.props.history.push('/users');
         });
-
-
-        this.props.history.push('/users/1');
     }
 
     render() {

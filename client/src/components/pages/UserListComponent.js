@@ -3,6 +3,7 @@ import {Button, ButtonGroup, Container, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 
 class UserListComponent extends React.Component {
@@ -31,10 +32,16 @@ class UserListComponent extends React.Component {
     }
 
     fetchURL(page) {
+        console.log(localStorage.getItem(ACCESS_TOKEN));
         axios.get(`/user/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
+            },
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         })
             .then(response => {
@@ -106,7 +113,7 @@ class UserListComponent extends React.Component {
             <div>
                 <Container fluid>
                     <div className="float-right">
-                        <Button color="success" tag={Link} to="/car/create">Добавить</Button>
+                        <Button color="success" tag={Link} to="/user/create">Добавить</Button>
                     </div>
                     <Table className="mt-4">
                         <thead>
@@ -114,7 +121,7 @@ class UserListComponent extends React.Component {
                             <th width="40%">Имя</th>
                             <th width="15%">Роль</th>
                             <th width="15%">Расход топлива</th>
-                            <th>Статус</th>
+                            <th>Логин</th>
                             <th width="10%"></th>
                         </tr>
                         </thead>

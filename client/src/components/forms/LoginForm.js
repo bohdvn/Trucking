@@ -50,7 +50,7 @@ class LoginForm extends React.Component {
                 const role=authDataDecrypted.roles[0].authority;
                 this.props.setRole(role);
                 console.log(role);
-                this.props.history.push('/home');
+                this.props.history.push('/users');
             });
     }
 

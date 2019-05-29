@@ -3,25 +3,25 @@ import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
-import {ACCESS_TOKEN} from "../../constants/auth";
 
 
-class UserListComponent extends React.Component {
+class ClientListComponent extends React.Component {
 
-    userRoles = [
-        'Системный администратор',
-        'Администратор',
-        'Менеджер',
-        'Диспетчер',
-        'Водитель',
-        'Владелец'
-    ];
+    clientTypeMap = {
+        'INDIVIDUAL': 'Физическое лицо',
+        'LEGAL': 'Юридическое лицо'
+    };
+
+    clientStatusMap = {
+        'ACTIVE': 'Активен',
+        'BLOCKED': 'Заблокирован'
+    };
 
     constructor(props) {
         super(props);
         this.state = {
-            users: [],
-            activePage:0,
+            clients: [],
+            activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null
@@ -32,17 +32,24 @@ class UserListComponent extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
+    handleChange = e => {
+        const id = e.target.id;
+        this.setState(prevState => {
+            return {
+                clients: prevState.clients.map(
+                    client => (client.id === +id ? {
+                        ...client, value: !client.value
+                    } : client)
+                )
+            }
+        })
+    };
+
     fetchURL(page) {
-        console.log(localStorage.getItem(ACCESS_TOKEN));
-        axios.get(`/user/list?page=${page}&size=5`, {
+        axios.get(`/client/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
-            },
-            headers:{
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         })
             .then(response => {
@@ -58,8 +65,11 @@ class UserListComponent extends React.Component {
                     const results = response.data.content;
                     console.log(this.state);
 
-                    this.setState({users: results});
-                    console.log(results);
+                    if (results != null) {
+                        this.setState({clients: results});
+                        console.log(results);
+                    }
+
                     console.log(this.state.activePage);
                     console.log(this.state.itemsCountPerPage);
                 }
@@ -73,104 +83,88 @@ class UserListComponent extends React.Component {
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber-1)
+        this.fetchURL(pageNumber - 1)
     }
 
-    handleChange = e => {
-        const id = e.target.id;
-        this.setState(prevState => {
-            return {
-                users: prevState.users.map(
-                    user => (user.id === +id ? {
-                        ...user, value: !user.value
-                    } : user)
-                )
-            }
-        })
-    };
-
     populateRowsWithData = () => {
-        const users = this.state.users.map(user => {
-            return <tr key={user.id}>
+        const clients = this.state.clients.map(client => {
+            return <tr key={client.id}>
                 <td><Input
                     type="checkbox"
-                    id={user.id || ''}
-                    name="selected_users"
-                    value={user.id || ''}
-                    checked={user.value || ''}
+                    id={client.id || ''}
+                    name="selected_clients"
+                    value={client.id || ''}
+                    checked={client.value || ''}
                     onChange={this.handleChange}/></td>
-                <td style={{whiteSpace: 'nowrap'}}><Link
-                    to={"/user/" + user.id}>{user.surname} {user.name} {user.patronymic}</Link></td>
-                <td>{this.userRoles[user.role]}</td>
-                <td>{user.dateOfBirth}</td>
-                <td>{user.login}</td>
+                <td style={{whiteSpace: 'nowrap'}}><Link to={"/client/" + client.id}>{client.name}</Link></td>
+                <td>{this.clientTypeMap[client.type]}</td>
+                <td>{this.clientStatusMap[client.status]}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/user/" + user.id}>Редактировать</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(user.id)}>Удалить</Button>
+                        <Button size="sm" color="primary" tag={Link} to={"/client/" + client.id}>Редактировать</Button>
+                        <Button size="sm" color="danger" onClick={() => this.remove(client.id)}>Удалить</Button>
                     </ButtonGroup>
                 </td>
             </tr>
         });
 
-        return users
+        return clients
     };
 
     async remove(id) {
-        await fetch(`/user/${id}`, {
+        await fetch(`/client/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         }).then(() => {
-            let updateUsers = [...this.state.users].filter(i => i.id !== id);
-            this.setState({users: updateUsers});
+            let updateClients = [...this.state.clients].filter(i => i.id !== id);
+            this.setState({clients: updateClients});
             this.handlePageChange(0);
         });
     }
 
     async removeChecked() {
-        const selectedUsers = Array.apply(null,
-            document.users.selected_users).filter(function (el) {
+        const selectedClients = Array.apply(null,
+            document.clients.selected_clients).filter(function (el) {
             return el.checked === true
         }).map(function (el) {
             return el.value
         });
-        console.log(selectedUsers);
-        await fetch(`/user/${selectedUsers}`, {
+        console.log(selectedClients);
+        await fetch(`/client/${selectedClients}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         }).then(() => {
-                let updateUsers = [...this.state.users].filter(user => !user.value);
-                this.setState({users: updateUsers});
-                this.handlePageChange(0);
+            let updateClients= [...this.state.clients].filter(client => !client.value);
+            this.setState({products: updateClients});
+            this.handlePageChange(0);
         });
     }
 
 
     render() {
         return (
-            <form name="users">
+            <form name="clients">
             <div>
                 <Container fluid>
                     <div className="float-right">
                         <ButtonGroup>
-                        <Button color="success" tag={Link} to="/user/create">Добавить</Button>
-                            <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
+                        <Button color="success" tag={Link} to="/client/create">Добавить</Button>
+                        <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
                         </ButtonGroup>
                     </div>
                     <Table className="mt-4">
                         <thead>
                         <tr>
                             <th></th>
-                            <th width="40%">Имя</th>
-                            <th width="15%">Роль</th>
-                            <th width="15%">Дата рождения</th>
-                            <th>Логин</th>
+                            <th width="20%">Название</th>
+                            <th width="20%">Тип</th>
+                            <th>Статус</th>
                             <th width="10%"></th>
                         </tr>
                         </thead>
@@ -187,6 +181,7 @@ class UserListComponent extends React.Component {
                             itemClass='page-item'
                             linkClass='btn btn-light'
                             onChange={this.handlePageChange}
+
                         />
                     </div>
                 </Container>
@@ -196,4 +191,4 @@ class UserListComponent extends React.Component {
     }
 }
 
-export default UserListComponent;
+export default ClientListComponent;

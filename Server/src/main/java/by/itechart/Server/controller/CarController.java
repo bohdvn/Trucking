@@ -3,6 +3,7 @@ package by.itechart.Server.controller;
 import by.itechart.Server.dto.CarDto;
 import by.itechart.Server.entity.Car;
 import by.itechart.Server.service.CarService;
+import by.itechart.Server.utils.ValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -10,8 +11,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,14 +31,14 @@ public class CarController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CarController.class);
 
     @PutMapping("/")
-    public ResponseEntity<?> edit(final @RequestBody Car car) {
+    public ResponseEntity<?> edit(final @Valid @RequestBody Car car) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", car);
         carService.save(car);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> create(final @RequestBody Car car) {
+    public ResponseEntity<?> create(final @Valid @RequestBody Car car) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", car);
         carService.save(car);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -50,10 +53,14 @@ public class CarController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> remove(@PathVariable("id") int id) {
-        LOGGER.info("REST request. Path:/car/{} method: DELETE.", id);
-        carService.deleteById(id);
+    @DeleteMapping("/{selectedCars}")
+    public ResponseEntity<?> remove(@PathVariable("selectedCars") String selectedCars ) {
+        LOGGER.info("REST request. Path:/car/{} method: DELETE.", selectedCars);
+       final String delimeter = ",";
+       final String[] carsId = selectedCars.split(delimeter);
+        for (String id : carsId) {
+            carService.deleteById(Integer.valueOf(id));
+        }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -67,5 +74,11 @@ public class CarController {
         LOGGER.info("Return carList.size:{}", carsDto.getNumber());
         return cars.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(carsDto, HttpStatus.OK);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        return new ResponseEntity<>(ValidationUtils.getErrorsMap(ex), HttpStatus.BAD_REQUEST);
     }
 }

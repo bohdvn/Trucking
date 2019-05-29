@@ -28,21 +28,37 @@ class UserComponent extends React.Component {
         id: '',
         city: '',
         street: '',
-        building: '',
-        flat: '',
+        building: '1',
+        flat: '1'
     };
 
     constructor(props) {
         super(props);
         this.state = {
-            user: this.emptyUser
+            user: this.emptyUser,
+            formErrors: {
+                name: '', surname: '', patronymic: '', passportNumber: '', passportIssued: '',
+                dateOfBirth: '', email: '', login: '', password: ''
+            },
+            surnameValid: false,
+            nameValid: false,
+            patronymicValid: false,
+            passportNumberValid: false,
+            passportIssuedValid: false,
+            dateOfBirthValid: false,
+            emailValid: false,
+            loginValid: false,
+            passwordValid: false,
+            addressValid: false,
+            userFormValid: false
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         if (this.props.match.params.id !== 'create') {
+{/*<<<<<<< HEAD*/}
             getUserById(`/user/${this.props.match.params.id}`)
                 .then(response =>
                     response.json().then(json => {
@@ -54,9 +70,21 @@ class UserComponent extends React.Component {
                     })
                 )
                 .then(newUser=>{
-                    this.setState({user: newUser});
+            this.setState({
+                user: newUser, surnameValid: true, nameValid: true, patronymicValid: true,
+                passportNumberValid: true, passportIssuedValid: true, dateOfBirthValid: true, emailValid: true,
+                loginValid: true, passwordValid: true, addressValid: true, userFormValid: true
+            });
                 });
             console.log(this.state);
+// =======
+//             const newUser = await (await fetch(`/user/${this.props.match.params.id}`)).json();
+//             this.setState({
+//                 user: newUser, surnameValid: true, nameValid: true, patronymicValid: true,
+//                 passportNumberValid: true, passportIssuedValid: true, dateOfBirthValid: true, emailValid: true,
+//                 loginValid: true, passwordValid: true, addressValid: true, userFormValid: true
+//             });
+// >>>>>>> master
         }
         else {
             const user = this.state.user;
@@ -71,23 +99,172 @@ class UserComponent extends React.Component {
         const name = target.name;
         let user = {...this.state.user};
         user[name] = value;
-        this.setState({user});
-        console.log(this.state);
+        this.setState({user},
+            () => {
+                this.validateField(name, value)
+            });
+    }
+
+    validateField(fieldName, value) {
+        let fieldValidationErrors = this.state.formErrors;
+        let nameValid = this.state.nameValid;
+        let surnameValid = this.state.surnameValid;
+        let patronymicValid = this.state.patronymicValid;
+        let passportNumberValid = this.state.passportNumberValid;
+        let passportIssuedValid = this.state.passportIssuedValid;
+        let dateOfBirthValid = this.state.dateOfBirthValid;
+        let emailValid = this.state.emailValid;
+        let loginValid = this.state.loginValid;
+        let passwordValid = this.state.passwordValid;
+
+        switch (fieldName) {
+            case 'name':
+                nameValid = value.length >= 1 && value.length <= 150;
+                fieldValidationErrors.name = nameValid ? '' : ' введено неверно';
+                break;
+            case 'surname':
+                surnameValid = value.length >= 2 && value.length <= 150;
+                fieldValidationErrors.surname = surnameValid ? '' : ' введена неверно';
+                break;
+            case 'patronymic':
+                patronymicValid = value.length >= 2 && value.length <= 150;
+                fieldValidationErrors.patronymic = patronymicValid ? '' : ' введено неверно';
+                break;
+            case 'passportNumber':
+                passportNumberValid = !!value.match(/^[A-Z]{2}[0-9]{7}$/i);
+                fieldValidationErrors.passportNumber = passportNumberValid ? '' : ' введен неверно';
+                break;
+            case 'passportIssued':
+                passportIssuedValid = value.length >= 2 && value.length <= 150;
+                fieldValidationErrors.passportIssued = passportIssuedValid ? '' : ' введено неверно';
+                break;
+            case 'dateOfBirth':
+                dateOfBirthValid = !!value.match(/^[0-9]{4,}-[0-9]{2}-[0-9]{2}$/i);
+                if (!dateOfBirthValid) {
+                    fieldValidationErrors.dateOfBirth = 'Дата введена неверно';
+                    break;
+                }
+                let fieldDate = new Date(value);
+                let currentDate = new Date();
+                let minDate = new Date(currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDate());
+                let maxDate = new Date(currentDate.getFullYear() - 100, currentDate.getMonth(), currentDate.getDate());
+                if (fieldDate > minDate) {
+                    fieldValidationErrors.dateOfBirth = 'Вам нет 18';
+                    dateOfBirthValid = false;
+                } else if (fieldDate < maxDate) {
+                    fieldValidationErrors.dateOfBirth = 'Вы слишком стары для этого всего';
+                    dateOfBirthValid = false;
+                } else {
+                    fieldValidationErrors.dateOfBirth = '';
+                    dateOfBirthValid = true;
+                }
+                break;
+            case 'email':
+                emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+                fieldValidationErrors.email = emailValid ? '' : ' введен неверно';
+                break;
+            case 'login':
+                loginValid = value.length >= 2 && value.length <= 150;
+                fieldValidationErrors.login = loginValid ? '' : ' введен неверно';
+                break;
+            case 'password':
+                passwordValid = value.length >= 2 && value.length <= 150;
+                fieldValidationErrors.password = passwordValid ? '' : ' введен неверно';
+                break;
+            default:
+                break;
+        }
+        this.setState({
+            formErrors: fieldValidationErrors,
+            surnameValid: surnameValid,
+            nameValid: nameValid,
+            patronymicValid: patronymicValid,
+            passportNumberValid: passportNumberValid,
+            passportIssuedValid: passportIssuedValid,
+            dateOfBirthValid: dateOfBirthValid,
+            emailValid: emailValid,
+            loginValid: loginValid,
+            passwordValid: passwordValid
+        }, this.validateUserForm);
+    }
+
+    validateUserForm() {
+        this.setState({
+            userFormValid: this.state.nameValid && this.state.surnameValid && this.state.patronymicValid
+            && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
+            && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid
+            && this.state.addressValid
+        });
+
     }
 
     changeAddressFields(value) {
+        console.log(value);
         let user = {...this.state.user};
         user['address'] = value.address;
-        this.setState({user});
+        this.setState({user: user});
+    };
+
+    validationHandler = (formValid) => {
+        let pam = this.state.nameValid && this.state.surnameValid && this.state.patronymicValid
+            && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
+            && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid;
+        this.setState({addressValid: formValid, userFormValid: pam && formValid});
     };
 
     handleSubmit(event) {
         event.preventDefault();
         const {user} = this.state;
 
-        saveUser(user).then(()=>{
-            this.props.history.push('/users');
+        saveUser(user)
+            .then(resp => {
+            if (resp.status === 400) {
+                return resp.json();
+            }
+            else {
+                this.props.history.push('/users');
+                return null;
+            }
+        }).then(data => {
+            if (data) {
+                let s = '';
+                for (const k in data) {
+                    s += data[k] + '\n';
+                }
+                alert(s);
+            }
         });
+{/*<<<<<<< HEAD*/}
+        {/*saveUser(user).then(()=>{*/}
+            {/*this.props.history.push('/users');*/}
+        {/*});*/}
+{/*=======*/}
+        {/*await fetch('/user/', {*/}
+            {/*method: user.id ? 'PUT':'POST',*/}
+            {/*headers: {*/}
+                {/*'Accept': 'application/json',*/}
+                {/*'Content-Type': 'application/json'*/}
+            {/*},*/}
+            {/*body: JSON.stringify(user),*/}
+        {/*}).then(resp => {*/}
+            {/*if (resp.status === 400) {*/}
+                {/*return resp.json();*/}
+            {/*}*/}
+            {/*else {*/}
+                {/*this.props.history.push('/users');*/}
+                {/*return null;*/}
+            {/*}*/}
+        {/*}).then(data => {*/}
+            {/*if (data) {*/}
+                {/*let s = '';*/}
+                {/*for (const k in data) {*/}
+                    {/*s += data[k] + '\n';*/}
+                {/*}*/}
+                {/*alert(s);*/}
+            {/*}*/}
+        {/*});*/}
+
+// >>>>>>> master
     }
 
     render() {
@@ -100,48 +277,63 @@ class UserComponent extends React.Component {
                         <Label for="surname">Фамилия</Label>
                         <Input type="text" name="surname" id="surname" value={user.surname || ''}
                                onChange={this.handleChange} autoComplete="surname"/>
+                        <p className={'error-message'}>{(this.state.formErrors.surname === '') ? ''
+                            : 'Фамилия' + this.state.formErrors.surname}</p>
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="name">Имя</Label>
                         <Input type="text" name="name" id="name" value={user.name || ''}
                                onChange={this.handleChange} autoComplete="name"/>
+                        <p className={'error-message'}>{(this.state.formErrors.name === '') ? ''
+                            : 'Имя' + this.state.formErrors.name}</p>
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="patronymic">Отчество</Label>
                         <Input type="text" name="patronymic" id="patronymic" value={user.patronymic || ''}
                                onChange={this.handleChange} autoComplete="patronymic"/>
+                        <p className={'error-message'}>{(this.state.formErrors.patronymic === '') ? ''
+                            : 'Отчество' + this.state.formErrors.patronymic}</p>
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="passportNumber">Номер паспорта</Label>
                         <Input type="text" name="passportNumber" id="passportNumber" value={user.passportNumber || ''}
                                onChange={this.handleChange} autoComplete="passportNumber"/>
+                        <p className={'error-message'}>{(this.state.formErrors.passportNumber === '') ? ''
+                            : 'Номер паспорта' + this.state.formErrors.passportNumber}</p>
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="passportIssued">Паспорт выдан</Label>
                         <Input type="text" name="passportIssued" id="passportIssued" value={user.passportIssued || ''}
                                onChange={this.handleChange} autoComplete="passportIssued"/>
+                        <p className={'error-message'}>{(this.state.formErrors.passportIssued === '') ? ''
+                            : 'Поле' + this.state.formErrors.passportIssued}</p>
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="dateOfBirth">Дата рождения</Label>
                         <Input type="date" name="dateOfBirth" id="birthDate" value={user.dateOfBirth || ''}
                                onChange={this.handleChange} autoComplete="dateOfBirth"/>
+                        <p className={'error-message'}>{(this.state.formErrors.dateOfBirth === '') ? ''
+                            : this.state.formErrors.dateOfBirth}</p>
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="email">Email</Label>
                         <Input type="email" name="email" id="email" value={user.email || ''}
                                onChange={this.handleChange} autoComplete="email"/>
+                        <p className={'error-message'}>{(this.state.formErrors.email === '') ? ''
+                            : 'Email' + this.state.formErrors.email}</p>
                     </FormGroup>
 
                     <FormGroup>
                         {user.address ? <AddressFields
                             name="address"
                             id="addressFields"
+                            validationHandler={this.validationHandler}
                             changeState={this.changeAddressFields.bind(this)}
                             address={user.address}/> : null}
                     </FormGroup>
@@ -163,15 +355,20 @@ class UserComponent extends React.Component {
                         <Label for="login">Логин</Label>
                         <Input type="text" name="login" id="login" value={user.login || ''}
                                onChange={this.handleChange} autoComplete="login"/>
+                        <p className={'error-message'}>{(this.state.formErrors.login === '') ? ''
+                            : 'Логин' + this.state.formErrors.login}</p>
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="password">Пароль</Label>
                         <Input type="password" name="password" id="password" value={user.password || ''}
                                onChange={this.handleChange} autoComplete="password"/>
+                        <p className={'error-message'}>{(this.state.formErrors.password === '') ? ''
+                            : 'Пароль' + this.state.formErrors.password}</p>
                     </FormGroup>
                     <FormGroup>
-                        <Button color="primary" type="submit">Сохранить</Button>{' '}
+                        <Button color="primary" type="submit"
+                                disabled={!this.state.userFormValid}>Сохранить</Button>{' '}
                     </FormGroup>
                 </Form>
             </Container>

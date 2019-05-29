@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Entity
-@Table(name = "address",catalog = "trucking")
+@Table(name = "address")
 public class Address implements Transformable {
 
     @Id

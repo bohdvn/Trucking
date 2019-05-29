@@ -66,15 +66,30 @@ class ClientComponent extends React.Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(client),
+            body: JSON.stringify(client)
+        }).then(resp => {
+            if (resp.status === 400) {
+                return resp.json();
+            }
+            else {
+                this.props.history.push('/clients');
+                return null;
+            }
+        }).then(data => {
+            if (data) {
+                let s = '';
+                for (const k in data) {
+                    s += data[k] + '\n';
+                }
+                alert(s);
+            }
         });
-        this.props.history.push('/clients');
     }
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
             const newClient = await (await fetch(`/client/${this.props.match.params.id}`)).json();
-            this.setState({client: newClient});
+            this.setState({client: newClient, nameValid: true, formValid: true});
         }
     }
 

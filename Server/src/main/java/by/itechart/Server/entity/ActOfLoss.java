@@ -10,6 +10,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "act_of_loss")
 public class ActOfLoss implements Transformable {
+    /**
+     *
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

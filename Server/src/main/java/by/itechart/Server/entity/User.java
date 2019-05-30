@@ -13,7 +13,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "user")
-public class User implements Transformable{
+public class User implements Transformable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -54,7 +54,9 @@ public class User implements Transformable{
     @Column(name = "login")
     private String login;
 
-    @Size(min = 2, max = 45, message = "Password number must be between 2 and 45 characters")
+    @Size(min = 2, max = 45, message = "Password **\n" +
+            "     * One user can have only one address.\n" +
+            "     */number must be between 2 and 45 characters")
     @Column(name = "password")
     private String password;
 
@@ -62,29 +64,40 @@ public class User implements Transformable{
     @Column(name = "user_role")
     private Role role;
 
-    /**
-     * One user can have only one address.
-     */
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "address")
     private Address address;
     /**
      * One manager can check several invoices.
      */
-    @OneToMany( mappedBy = "manager", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
     private List<Invoice> checkedByManagerInvoices;
 
     /**
      * One dispatcherFrom can issue several invoices.
      */
-    @OneToMany( mappedBy = "dispatcherFrom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "dispatcherFrom", cascade = CascadeType.ALL)
     private List<Invoice> issuedByDispatcherFromInvoices;
 
     /**
      * One dispatcherTo can issue several invoices.
      */
-    @OneToMany( mappedBy = "dispatcherTo", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "dispatcherTo", cascade = CascadeType.ALL)
     private List<Invoice> issuedByDispatcherToInvoices;
+
+    /**
+     * One driver can be choosed in several requests.
+     */
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL)
+    private List<Request> requests;
+
+    /**
+     *One user can belong to only one clientCompany.
+     * The same clientCompany may have many users.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_company_id")
+    private ClientCompany clientCompany;
 
     @Column(name = "is_enabled")
     private Boolean isEnabled;
@@ -118,7 +131,7 @@ public class User implements Transformable{
 
     public User() {
         super();
-        this.isEnabled=false;
+        this.isEnabled = false;
     }
 
     public Boolean getEnabled() {
@@ -217,14 +230,6 @@ public class User implements Transformable{
         this.address = address;
     }
 
-    public List<Invoice> getCheckedByManagerInvoices() {
-        return checkedByManagerInvoices;
-    }
-
-    public void setCheckedByManagerInvoices(List<Invoice> checkedByManagerInvoices) {
-        this.checkedByManagerInvoices = checkedByManagerInvoices;
-    }
-
     public List<Invoice> getIssuedByDispatcherFromInvoices() {
         return issuedByDispatcherFromInvoices;
     }
@@ -249,6 +254,30 @@ public class User implements Transformable{
         this.email = email;
     }
 
+    public List<Invoice> getCheckedByManagerInvoices() {
+        return checkedByManagerInvoices;
+    }
+
+    public void setCheckedByManagerInvoices(List<Invoice> checkedByManagerInvoices) {
+        this.checkedByManagerInvoices = checkedByManagerInvoices;
+    }
+
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
+    }
+
+    public ClientCompany getClientCompany() {
+        return clientCompany;
+    }
+
+    public void setClientCompany(ClientCompany clientCompany) {
+        this.clientCompany = clientCompany;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -266,7 +295,7 @@ public class User implements Transformable{
                 Objects.equals(password, user.password) &&
                 role == user.role &&
                 Objects.equals(address, user.address) &&
-                Objects.equals(checkedByManagerInvoices, user.checkedByManagerInvoices) &&
+                Objects.equals(requests, user.requests) &&
                 Objects.equals(issuedByDispatcherFromInvoices, user.issuedByDispatcherFromInvoices) &&
                 Objects.equals(issuedByDispatcherToInvoices, user.issuedByDispatcherToInvoices) &&
                 Objects.equals(isEnabled, user.isEnabled);
@@ -274,7 +303,7 @@ public class User implements Transformable{
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, patronymic, surname, passportNumber, passportIssued, dateOfBirth, email, login, password, role, address, checkedByManagerInvoices, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices, isEnabled);
+        return Objects.hash(id, name, patronymic, surname, passportNumber, passportIssued, dateOfBirth, email, login, password, role, address, requests, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices, isEnabled);
     }
 
     @Override
@@ -292,7 +321,7 @@ public class User implements Transformable{
                 ", password='" + password + '\'' +
                 ", role=" + role +
                 ", address=" + address +
-                ", checkedByManagerInvoices=" + checkedByManagerInvoices +
+                ", requests=" + requests +
                 ", issuedByDispatcherFromInvoices=" + issuedByDispatcherFromInvoices +
                 ", issuedByDispatcherToInvoices=" + issuedByDispatcherToInvoices +
                 ", isEnabled=" + isEnabled +

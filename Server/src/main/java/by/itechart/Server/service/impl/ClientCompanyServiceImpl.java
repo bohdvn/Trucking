@@ -13,8 +13,8 @@ import java.util.Optional;
 public class ClientCompanyServiceImpl implements ClientCompanyService {
     private ClientCompanyRepository clientCompanyRepository;
 
-    public ClientCompanyServiceImpl(ClientCompanyRepository clientCompanyRepository){
-        this.clientCompanyRepository=clientCompanyRepository;
+    public ClientCompanyServiceImpl(ClientCompanyRepository clientCompanyRepository) {
+        this.clientCompanyRepository = clientCompanyRepository;
     }
 
     @Override
@@ -23,7 +23,9 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public Page<ClientCompany> findAll(Pageable pageable) { return clientCompanyRepository.findAll(pageable); }
+    public Page<ClientCompany> findAll(Pageable pageable) {
+        return clientCompanyRepository.findAll(pageable);
+    }
 
     @Override
     public Optional<ClientCompany> findById(int id) {

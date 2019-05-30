@@ -10,4 +10,5 @@
 
     <include file="src/main/resources/liquibase/sprint-1/changelog-1.x-cumulative.xml"/>
     <include file="src/main/resources/liquibase/sprint-2/changelog-2.x-cumulative.xml"/>
+    <include file="src/main/resources/liquibase/sprint-3/changelog-3.x-cumulative.xml"/>
 </databaseChangeLog>

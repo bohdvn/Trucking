@@ -5,22 +5,16 @@ import axios from 'axios';
 import Pagination from "react-js-pagination";
 
 
-class ClientListComponent extends React.Component {
-
-    clientTypeMap = {
-        'INDIVIDUAL': 'Физическое лицо',
-        'LEGAL': 'Юридическое лицо'
-    };
-
-    clientStatusMap = {
-        'ACTIVE': 'Активен',
-        'BLOCKED': 'Заблокирован'
+class WaybillListComponent extends React.Component {
+    waybillStatusMap = {
+        'STARTED': 'Перевозка начата',
+        'FINISHED': 'Перевозка завершена'
     };
 
     constructor(props) {
         super(props);
         this.state = {
-            clients: [],
+            waybills: [],
             activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
@@ -36,17 +30,17 @@ class ClientListComponent extends React.Component {
         const id = e.target.id;
         this.setState(prevState => {
             return {
-                clients: prevState.clients.map(
-                    client => (client.id === +id ? {
-                        ...client, value: !client.value
-                    } : client)
+                waybills: prevState.waybills.map(
+                    waybill => (waybill.id === +id ? {
+                        ...waybill, value: !waybill.value
+                    } : waybill)
                 )
             }
         })
     };
 
     fetchURL(page) {
-        axios.get(`/client/list?page=${page}&size=5`, {
+        axios.get(`/waybill/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
@@ -66,7 +60,7 @@ class ClientListComponent extends React.Component {
                     console.log(this.state);
 
                     if (results != null) {
-                        this.setState({clients: results});
+                        this.setState({waybills: results});
                         console.log(results);
                     }
 
@@ -87,61 +81,74 @@ class ClientListComponent extends React.Component {
     }
 
     populateRowsWithData = () => {
-        const clients = this.state.clients.map(client => {
-            return <tr key={client.id}>
+        const waybills = this.state.waybills.map(waybill => {
+            return <tr key={waybill.id}>
                 <td><Input
                     type="checkbox"
-                    id={client.id || ''}
-                    name="selected_clients"
-                    value={client.id || ''}
-                    checked={client.value || ''}
+                    id={waybill.id || ''}
+                    name="selected_waybills"
+                    value={waybill.id || ''}
+                    checked={waybill.value || ''}
                     onChange={this.handleChange}/></td>
-                <td style={{whiteSpace: 'nowrap'}}><Link to={"/client/" + client.id}>{client.name}</Link></td>
-                <td>{this.clientTypeMap[client.type]}</td>
-                <td>{this.clientStatusMap[client.status]}</td>
+                    <td style={{whiteSpace: 'nowrap'}}>
+                        {waybill.addressFrom.city} {waybill.addressFrom.street} {waybill.addressFrom.building}
+                    </td>
+                    <td>
+                        {waybill.addressTo.city} {waybill.addressTo.street} {waybill.addressTo.building}
+                    </td>
+                    <td>
+                        {waybill.invoice.carName}
+                    </td>
+                    <td>
+                        {waybill.invoice.number}
+                    </td>
+                    <td>{waybill.dateFrom}</td>
+                    <td>{this.waybillStatusMap[waybill.status]}</td>
+
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/client/" + client.id}>Редактировать</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(client.id)}>Удалить</Button>
+                        <Button size="sm" color="primary" tag={Link}
+                                to={"/waybill/" + waybill.id}>Редактировать</Button>
+                        <Button size="sm" color="danger" onClick={() => this.remove(waybill.id)}>Удалить</Button>
                     </ButtonGroup>
                 </td>
             </tr>
         });
 
-        return clients
+        return waybills
     };
 
     async remove(id) {
-        await fetch(`/client/${id}`, {
+        await fetch(`/waybill/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         }).then(() => {
-            let updateClients = [...this.state.clients].filter(i => i.id !== id);
-            this.setState({clients: updateClients});
+            let updateWaybills = [...this.state.waybills].filter(i => i.id !== id);
+            this.setState({waybills: updateWaybills});
             this.handlePageChange(0);
         });
     }
 
     async removeChecked() {
-        const selectedClients = Array.apply(null,
-            document.clients.selected_clients).filter(function (el) {
+        const selectedWaybills = Array.apply(null,
+            document.waybills.selected_waybills).filter(function (el) {
             return el.checked === true
         }).map(function (el) {
             return el.value
         });
-        console.log(selectedClients);
-        await fetch(`/client/${selectedClients}`, {
+        console.log(selectedWaybills);
+        await fetch(`/waybill/${selectedWaybills}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         }).then(() => {
-            let updateClients = [...this.state.clients].filter(client => !client.value);
-            this.setState({products: updateClients});
+            let updateWaybills = [...this.state.waybills].filter(waybill => !waybill.value);
+            this.setState({products: updateWaybills});
             this.handlePageChange(0);
         });
     }
@@ -149,12 +156,12 @@ class ClientListComponent extends React.Component {
 
     render() {
         return (
-            <form name="clients">
+            <form name="waybills">
                 <div>
                     <Container fluid>
                         <div className="float-right">
                             <ButtonGroup>
-                                <Button color="success" tag={Link} to="/client/create">Добавить</Button>
+                                <Button color="success" tag={Link} to="/waybill/create">Добавить</Button>
                                 <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
                             </ButtonGroup>
                         </div>
@@ -162,9 +169,12 @@ class ClientListComponent extends React.Component {
                             <thead>
                             <tr>
                                 <th></th>
-                                <th width="30%">Название</th>
-                                <th width="30%">Тип</th>
-                                <th>Статус</th>
+                                <th width="15%">Отправитель</th>
+                                <th width="15%">Получатель</th>
+                                <th width="15%">Номер автомобиля</th>
+                                <th width="15%">Номер ТТН</th>
+                                <th width="15%">Дата оформления</th>
+                                <th width="15%">Статус</th>
                                 <th width="10%"></th>
                             </tr>
                             </thead>
@@ -191,4 +201,4 @@ class ClientListComponent extends React.Component {
     }
 }
 
-export default ClientListComponent;
+export default WaybillListComponent;

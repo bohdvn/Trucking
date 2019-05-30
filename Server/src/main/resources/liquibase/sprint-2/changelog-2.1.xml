@@ -5,6 +5,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <include file="src/main/resources/liquibase/sprint-2/changelog-2.0.xml"/>
-    <include file="src/main/resources/liquibase/sprint-2/changelog-2.1.xml"/>
+<changeSet id="6" author="aliaksandr.yakutsin">
+    <modifyDataType
+            columnName="password"
+            newDataType="varchar(255)"
+            tableName="user"/>
+</changeSet>
+
 </databaseChangeLog>

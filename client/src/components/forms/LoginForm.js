@@ -2,6 +2,8 @@ import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import {ACCESS_TOKEN,ROLE} from '../../constants/auth';
 import {login} from '../../utils/APIUtils';
+import {connect} from "react-redux";
+import {changeLoggedIn} from "../../actions/user";
 
 class LoginForm extends React.Component {
     loginRequest = {
@@ -46,9 +48,17 @@ class LoginForm extends React.Component {
                 const token=data.accessToken;
                 localStorage.setItem(ACCESS_TOKEN, token);
                 const authDataEncrypted=token.split('.')[1];
-                const authDataDecrypted=JSON.parse(window.atob(authDataEncrypted));
+                const authDataDecrypted=JSON.parse(window.atob(authDataEncrypted))
+                console.log(authDataDecrypted);
                 const role=authDataDecrypted.roles[0].authority;
-                this.props.setRole(role);
+                // this.props.setRole(role);
+                // localStorage.setItem('user',authDataDecrypted);
+                // this.props.
+                // connect(authDataDecrypted);
+                localStorage.setItem('loggedIn',JSON.stringify(authDataDecrypted));
+                const x=localStorage.getItem('loggedIn');
+                console.log(x);
+                this.props.changeLoggedIn(authDataDecrypted);
                 console.log(role);
                 this.props.history.push('/users');
             });
@@ -79,4 +89,11 @@ class LoginForm extends React.Component {
     }
 }
 
-export default LoginForm;
+// export default LoginForm;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    }), {
+        changeLoggedIn,
+    }
+)(LoginForm)

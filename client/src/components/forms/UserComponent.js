@@ -58,7 +58,6 @@ class UserComponent extends React.Component {
 
     componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-{/*<<<<<<< HEAD*/}
             getUserById(`/user/${this.props.match.params.id}`)
                 .then(response =>
                     response.json().then(json => {
@@ -77,14 +76,6 @@ class UserComponent extends React.Component {
             });
                 });
             console.log(this.state);
-// =======
-//             const newUser = await (await fetch(`/user/${this.props.match.params.id}`)).json();
-//             this.setState({
-//                 user: newUser, surnameValid: true, nameValid: true, patronymicValid: true,
-//                 passportNumberValid: true, passportIssuedValid: true, dateOfBirthValid: true, emailValid: true,
-//                 loginValid: true, passwordValid: true, addressValid: true, userFormValid: true
-//             });
-// >>>>>>> master
         }
         else {
             const user = this.state.user;
@@ -234,37 +225,6 @@ class UserComponent extends React.Component {
                 alert(s);
             }
         });
-{/*<<<<<<< HEAD*/}
-        {/*saveUser(user).then(()=>{*/}
-            {/*this.props.history.push('/users');*/}
-        {/*});*/}
-{/*=======*/}
-        {/*await fetch('/user/', {*/}
-            {/*method: user.id ? 'PUT':'POST',*/}
-            {/*headers: {*/}
-                {/*'Accept': 'application/json',*/}
-                {/*'Content-Type': 'application/json'*/}
-            {/*},*/}
-            {/*body: JSON.stringify(user),*/}
-        {/*}).then(resp => {*/}
-            {/*if (resp.status === 400) {*/}
-                {/*return resp.json();*/}
-            {/*}*/}
-            {/*else {*/}
-                {/*this.props.history.push('/users');*/}
-                {/*return null;*/}
-            {/*}*/}
-        {/*}).then(data => {*/}
-            {/*if (data) {*/}
-                {/*let s = '';*/}
-                {/*for (const k in data) {*/}
-                    {/*s += data[k] + '\n';*/}
-                {/*}*/}
-                {/*alert(s);*/}
-            {/*}*/}
-        {/*});*/}
-
-// >>>>>>> master
     }
 
     render() {

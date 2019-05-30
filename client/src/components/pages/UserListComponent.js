@@ -121,7 +121,8 @@ class UserListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
             let updateUsers = [...this.state.users].filter(i => i.id !== id);
@@ -142,7 +143,8 @@ class UserListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
                 let updateUsers = [...this.state.users].filter(user => !user.value);

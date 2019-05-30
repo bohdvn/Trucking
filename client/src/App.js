@@ -10,43 +10,40 @@ import ProductComponent from "./components/forms/ProductComponent";
 import ClientComponent from "./components/forms/ClientComponent";
 import LoginForm from "./components/forms/LoginForm";
 import Home from "./components/home/Home"
+import {connect} from 'react-redux';
+import { changeLoggedIn } from './actions/user';
+import ProtectedRoute from "./components/ProtectedRoute";
 
 class App extends React.Component {
-    constructor(props) {
+    constructor(props){
         super(props);
-        this.state = {
-            role: ''
-        }
     }
-
-    setRole(role) {
-        this.setState({
-            role: role
-        });
-        console.log(this.state);
-    }
-
-
     render() {
-        const {role} = this.state;
+        console.log(this.props.loggedIn);
+        const {role}=this.props.loggedIn.roles[0].authority;
+        console.log(this.props.loggedIn.roles[0].authority);
         console.log(role);
         return (
             <Router history={createBrowserHistory}>
                 <Route path="/home" component={Home}/>
                 <Route path="/user/:id" component={UserComponent}/>
-                <Route path="/home" component={Home}/>
-                <Route path="/user/:id" component={UserComponent}/>
                 <Route path="/car/:id" component={CarComponent}/>
                 <Route path="/product/:id" component={ProductComponent}/>
                 <Route path="/cars" component={CarListComponent}/>
-                <Route path="/users" component={UserListComponent}/>
+                {/*<Route path="/users" component={UserListComponent}/>*/}
                 <Route path="/products" component={ProductListComponent}/>
                 <Route path="/client/:id" component={ClientComponent}/>
-                <Route path="/login" component={(props) => <LoginForm {...props} setRole={this.setRole.bind(this)}/>}/>
+                <Route path="/login" component={LoginForm}/>
+                <ProtectedRoute exact path="/users" allowed='SYSADMIN' component={UserListComponent}/>
             </Router>
         );
     }
 }
 
-
-export default App;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    }), {
+        changeLoggedIn,
+    }
+)(App);

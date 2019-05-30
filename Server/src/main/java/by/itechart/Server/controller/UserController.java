@@ -112,7 +112,7 @@ public class UserController {
         return new ResponseEntity<>(ValidationUtils.getErrorsMap(ex), HttpStatus.BAD_REQUEST);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @Transactional
     @PutMapping("/")
     public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody User user) {

@@ -1,15 +1,22 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router';
+import { connect } from 'react-redux';
+import { Redirect, Route } from 'react-router';
 
-const ProtectedRoute = ({ component: Component, role,allowedRole, ...rest }) => (
-    <Route
-        {...rest}
-        render={props => (
-            role===allowedRole
-                ? <Component {...props} />
-                : <Redirect to="/login" />
-        )}
-    />
+const ProtectedRoute = ({ component: Component, ...rest }) => (
+    <Route {...rest} render={props => (
+        (rest.loggedIn.roles[0].authority===rest.allowed) ? (
+            <Component {...props} />
+        ) : (
+            <Redirect to={{
+                pathname: '/login',
+                state: { from: props.location }
+            }} />
+        )
+    )} />
 );
 
-export default ProtectedRoute;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    })
+)(ProtectedRoute);

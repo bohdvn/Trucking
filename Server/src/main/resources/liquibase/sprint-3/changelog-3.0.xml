@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="victor.bogdan">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="request"/>
+            </not>
+        </preConditions>
+        <createTable tableName="request">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="car_id" type="int"/>
+            <column name="driver_id" type="int"/>
+            <column name="client_company_from" type="int"/>
+            <column name="client_company_to" type="int"/>
+        </createTable>
+        <rollback>
+            <dropTable tableName="request"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2" author="victor.bogdan">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="address" tableName="client_company"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="client_company">
+            <column name="address" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="3" author="victor.bogdan">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="client_company_id" tableName="user"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="user">
+            <column name="client_company_id" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="4" author="victor.bogdan">
+        <dropColumn catalogName="trucking"
+                    columnName="invoice_id"
+                    schemaName="trucking"
+                    tableName="product"/>
+    </changeSet>
+
+    <changeSet id="5" author="victor.bogdan">
+        <dropColumn catalogName="trucking"
+                    columnName="act_of_loss_id"
+                    schemaName="trucking"
+                    tableName="product"/>
+    </changeSet>
+
+    <changeSet id="6" author="victor.bogdan">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="request_id" tableName="product"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="product">
+            <column name="request_id" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="7" author="victor.bogdan">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="lost_amount" tableName="product"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="product">
+            <column name="lost_amount" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="8" author="victor.bogdan">
+        <dropColumn catalogName="trucking"
+                    columnName="client_company_id"
+                    schemaName="trucking"
+                    tableName="waybill"/>
+    </changeSet>
+
+    <changeSet id="9" author="victor.bogdan">
+        <dropColumn catalogName="trucking"
+                    columnName="address_from"
+                    schemaName="trucking"
+                    tableName="waybill"/>
+    </changeSet>
+
+    <changeSet id="10" author="victor.bogdan">
+        <dropColumn catalogName="trucking"
+                    columnName="address_to"
+                    schemaName="trucking"
+                    tableName="waybill"/>
+    </changeSet>
+
+    <changeSet id="11" author="victor.bogdan">
+        <dropColumn catalogName="trucking"
+                    columnName="driver_id"
+                    schemaName="trucking"
+                    tableName="invoice"/>
+    </changeSet>
+
+    <changeSet id="12" author="victor.bogdan">
+        <dropColumn catalogName="trucking"
+                    columnName="car_id"
+                    schemaName="trucking"
+                    tableName="invoice"/>
+    </changeSet>
+
+    <changeSet id="13" author="victor.bogdan">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="request_id" tableName="invoice"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="invoice">
+            <column name="request_id" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="14" author="victor.bogdan">
+        <dropTable cascadeConstraints="true"
+                   catalogName="trucking"
+                   schemaName="trucking"
+                   tableName="act_of_loss"/>
+    </changeSet>
+</databaseChangeLog>

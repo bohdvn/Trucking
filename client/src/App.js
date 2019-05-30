@@ -13,6 +13,8 @@ import Home from "./components/home/Home"
 import {connect} from 'react-redux';
 import { changeLoggedIn } from './actions/user';
 import ProtectedRoute from "./components/ProtectedRoute";
+import ClientListComponent from "./components/pages/ClientListComponent";
+import WaybillListComponent from "./components/pages/WaybillListComponent";
 
 class App extends React.Component {
     constructor(props){
@@ -30,10 +32,11 @@ class App extends React.Component {
                 <Route path="/car/:id" component={CarComponent}/>
                 <Route path="/product/:id" component={ProductComponent}/>
                 <Route path="/cars" component={CarListComponent}/>
-                {/*<Route path="/users" component={UserListComponent}/>*/}
                 <Route path="/products" component={ProductListComponent}/>
                 <Route path="/client/:id" component={ClientComponent}/>
                 <Route path="/login" component={LoginForm}/>
+                <Route path="/clients" component={ClientListComponent}/>
+                <Route path="/waybills" component={WaybillListComponent}/
                 <ProtectedRoute exact path="/users" allowed='SYSADMIN' component={UserListComponent}/>
             </Router>
         );

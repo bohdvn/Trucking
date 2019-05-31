@@ -17,5 +17,9 @@ public interface UserService {
 
     void deleteById(int id);
 
+    boolean existsByLogin(String login);
+
+    boolean existsByEmail(String email);
+
     User findByEmailIgnoreCase(String email);
 }

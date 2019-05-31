@@ -6,6 +6,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
+    "formik": "^1.5.7",
     "history": "^4.9.0",
     "jquery": "^3.4.1",
     "jsonwebtoken": "^8.5.1",
@@ -15,11 +16,16 @@
     "react-datepicker": "^2.5.0",
     "react-dom": "^16.8.6",
     "react-js-pagination": "^3.0.2",
+    "react-native": "^0.59.8",
+    "react-native-formik": "^1.7.5",
+    "react-native-material-textfield": "^0.12.0",
     "react-redux": "^7.0.3",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.0",
     "reactstrap": "^8.0.0",
+    "recompose": "^0.30.0",
+    "yup": "^0.27.0"
     "redux": "^4.0.1"
   },
   "scripts": {

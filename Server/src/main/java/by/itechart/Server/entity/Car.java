@@ -35,10 +35,10 @@ public class Car implements Transformable {
     private Status status;
 
     /**
-     * One car can be in different invoices in various dates.
+     * One car can be in different requests in various dates.
      */
-    @OneToMany( mappedBy = "dispatcherFrom", cascade = CascadeType.ALL)
-    private List<Invoice> invoices;
+    @OneToMany( mappedBy = "car", cascade = CascadeType.ALL)
+    private List<Request> requests;
 
     public enum Status {
         AVAILABLE,
@@ -100,12 +100,12 @@ public class Car implements Transformable {
         this.status = status;
     }
 
-    public List<Invoice> getInvoices() {
-        return invoices;
+    public List<Request> getRequests() {
+        return requests;
     }
 
-    public void setInvoices(List<Invoice> invoices) {
-        this.invoices = invoices;
+    public void setRequests(final List<Request> requests) {
+        this.requests = requests;
     }
 
     @Override
@@ -118,12 +118,12 @@ public class Car implements Transformable {
                 Objects.equals(name, car.name) &&
                 Objects.equals(consumption, car.consumption) &&
                 status == car.status &&
-                Objects.equals(invoices, car.invoices);
+                Objects.equals(requests, car.requests);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, carType, name, consumption, status, invoices);
+        return Objects.hash(id, carType, name, consumption, status, requests);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class Car implements Transformable {
                 ", name='" + name + '\'' +
                 ", consumption=" + consumption +
                 ", status=" + status +
-                ", invoices=" + invoices +
+                ", requests=" + requests +
                 '}';
     }
 }

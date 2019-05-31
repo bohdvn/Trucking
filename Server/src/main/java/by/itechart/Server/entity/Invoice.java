@@ -7,10 +7,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "invoice")
@@ -37,22 +34,6 @@ public class Invoice implements Transformable {
     private LocalDate dateOfCheck;
 
     /**
-     *  One invoice can have one driver.
-     *  The same driver can be in different invoices in various dates.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "driver_id")
-    private User driver;
-
-    /**
-     * One invoice can have one car.
-     * The same car can be in different invoices in various dates.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "car_id")
-    private Car car;
-
-    /**
      *One invoice can be issued by one dispatcherFrom.
      * The same dispatcherFrom can be in different invoices in various dates.
      */
@@ -76,17 +57,17 @@ public class Invoice implements Transformable {
     private User manager;
 
     /**
-     * In one invoice may be several products.
+     * One invoice can have only one request.
      */
-    @OneToMany(fetch = FetchType.LAZY,
-            mappedBy = "invoice",
-            cascade =  CascadeType.ALL)
-    private List<Product> products = new ArrayList<>();
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name = "request_id")
+    private Request request;
 
 
     public enum Status {
         COMPLETED,
         CHECKED,
+        CHECKED_BY_DRIVER,
         DELIVERED
     }
 
@@ -98,12 +79,9 @@ public class Invoice implements Transformable {
                 .withDateOfIssue(this.dateOfIssue)
                 .withNumber(this.number)
                 .withStatus(this.status)
-                .withCarName(this.car.getName())
-                .withDriverFullName(this.driver.getName() + " " + this.driver.getPatronymic() + " " + this.driver.getSurname())
                 .withDispathcerFromFullName(this.dispatcherFrom.getName() + " " + this.dispatcherFrom.getPatronymic() + " " + this.dispatcherFrom.getSurname())
                 .withDispatcherToFullName(this.dispatcherTo.getName() + " " + this.dispatcherTo.getPatronymic() + " " + this.dispatcherTo.getSurname())
                 .withManagerFullName(this.manager.getName() + " " + this.manager.getPatronymic() + " " + this.manager.getSurname())
-                .withProducts(this.products.stream().map(Product::transform).collect(Collectors.toList()))
                 .build();
     }
 
@@ -147,22 +125,6 @@ public class Invoice implements Transformable {
         this.dateOfCheck = dateOfCheck;
     }
 
-    public User getDriver() {
-        return driver;
-    }
-
-    public void setDriver(final User driver) {
-        this.driver = driver;
-    }
-
-    public Car getCar() {
-        return car;
-    }
-
-    public void setCar(final Car car) {
-        this.car = car;
-    }
-
     public User getDispatcherFrom() {
         return dispatcherFrom;
     }
@@ -187,12 +149,12 @@ public class Invoice implements Transformable {
         this.manager = manager;
     }
 
-    public List<Product> getProducts() {
-        return products;
+    public Request getRequest() {
+        return request;
     }
 
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    public void setRequest(Request request) {
+        this.request = request;
     }
 
     @Override
@@ -205,17 +167,15 @@ public class Invoice implements Transformable {
                 Objects.equals(number, invoice.number) &&
                 Objects.equals(dateOfIssue, invoice.dateOfIssue) &&
                 Objects.equals(dateOfCheck, invoice.dateOfCheck) &&
-                Objects.equals(driver, invoice.driver) &&
-                Objects.equals(car, invoice.car) &&
                 Objects.equals(dispatcherFrom, invoice.dispatcherFrom) &&
                 Objects.equals(dispatcherTo, invoice.dispatcherTo) &&
                 Objects.equals(manager, invoice.manager) &&
-                Objects.equals(products, invoice.products);
+                Objects.equals(request, invoice.request);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, number, dateOfIssue, dateOfCheck, driver, car, dispatcherFrom, dispatcherTo, manager, products);
+        return Objects.hash(id, status, number, dateOfIssue, dateOfCheck, dispatcherFrom, dispatcherTo, manager, request);
     }
 
     @Override
@@ -226,13 +186,10 @@ public class Invoice implements Transformable {
                 ", number='" + number + '\'' +
                 ", dateOfIssue=" + dateOfIssue +
                 ", dateOfCheck=" + dateOfCheck +
-                ", driver=" + driver +
-                ", car=" + car +
                 ", dispatcherFrom=" + dispatcherFrom +
                 ", dispatcherTo=" + dispatcherTo +
                 ", manager=" + manager +
-                ", products=" + products +
+                ", request=" + request +
                 '}';
     }
-
 }

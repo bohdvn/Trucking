@@ -5,7 +5,6 @@ import by.itechart.Server.dto.ClientCompanyDto;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,29 +22,31 @@ public class ClientCompany implements Transformable {
 
     @Enumerated
     @NotNull(message = "Type cannot be null")
-    @Column(name="type")
+    @Column(name = "type")
     private Type type;
 
     @Enumerated
     @NotNull(message = "Status cannot be null")
-    @Column(name="status")
+    @Column(name = "status")
     private Status status;
 
-    public enum Type{
-        LEGAL,INDIVIDUAL
-    }
-
-    public enum Status{
-        ACTIVE,BLOCKED
-    }
-
     /**
-     * One clientCompany can be in different waybills.
+     * One clientCompany can have only one address.
      */
-    @OneToMany(fetch = FetchType.LAZY,
-            mappedBy = "clientCompany")
-           // cascade =  CascadeType.ALL)
-    private List<WayBill> waybills = new ArrayList<>();
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "address")
+    private Address address;
+
+    @OneToMany(mappedBy = "clientCompany", cascade = CascadeType.ALL)
+    private List<User> users;
+
+    public enum Type {
+        LEGAL, INDIVIDUAL
+    }
+
+    public enum Status {
+        ACTIVE, BLOCKED
+    }
 
     @Override
     public ClientCompanyDto transform() {
@@ -55,6 +56,14 @@ public class ClientCompany implements Transformable {
                 .withType(this.type)
                 .withStatus(this.status)
                 .build();
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public Integer getId() {
@@ -73,14 +82,6 @@ public class ClientCompany implements Transformable {
         this.name = name;
     }
 
-    public List<WayBill> getWaybills() {
-        return waybills;
-    }
-
-    public void setWaybills(List<WayBill> waybills) {
-        this.waybills = waybills;
-    }
-
     public Type getType() {
         return type;
     }
@@ -97,6 +98,14 @@ public class ClientCompany implements Transformable {
         this.status = status;
     }
 
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -104,12 +113,15 @@ public class ClientCompany implements Transformable {
         ClientCompany that = (ClientCompany) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
-                Objects.equals(waybills, that.waybills);
+                type == that.type &&
+                status == that.status &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(users, that.users);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, waybills);
+        return Objects.hash(id, name, type, status, address, users);
     }
 
     @Override
@@ -117,7 +129,10 @@ public class ClientCompany implements Transformable {
         return "ClientCompany{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", waybills=" + waybills +
+                ", type=" + type +
+                ", status=" + status +
+                ", address=" + address +
+                ", users=" + users +
                 '}';
     }
 }

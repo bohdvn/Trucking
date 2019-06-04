@@ -1,16 +1,17 @@
+//Dmitry Gorlach
 import React from 'react';
 import "../../styles.css";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import AddressFields from "./AddressFields";
 
-class ClientComponent extends React.Component {
-    emptyClient = {
+class WarehouseComponent extends React.Component {
+    emptyWarehouse = {
         id: '',
         name: '',
         address: '',
         type: 'LEGAL',
         status: 'ACTIVE',
-        companyType: 'CLIENT',
+        companyType: 'WAREHOUSE'
     };
 
     address = {
@@ -24,7 +25,7 @@ class ClientComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            client: this.emptyClient,
+            warehouse: this.emptyWarehouse,
             formErrors: {name: ''},
             nameValid: false,
             formValid: false,
@@ -40,9 +41,9 @@ class ClientComponent extends React.Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        let client = {...this.state.client};
-        client[name] = value;
-        this.setState({client},
+        let warehouse = {...this.state.warehouse};
+        warehouse[name] = value;
+        this.setState({warehouse: warehouse},
             () => {
                 this.validateField(name, value)
             });
@@ -74,27 +75,26 @@ class ClientComponent extends React.Component {
 
     changeAddressFields(value) {
         console.log(value);
-        let client = {...this.state.client};
-        client['address'] = value.address;
-        this.setState({client: client});
+        let warehouse = {...this.state.warehouse};
+        warehouse['address'] = value.address;
+        this.setState({warehouse: warehouse});
     };
 
     async handleSubmit(event) {
         event.preventDefault();
-        const {client} = this.state;
+        const {warehouse} = this.state;
         await fetch('/client/', {
-            method: client.id ? 'PUT' : 'POST',
+            method: warehouse.id ? 'PUT' : 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(client)
+            body: JSON.stringify(warehouse)
         }).then(resp => {
             if (resp.status === 400) {
                 return resp.json();
-            }
-            else {
-                this.props.history.push('/clients');
+            } else {
+                this.props.history.push('/warehouses');
                 return null;
             }
         }).then(data => {
@@ -110,53 +110,37 @@ class ClientComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            const newClient = await (await fetch(`/client/${this.props.match.params.id}`)).json();
-            this.setState({client: newClient, nameValid: true, formValid: true, addressValid: true});
+            const newWarehouse = await (await fetch(`/client/${this.props.match.params.id}`)).json();
+            this.setState({warehouse: newWarehouse, nameValid: true, formValid: true, addressValid: true});
         } else {
-            const client = this.state.client;
-            client['address'] = this.address;
-            this.setState({client});
+            const warehouse = this.state.warehouse;
+            warehouse['address'] = this.address;
+            this.setState({warehouse});
         }
     }
 
     render() {
-        const {client} = this.state;
+        const {warehouse} = this.state;
         return (
             <Container className="col-3">
-                <h1>Клиент</h1>
+                <h1>Получатель</h1>
                 <Form onSubmit={this.handleSubmit}>
                     <FormGroup>
                         <Label for="name">Имя/название</Label>
-                        <Input type="text" name="name" id="name" value={client.name || ''}
+                        <Input type="text" name="name" id="name" value={warehouse.name || ''}
                                onChange={this.handleChange} autoComplete="name"/>
                         <p className={'error-message'}>{(this.state.formErrors.name === '') ? ''
                             : 'Имя/название' + this.state.formErrors.name}</p>
                     </FormGroup>
                     <FormGroup>
-                        <Label for="type">Тип</Label>
-                        <Input type="select" name="type" id="type" value={client.type || ''}
-                               onChange={this.handleChange} autoComplete="type">
-                            <option value="INDIVIDUAL">Физическое лицо</option>
-                            <option value="LEGAL">Юридическое лицо</option>
-                        </Input>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="status">Статус</Label>
-                        <Input type="select" name="status" id="status" value={client.status || ''}
-                               onChange={this.handleChange} autoComplete="status">
-                            <option value="ACTIVE">Активен</option>
-                            <option value="BLOCKED">Заблокирован</option>
-                        </Input>
-                    </FormGroup>
-
-                    <FormGroup>
-                        {client.address ? <AddressFields
+                        {warehouse.address ? <AddressFields
                             name="address"
                             id="addressFields"
                             validationHandler={this.validateForm}
                             changeState={this.changeAddressFields.bind(this)}
-                            address={client.address}/> : null}
+                            address={warehouse.address}/> : null}
                     </FormGroup>
+
                     <FormGroup>
                         <Button color="primary" type="submit"
                                 disabled={!this.state.formValid}>Сохранить</Button>{' '}
@@ -167,4 +151,4 @@ class ClientComponent extends React.Component {
     }
 }
 
-export default ClientComponent;
+export default WarehouseComponent;

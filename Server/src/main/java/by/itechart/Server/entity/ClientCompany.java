@@ -30,6 +30,11 @@ public class ClientCompany implements Transformable {
     @Column(name = "status")
     private Status status;
 
+    @Enumerated
+    @NotNull(message = "CompanyType cannot be null")
+    @Column(name = "company_type")
+    private CompanyType companyType;
+
     /**
      * One clientCompany can have only one address.
      */
@@ -44,10 +49,6 @@ public class ClientCompany implements Transformable {
         LEGAL, INDIVIDUAL
     }
 
-    public enum Status {
-        ACTIVE, BLOCKED
-    }
-
     @Override
     public ClientCompanyDto transform() {
         return ClientCompanyDto.builder()
@@ -55,15 +56,43 @@ public class ClientCompany implements Transformable {
                 .withName(this.name)
                 .withType(this.type)
                 .withStatus(this.status)
+                .withCompanyType(this.companyType)
+                .withAddressDto(this.address.transform())
                 .build();
+    }
+
+    public CompanyType getCompanyType() {
+        return companyType;
+    }
+
+    public void setCompanyType(final CompanyType companyType) {
+        this.companyType = companyType;
+    }
+
+    public void setAddress(final Address address) {
+        this.address = address;
+    }
+
+    public void setUsers(final List<User> users) {
+        this.users = users;
     }
 
     public Address getAddress() {
         return address;
     }
 
-    public void setAddress(Address address) {
-        this.address = address;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClientCompany that = (ClientCompany) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                type == that.type &&
+                companyType == that.companyType &&
+                status == that.status &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(users, that.users);
     }
 
     public Integer getId() {
@@ -102,26 +131,9 @@ public class ClientCompany implements Transformable {
         return users;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClientCompany that = (ClientCompany) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
-                type == that.type &&
-                status == that.status &&
-                Objects.equals(address, that.address) &&
-                Objects.equals(users, that.users);
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, status, address, users);
+        return Objects.hash(id, name, type, companyType, status, address, users);
     }
 
     @Override
@@ -130,9 +142,18 @@ public class ClientCompany implements Transformable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", type=" + type +
+                ", companyType=" + companyType +
                 ", status=" + status +
                 ", address=" + address +
                 ", users=" + users +
                 '}';
+    }
+
+    public enum Status {
+        ACTIVE, BLOCKED
+    }
+
+    public enum CompanyType {
+        CLIENT, WAREHOUSE
     }
 }

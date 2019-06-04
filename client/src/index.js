@@ -8,18 +8,19 @@ import { createStore } from 'redux';
 import {changeLoggedIn} from "./actions/user";
 import { BrowserRouter } from 'react-router-dom';
 import reducers from './redusers/redusers';
+import {parseToken, setToken} from "./utils/tokenParser";
 
-const store = createStore(reducers);
-store.subscribe(()=>{
-    console.log(store.getState());
-    console.log(localStorage.getItem('loggedIn'));
-    // localStorage.setItem('loggedIn',store.getState().loggedIn);
-});
+const loggedIn=parseToken();
+const store = createStore(reducers,loggedIn);
+// store.subscribe(()=>{
+//     // localStorage.setItem('accessItem',store.getState().loggedIn);
+//     localStorage.setItem('loggedIn',store.getState().loggedIn);
+// });
+store.subscribe(setToken);
 
 ReactDOM.render(
     <Provider store={store}>
         <BrowserRouter>
-            {/*<ActuallyMainApp />*/}
             <App/>
         </BrowserRouter>
     </Provider>

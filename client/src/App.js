@@ -15,18 +15,16 @@ import { changeLoggedIn } from './actions/user';
 import ProtectedRoute from "./components/ProtectedRoute";
 import ClientListComponent from "./components/pages/ClientListComponent";
 import WaybillListComponent from "./components/pages/WaybillListComponent";
+import Navigation from "./components/Navigation";
 
 class App extends React.Component {
     constructor(props){
         super(props);
     }
     render() {
-        console.log(this.props.loggedIn);
-        const {role}=this.props.loggedIn.roles[0].authority;
-        console.log(this.props.loggedIn.roles[0].authority);
-        console.log(role);
         return (
             <Router history={createBrowserHistory}>
+                <Navigation/>
                 <Route path="/home" component={Home}/>
                 <Route path="/user/:id" component={UserComponent}/>
                 <Route path="/car/:id" component={CarComponent}/>
@@ -36,7 +34,7 @@ class App extends React.Component {
                 <Route path="/client/:id" component={ClientComponent}/>
                 <Route path="/login" component={LoginForm}/>
                 <Route path="/clients" component={ClientListComponent}/>
-                <Route path="/waybills" component={WaybillListComponent}/
+                <Route path="/waybills" component={WaybillListComponent}/>
                 <ProtectedRoute exact path="/users" allowed='SYSADMIN' component={UserListComponent}/>
             </Router>
         );
@@ -46,7 +44,5 @@ class App extends React.Component {
 export default connect(
     state => ({
         loggedIn: state.loggedIn,
-    }), {
-        changeLoggedIn,
-    }
+    })
 )(App);

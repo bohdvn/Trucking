@@ -54,9 +54,7 @@ public class User implements Transformable {
     @Column(name = "login")
     private String login;
 
-    @Size(min = 2, max = 45, message = "Password **\n" +
-            "     * One user can have only one address.\n" +
-            "     */number must be between 2 and 45 characters")
+    @Size(min = 2, message = "Password number must be between 2 and 45 characters")
     @Column(name = "password")
     private String password;
 
@@ -64,6 +62,9 @@ public class User implements Transformable {
     @Column(name = "user_role")
     private Role role;
 
+    /**
+    * One user can have only one address.
+    */  
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "address")
     private Address address;

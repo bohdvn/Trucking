@@ -3,6 +3,7 @@ import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 
 class UserListComponent extends React.Component {
@@ -32,10 +33,16 @@ class UserListComponent extends React.Component {
     }
 
     fetchURL(page) {
+        console.log(localStorage.getItem(ACCESS_TOKEN));
         axios.get(`/user/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
+            },
+            headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         })
             .then(response => {
@@ -114,7 +121,8 @@ class UserListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
             let updateUsers = [...this.state.users].filter(i => i.id !== id);
@@ -135,7 +143,8 @@ class UserListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
                 let updateUsers = [...this.state.users].filter(user => !user.value);

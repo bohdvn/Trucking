@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Router} from 'react-router'
+import {Router, Route, Redirect} from 'react-router'
 import createBrowserHistory from './helpers/history';
 import UserComponent from "./components/forms/UserComponent";
 import CarComponent from "./components/forms/CarComponent";
@@ -8,13 +8,25 @@ import ProductListComponent from "./components/pages/ProductListComponent";
 import UserListComponent from "./components/pages/UserListComponent";
 import ProductComponent from "./components/forms/ProductComponent";
 import ClientComponent from "./components/forms/ClientComponent";
+import LoginForm from "./components/forms/LoginForm";
+import Home from "./components/home/Home"
+import {connect} from 'react-redux';
+import { changeLoggedIn } from './actions/user';
+import ProtectedRoute from "./components/ProtectedRoute";
 import ClientListComponent from "./components/pages/ClientListComponent";
 import WaybillListComponent from "./components/pages/WaybillListComponent";
 import WarehouseListComponent from "./components/pages/WarehouseListComponent";
 import WarehouseComponent from "./components/forms/WarehouseComponent";
 
 class App extends React.Component {
+    constructor(props){
+        super(props);
+    }
     render() {
+        console.log(this.props.loggedIn);
+        const {role}=this.props.loggedIn.roles[0].authority;
+        console.log(this.props.loggedIn.roles[0].authority);
+        console.log(role);
         return (
             <div>
                 <Router history={createBrowserHistory}>
@@ -35,4 +47,10 @@ class App extends React.Component {
     }
 }
 
-export default App;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    }), {
+        changeLoggedIn,
+    }
+)(App);

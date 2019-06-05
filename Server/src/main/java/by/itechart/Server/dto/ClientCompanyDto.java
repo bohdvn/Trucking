@@ -11,6 +11,10 @@ public class ClientCompanyDto {
 
     private ClientCompany.Type type;
 
+    private ClientCompany.CompanyType companyType;
+
+    private AddressDto address;
+
     private ClientCompanyDto() {
     }
 
@@ -18,34 +22,12 @@ public class ClientCompanyDto {
         return new ClientCompanyDto().new Builder();
     }
 
-    public class Builder {
+    public ClientCompany.CompanyType getCompanyType() {
+        return companyType;
+    }
 
-        private Builder() {
-        }
-
-        public Builder withId(final int id){
-            ClientCompanyDto.this.id = id;
-            return this;
-        }
-
-        public Builder withName(final String name) {
-            ClientCompanyDto.this.name = name;
-            return this;
-        }
-
-        public Builder withStatus(final ClientCompany.Status status){
-            ClientCompanyDto.this.status = status;
-            return this;
-        }
-
-        public Builder withType(final ClientCompany.Type type){
-            ClientCompanyDto.this.type = type;
-            return this;
-        }
-
-        public ClientCompanyDto build() {
-            return ClientCompanyDto.this;
-        }
+    public void setCompanyType(final ClientCompany.CompanyType companyType) {
+        this.companyType = companyType;
     }
 
     public String getName() {
@@ -78,5 +60,53 @@ public class ClientCompanyDto {
 
     public void setType(final ClientCompany.Type type) {
         this.type = type;
+    }
+
+    public AddressDto getAddress() {
+        return address;
+    }
+
+    public void setAddress(final AddressDto address) {
+        this.address = address;
+    }
+
+    public class Builder {
+
+        private Builder() {
+        }
+
+        public Builder withId(final int id) {
+            ClientCompanyDto.this.id = id;
+            return this;
+        }
+
+        public Builder withName(final String name) {
+            ClientCompanyDto.this.name = name;
+            return this;
+        }
+
+        public Builder withStatus(final ClientCompany.Status status) {
+            ClientCompanyDto.this.status = status;
+            return this;
+        }
+
+        public Builder withType(final ClientCompany.Type type) {
+            ClientCompanyDto.this.type = type;
+            return this;
+        }
+
+        public Builder withCompanyType(final ClientCompany.CompanyType companyType) {
+            ClientCompanyDto.this.companyType = companyType;
+            return this;
+        }
+
+        public Builder withAddressDto(final AddressDto addressDto) {
+            ClientCompanyDto.this.address = addressDto;
+            return this;
+        }
+
+        public ClientCompanyDto build() {
+            return ClientCompanyDto.this;
+        }
     }
 }

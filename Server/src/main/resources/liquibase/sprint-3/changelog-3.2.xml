@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="dmitry.gorlach" id="1">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="company_type" tableName="client_company"/>
+            </not>
+        </preConditions>
+        <addColumn
+                catalogName="trucking"
+                schemaName="trucking"
+                tableName="client_company">
+            <column name="company_type" type="int"/>
+        </addColumn>
+        <rollback>
+            <dropColumn tableName="client_company" columnName="company_type"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

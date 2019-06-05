@@ -23,6 +23,11 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
+    public Page<ClientCompany> findByCompanyType(ClientCompany.CompanyType companyType, Pageable pageable) {
+        return clientCompanyRepository.findClientCompaniesByCompanyType(companyType, pageable);
+    }
+
+    @Override
     public Page<ClientCompany> findAll(Pageable pageable) {
         return clientCompanyRepository.findAll(pageable);
     }

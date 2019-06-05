@@ -11,11 +11,12 @@ import ClientComponent from "./components/forms/ClientComponent";
 import LoginForm from "./components/forms/LoginForm";
 import Home from "./components/home/Home"
 import {connect} from 'react-redux';
-import { changeLoggedIn } from './actions/user';
 import ProtectedRoute from "./components/ProtectedRoute";
 import ClientListComponent from "./components/pages/ClientListComponent";
 import WaybillListComponent from "./components/pages/WaybillListComponent";
 import Navigation from "./components/Navigation";
+import WarehouseListComponent from "./components/pages/WarehouseListComponent";
+import WarehouseComponent from "./components/forms/WarehouseComponent";
 
 class App extends React.Component {
     constructor(props){

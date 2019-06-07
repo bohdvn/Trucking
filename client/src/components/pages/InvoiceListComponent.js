@@ -1,21 +1,31 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, Table} from 'reactstrap';
-import {Link} from 'react-router-dom';
+import {Container, Table} from 'reactstrap';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 
 
-class WaybillListComponent extends React.Component {
+class InvoiceListComponent extends React.Component {
 
-    waybillStatusMap = {
-        'STARTED': 'Начата',
-        'FINISHED': 'Завершена'
+    carStatusMap = {
+        'AVAILABLE': 'Доступен',
+        'UNAVAILABLE': 'Недоступен'
+    };
+    carTypeMap = {
+        'TILT': 'Крытый кузов',
+        'TANKER': 'Автоцистерна',
+        'FRIDGE': 'Рефрижератор'
+    };
+    invoiceStatusMap = {
+        'COMPLETED': 'Оформлена',
+        'CHECKED': 'Проверена',
+        'CHECKED_BY_DRIVER': 'Проверена водителем',
+        'DELIVERED': 'Доставлена'
     };
 
     constructor(props) {
         super(props);
         this.state = {
-            waybills: [],
+            invoices: [],
             activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
@@ -27,7 +37,7 @@ class WaybillListComponent extends React.Component {
     }
 
     fetchURL(page) {
-        axios.get(`/waybill/list?page=${page}&size=5`, {
+        axios.get(`/invoice/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
@@ -47,7 +57,7 @@ class WaybillListComponent extends React.Component {
                     console.log(this.state);
 
                     if (results != null) {
-                        this.setState({waybills: results});
+                        this.setState({invoices: results});
                         console.log(results);
                     }
 
@@ -68,40 +78,29 @@ class WaybillListComponent extends React.Component {
     }
 
     populateRowsWithData = () => {
-        const waybills = this.state.waybills.map(waybill => {
-            return <tr key={waybill.id}>
-                <td>{waybill.invoice.number}</td>
-                <td>{waybill.invoice.request.clientCompanyFrom.address.city}
-                    {waybill.invoice.request.clientCompanyFrom.address.street}
-                    {waybill.invoice.request.clientCompanyFrom.address.building}</td>
-                <td>{waybill.invoice.request.clientCompanyTo.address.city}
-                    {waybill.invoice.request.clientCompanyTo.address.street}
-                    {waybill.invoice.request.clientCompanyTo.address.building}</td>
-                <td>{waybill.dateFrom}</td>
-                <td>{this.waybillStatusMap[waybill.status]}</td>
-                <td>
-                    <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link}
-                                to={"/waybill/" + waybill.id}>Редактировать</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(waybill.id)}>Удалить</Button>
-                    </ButtonGroup>
-                </td>
+        return this.state.invoices.map(invoice => {
+            return <tr key={invoice.id}>
+                <td style={{whiteSpace: 'nowrap'}}>{invoice.request.car.name}</td>
+                <td>{this.carTypeMap[invoice.request.car.carType]}</td>
+                <td>{this.carStatusMap[invoice.request.car.status]}</td>
+                <td>{this.invoiceStatusMap[invoice.status]}</td>
+                <td>{invoice.request.driver.name}</td>
+
             </tr>
         });
 
-        return waybills;
     };
 
     async remove(id) {
-        await fetch(`/waybill/${id}`, {
+        await fetch(`/car/${id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
         }).then(() => {
-            let updateWaybills = [...this.state.waybills].filter(i => i.id !== id);
-            this.setState({waybills: updateWaybills});
+            let updateCars = [...this.state.cars].filter(i => i.id !== id);
+            this.setState({cars: updateCars});
         });
     }
 
@@ -110,23 +109,20 @@ class WaybillListComponent extends React.Component {
         return (
             <div>
                 <Container fluid>
-                    <div className="float-right">
-                        <Button color="success" tag={Link} to="/waybill/create">Добавить</Button>
-                    </div>
                     <Table className="mt-4">
                         <thead>
                         <tr>
-                            <th width="20%">Номер ТТН</th>
-                            <th width="20%">Пункт отправления</th>
-                            <th width="20%">Пункт назначения</th>
-                            <th width="20%">Дата отправления</th>
-                            <th>Статус</th>
-                            <th width="10%"></th>
+                            <th width="20%">Машина</th>
+                            <th width="20%">Тип мфшины</th>
+                            <th width="20%">Статус машины</th>
+                            <th>Статус ТТН</th>
+                            <th width="20%">Водитель</th>
                         </tr>
                         </thead>
                         <tbody>
                         {this.populateRowsWithData()}
                         </tbody>
+
                     </Table>
 
                     <div className="d-flex justify-content-center">
@@ -146,4 +142,4 @@ class WaybillListComponent extends React.Component {
     }
 }
 
-export default WaybillListComponent;
+export default InvoiceListComponent;

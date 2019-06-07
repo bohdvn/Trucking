@@ -7,20 +7,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
     private ProductRepository productRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository){
-        this.productRepository=productRepository;
+    public ProductServiceImpl(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
     @Override
-    public void save(Product product) {
-        productRepository.save(product);
+    public Product save(Product product) {
+        return productRepository.save(product);
     }
 
     @Override
@@ -29,10 +29,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Optional<Product> findById(int id) { return  productRepository.findById(id);}
+    public Optional<Product> findById(int id) {
+        return productRepository.findById(id);
+    }
 
     @Override
     public void deleteById(int id) {
         productRepository.deleteById(id);
     }
+
 }

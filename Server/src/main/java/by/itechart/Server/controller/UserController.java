@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,9 @@ public class UserController {
 
     private UserService userService;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     private ConfirmationTokenService confirmationTokenService;
+
     private EmailSenderService emailSenderService;
 
     public UserController(UserService userService, ConfirmationTokenService confirmationTokenService, EmailSenderService emailSenderService) {
@@ -80,6 +83,18 @@ public class UserController {
         return users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
+
+    @GetMapping("/drivers")
+    public ResponseEntity<?> getDrivers() {
+        LOGGER.info("REST request. Path:/user method: GET.");
+        final List<User> all = userService.findAll();
+        final List<UserDto> users = all.stream().filter(user -> user.getRole().equals(User.Role.DRIVER))
+                .map(User::transform).collect(Collectors.toList());
+        return
+              //  users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
 
     @PreAuthorize("hasAuthority('SYSADMIN')")
     @Transactional

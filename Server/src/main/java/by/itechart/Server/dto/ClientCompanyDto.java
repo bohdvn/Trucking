@@ -2,6 +2,8 @@ package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.ClientCompany;
 
+import java.util.List;
+
 public class ClientCompanyDto {
     private int id;
 
@@ -10,6 +12,10 @@ public class ClientCompanyDto {
     private ClientCompany.Status status;
 
     private ClientCompany.Type type;
+
+    private AddressDto address;
+
+    private List<UserDto> users;
 
     private ClientCompanyDto() {
     }
@@ -33,6 +39,16 @@ public class ClientCompanyDto {
             return this;
         }
 
+        public Builder withAddress(final AddressDto address) {
+            ClientCompanyDto.this.address = address;
+            return this;
+        }
+
+        public Builder withUsers(final List<UserDto> users) {
+            ClientCompanyDto.this.users = users;
+            return this;
+        }
+
         public Builder withStatus(final ClientCompany.Status status){
             ClientCompanyDto.this.status = status;
             return this;
@@ -42,6 +58,7 @@ public class ClientCompanyDto {
             ClientCompanyDto.this.type = type;
             return this;
         }
+
 
         public ClientCompanyDto build() {
             return ClientCompanyDto.this;

@@ -2,10 +2,18 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.InvoiceDto;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -21,20 +29,20 @@ public class Invoice implements Transformable {
     private Status status;
 
     @NotNull(message = "Number cannot be null")
-    @Size(min = 2, max = 45, message = "Number must be between 2 and 45 characters")
+    //@Size(min = 2, max = 45, message = "Number must be between 2 and 45 characters")
     @Column(name = "number")
     private String number;
 
-    @Past(message = "Wrong date of issue")
+    //@Past(message = "Wrong date of issue")
     @Column(name = "date_of_issue")
     private LocalDate dateOfIssue;
 
-    @Past(message = "Wrong date of check")
+    //@Past(message = "Wrong date of check")
     @Column(name = "date_of_check")
     private LocalDate dateOfCheck;
 
     /**
-     *One invoice can be issued by one dispatcherFrom.
+     * One invoice can be issued by one dispatcherFrom.
      * The same dispatcherFrom can be in different invoices in various dates.
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,7 +50,7 @@ public class Invoice implements Transformable {
     private User dispatcherFrom;
 
     /**
-     *One invoice can be issued by one dispatcherTo.
+     * One invoice can be issued by one dispatcherTo.
      * The same dispatcherTo can be in different invoices in various dates.
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,17 +67,9 @@ public class Invoice implements Transformable {
     /**
      * One invoice can have only one request.
      */
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "request_id")
     private Request request;
-
-
-    public enum Status {
-        COMPLETED,
-        CHECKED,
-        CHECKED_BY_DRIVER,
-        DELIVERED
-    }
 
     @Override
     public InvoiceDto transform() {
@@ -79,9 +79,10 @@ public class Invoice implements Transformable {
                 .withDateOfIssue(this.dateOfIssue)
                 .withNumber(this.number)
                 .withStatus(this.status)
-                .withDispathcerFromFullName(this.dispatcherFrom.getName() + " " + this.dispatcherFrom.getPatronymic() + " " + this.dispatcherFrom.getSurname())
-                .withDispatcherToFullName(this.dispatcherTo.getName() + " " + this.dispatcherTo.getPatronymic() + " " + this.dispatcherTo.getSurname())
-                .withManagerFullName(this.manager.getName() + " " + this.manager.getPatronymic() + " " + this.manager.getSurname())
+                .withDispatcherFrom((this.dispatcherFrom == null) ? null : this.dispatcherFrom.transform())
+                .withDispatcherTo((this.dispatcherTo == null) ? null : this.dispatcherTo.transform())
+                .withManager((this.manager == null) ? null : this.manager.transform())
+                .withRequest(this.request.transform())
                 .build();
     }
 
@@ -169,13 +170,13 @@ public class Invoice implements Transformable {
                 Objects.equals(dateOfCheck, invoice.dateOfCheck) &&
                 Objects.equals(dispatcherFrom, invoice.dispatcherFrom) &&
                 Objects.equals(dispatcherTo, invoice.dispatcherTo) &&
-                Objects.equals(manager, invoice.manager) &&
-                Objects.equals(request, invoice.request);
+                Objects.equals(manager, invoice.manager);
+        //  Objects.equals(request, invoice.request);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, number, dateOfIssue, dateOfCheck, dispatcherFrom, dispatcherTo, manager, request);
+        return Objects.hash(id, status, number, dateOfIssue, dateOfCheck, dispatcherFrom, dispatcherTo, manager);
     }
 
     @Override
@@ -189,7 +190,14 @@ public class Invoice implements Transformable {
                 ", dispatcherFrom=" + dispatcherFrom +
                 ", dispatcherTo=" + dispatcherTo +
                 ", manager=" + manager +
-                ", request=" + request +
+                // ", request=" + request +
                 '}';
+    }
+
+    public enum Status {
+        COMPLETED,
+        CHECKED,
+        CHECKED_BY_DRIVER,
+        DELIVERED
     }
 }

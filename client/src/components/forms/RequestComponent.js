@@ -70,15 +70,7 @@ class RequestComponent extends React.Component {
         this.setState({show: false});
     }
 
-    saveProduct = () => {
-        this.setState({show: false});
-        let product = this.state.product;
-        let products = this.state.request.products;
-        products.push(product);
-        let request = {...this.state.request};
-        request['products'] = products;
-        this.setState({request: request, product: this.emptyProduct});
-    }
+
 
     handleShow() {
         this.setState({show: true});
@@ -99,6 +91,16 @@ class RequestComponent extends React.Component {
         this.props.history.push('/requests');
     }
 
+    saveProduct = () => {
+        this.setState({show: false});
+        let product = this.state.product;
+        let products = this.state.request.products;
+        products.push(product);
+        let request = {...this.state.request};
+        request['products'] = products;
+        this.setState({request: request, product: this.emptyProduct});
+    }
+    
     async getCar(id) {
         const newCar = await (await fetch(`/car/${id}`)).json();
         let request = {...this.state.request};
@@ -138,7 +140,7 @@ class RequestComponent extends React.Component {
     };
 
     fillCarSelector() {
-        if(this.state.cars.length === 0){
+        if (this.state.cars.length === 0) {
             return <option>Нет доступных машин</option>
         }
         return this.state.cars.map(car => {
@@ -147,12 +149,12 @@ class RequestComponent extends React.Component {
     };
 
     fillDriverSelector() {
-        if(this.state.drivers.length == 0){
+        if (this.state.drivers.length == 0) {
             return <option>Нет доступных водителей</option>
         }
-            return this.state.drivers.map(driver => {
-                return <option value={driver.id}>{driver.name} {driver.surname}</option>
-            });
+        return this.state.drivers.map(driver => {
+            return <option value={driver.id}>{driver.name} {driver.surname}</option>
+        });
     }
 
     async componentDidMount() {
@@ -171,8 +173,8 @@ class RequestComponent extends React.Component {
 
         console.log(cars);
         this.setState({cars: cars, drivers: drivers});
-        if(cars.length === 0 || drivers.length === 0){
-            this.setState({formValid:false});
+        if (cars.length === 0 || drivers.length === 0) {
+            this.setState({formValid: false});
         }
     }
 

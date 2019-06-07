@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,13 @@ public class CarController {
             carService.deleteById(Integer.valueOf(id));
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    @GetMapping("/all")
+    public ResponseEntity<?> getAll() {
+        final List<CarDto> carDtos = carService.findAll().stream().map(Car::transform).collect(Collectors.toList());
+        return
+                //carDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(carDtos, HttpStatus.OK);
     }
 
     @GetMapping("/list")

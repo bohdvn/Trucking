@@ -1,5 +1,5 @@
 import React from 'react';
-import {Router, Route, Redirect} from 'react-router'
+import {Route, Router} from 'react-router'
 import createBrowserHistory from './helpers/history';
 import UserComponent from "./components/forms/UserComponent";
 import CarComponent from "./components/forms/CarComponent";
@@ -17,11 +17,16 @@ import WaybillListComponent from "./components/pages/WaybillListComponent";
 import Navigation from "./components/Navigation";
 import WarehouseListComponent from "./components/pages/WarehouseListComponent";
 import WarehouseComponent from "./components/forms/WarehouseComponent";
+import RequestComponent from "./components/forms/RequestComponent";
+import RequestListComponent from "./components/pages/RequestListComponent";
+import InvoiceListComponent from "./components/pages/InvoiceListComponent";
+import WaybillComponent from "./components/forms/WaybillComponent";
 
 class App extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
     }
+
     render() {
         return (
             <Router history={createBrowserHistory}>
@@ -37,6 +42,12 @@ class App extends React.Component {
                 <Route path="/clients" component={ClientListComponent}/>
                 <Route path="/waybills" component={WaybillListComponent}/>
                 <ProtectedRoute exact path="/users" allowed='SYSADMIN' component={UserListComponent}/>
+                <Route path="/request/:id" component={RequestComponent}/>
+                <Route path="/requests" component={RequestListComponent}/>
+                <Route path="/invoices" component={InvoiceListComponent}/>
+                <Route path="/waybill/:id" component={WaybillComponent}/>
+                <Route path="/waybills" component={WaybillListComponent}/>
+
             </Router>
         );
     }

@@ -2,6 +2,8 @@ package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.ClientCompany;
 
+import java.util.List;
+
 public class ClientCompanyDto {
     private int id;
 
@@ -14,6 +16,8 @@ public class ClientCompanyDto {
     private ClientCompany.CompanyType companyType;
 
     private AddressDto address;
+
+    private List<UserDto> users;
 
     private ClientCompanyDto() {
     }
@@ -28,6 +32,51 @@ public class ClientCompanyDto {
 
     public void setCompanyType(final ClientCompany.CompanyType companyType) {
         this.companyType = companyType;
+    }
+
+    public class Builder {
+
+        private Builder() {
+        }
+
+        public Builder withId(final int id){
+            ClientCompanyDto.this.id = id;
+            return this;
+        }
+
+        public Builder withName(final String name) {
+            ClientCompanyDto.this.name = name;
+            return this;
+        }
+
+        public Builder withAddress(final AddressDto address) {
+            ClientCompanyDto.this.address = address;
+            return this;
+        }
+
+        public Builder withUsers(final List<UserDto> users) {
+            ClientCompanyDto.this.users = users;
+            return this;
+        }
+
+        public Builder withStatus(final ClientCompany.Status status){
+            ClientCompanyDto.this.status = status;
+            return this;
+        }
+
+        public Builder withType(final ClientCompany.Type type){
+            ClientCompanyDto.this.type = type;
+            return this;
+        }
+
+        public Builder withCompanyType(final ClientCompany.CompanyType companyType){
+            ClientCompanyDto.this.companyType = companyType;
+            return this;
+        }
+
+        public ClientCompanyDto build() {
+            return ClientCompanyDto.this;
+        }
     }
 
     public String getName() {
@@ -68,45 +117,5 @@ public class ClientCompanyDto {
 
     public void setAddress(final AddressDto address) {
         this.address = address;
-    }
-
-    public class Builder {
-
-        private Builder() {
-        }
-
-        public Builder withId(final int id) {
-            ClientCompanyDto.this.id = id;
-            return this;
-        }
-
-        public Builder withName(final String name) {
-            ClientCompanyDto.this.name = name;
-            return this;
-        }
-
-        public Builder withStatus(final ClientCompany.Status status) {
-            ClientCompanyDto.this.status = status;
-            return this;
-        }
-
-        public Builder withType(final ClientCompany.Type type) {
-            ClientCompanyDto.this.type = type;
-            return this;
-        }
-
-        public Builder withCompanyType(final ClientCompany.CompanyType companyType) {
-            ClientCompanyDto.this.companyType = companyType;
-            return this;
-        }
-
-        public Builder withAddressDto(final AddressDto addressDto) {
-            ClientCompanyDto.this.address = addressDto;
-            return this;
-        }
-
-        public ClientCompanyDto build() {
-            return ClientCompanyDto.this;
-        }
     }
 }

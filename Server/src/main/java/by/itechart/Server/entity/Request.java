@@ -1,10 +1,24 @@
 package by.itechart.Server.entity;
 
-import javax.persistence.*;
+import by.itechart.Server.dto.ProductDto;
+import by.itechart.Server.dto.RequestDto;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Gorlach Dmitry
@@ -12,7 +26,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "request")
-public class Request {
+public class Request implements Transformable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -26,15 +40,15 @@ public class Request {
     private Car car;
 
     /**
-     *  One request can have one driver.
-     *  The same driver can be in different requests in various dates.
+     * One request can have one driver.
+     * The same driver can be in different requests in various dates.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id")
     private User driver;
 
     /**
-     *One request can have only one clientCompanyFrom.
+     * One request can have only one clientCompanyFrom.
      * The same clientCompanyFrom can be in different requests in various dates.
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,26 +56,46 @@ public class Request {
     private ClientCompany clientCompanyFrom;
 
     /**
-     *One request can have only one clientCompanyTo.
+     * One request can have only one clientCompanyTo.
      * The same clientCompanyTo can be in different requests in various dates.
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_company_to")
     private ClientCompany clientCompanyTo;
 
-    @OneToMany(fetch = FetchType.LAZY,
-            mappedBy = "request",
-            cascade =  CascadeType.ALL)
+    @OneToMany(mappedBy = "request",
+            cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<>();
 
     @NotNull(message = "Status cannot be null")
     @Column(name = "status")
-    private Request.Status status;
+    private Status status;
 
-    public enum Status {
-        NOT_VIEWED,
-        REJECTED,
-        ISSUED
+    @Override
+    public RequestDto transform() {
+        final List<Product> products2 = this.products;
+        final List<ProductDto> productDtos = new ArrayList<>();
+        for (Product product:
+                products2) {
+            productDtos.add(product.transform());
+        }
+        return RequestDto.builder()
+                .withId(this.id)
+                .withCar(this.car.transform())
+                .withClientCompanyFrom(this.clientCompanyFrom.transform())
+                .withClientCompanyTo(this.clientCompanyTo.transform())
+                .withDriver(this.driver.transform())
+                .withStatus(this.status)
+                .withProducts(productDtos)
+                .build();
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(final Status status) {
+        this.status = status;
     }
 
     public Integer getId() {
@@ -138,5 +172,11 @@ public class Request {
                 ", clientCompanyFrom=" + clientCompanyFrom +
                 ", clientCompanyTo=" + clientCompanyTo +
                 '}';
+    }
+
+    public enum Status {
+        NOT_VIEWED,
+        REJECTED,
+        ISSUED
     }
 }

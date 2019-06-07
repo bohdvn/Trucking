@@ -40,8 +40,8 @@ public class ProductController {
     @PutMapping("/")
     public ResponseEntity<?> create(@Valid @RequestBody Product product) {
         LOGGER.info("REST request. Path:/product method: POST. product: {}", product);
-        productService.save(product);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        final Product save = productService.save(product);
+        return new ResponseEntity<>(save.transform(), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -53,8 +53,16 @@ public class ProductController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> remove(@PathVariable("id") int id) {
+        LOGGER.info("REST request. Path:/product/{} method: DELETE.", id);
+        productService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @DeleteMapping("/{selectedProducts}")
-    public ResponseEntity<?> remove(@PathVariable("selectedProducts") String selectedProducts ) {
+    public ResponseEntity<?> remove(@PathVariable("selectedProducts") String selectedProducts) {
         LOGGER.info("REST request. Path:/product/{} method: DELETE.", selectedProducts);
         final String delimeter = ",";
         final String[] productsId = selectedProducts.split(delimeter);

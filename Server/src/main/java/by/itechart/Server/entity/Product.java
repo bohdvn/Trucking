@@ -1,6 +1,8 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ProductDto;
+import by.itechart.Server.dto.RequestDto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -38,8 +40,8 @@ public class Product implements Transformable {
     /**
      * Several products may be in the same request.
      */
-    @ManyToOne(fetch = FetchType.LAZY,
-    cascade = CascadeType.ALL)
+    @JsonBackReference
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "request_id")
     private Request request;
 
@@ -63,6 +65,8 @@ public class Product implements Transformable {
                 .withPrice(this.price)
                 .withStatus(this.status)
                 .withType(this.type)
+//                .withLostAmount(this.lostAmount )
+  //              .withRequest(this.request != null? this.request.transform() : RequestDto.builder().build())
                 .build();
     }
 

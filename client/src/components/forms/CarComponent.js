@@ -42,7 +42,7 @@ class CarComponent extends React.Component {
         let consumptionValid = this.state.consumptionValid;
         switch (fieldName) {
             case 'name':
-                nameValid = value.length >= 2 && value.length <= 150;
+                nameValid = value.length >= 1 && value.length <= 150;
                 fieldValidationErrors.name = nameValid ? '' : ' введено неверно';
                 break;
             case 'consumption':

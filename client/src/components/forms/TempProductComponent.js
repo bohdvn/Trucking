@@ -1,20 +1,13 @@
 import React from 'react';
-import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
+import {Container, Form, FormGroup, Input, Label} from 'reactstrap';
 
 
-class ProductComponent extends React.Component {
-    emptyProduct = {
-        name: '',
-        type: '',
-        amount: '1',
-        price: '1',
-        status: 'REGISTERED'
-    };
+class TempProductComponent extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            product: this.emptyProduct,
+            product: props.product,
             formErrors: {name: '', type: '', price: '', amount: ''},
             nameValid: false,
             typeValid: false,
@@ -23,18 +16,6 @@ class ProductComponent extends React.Component {
             formValid: false
         };
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    async componentDidMount() {
-        console.log(this.props.match.params.id);
-        if (this.props.match.params.id !== 'create') {
-            const newProduct = await (await fetch(`/product/${this.props.match.params.id}`)).json();
-            this.setState({
-                product: newProduct, nameValid: true, typeValid: true, priceValid: true,
-                amountValid: true, formValid: true
-            });
-        }
     }
 
     handleChange(event) {
@@ -47,43 +28,9 @@ class ProductComponent extends React.Component {
             () => {
                 this.validateField(name, value)
             });
-    }
-
-    changeAddressFields(value) {
-        console.log(value);
-        let user = {...this.state.user};
-        user['address'] = value.address;
-        this.setState({user: user});
-    };
-
-    async handleSubmit(event) {
-        event.preventDefault();
-        const {product} = this.state;
-        await fetch('/product/', {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(product)
-        }).then(resp => {
-            if (resp.status === 400) {
-                return resp.json();
-            }
-            else {
-                this.props.history.push('/request/' + this.state.product.request_id);
-                return null;
-            }
-        }).then(data => {
-            if (data) {
-                let s = '';
-                for (const k in data) {
-                    s += data[k] + '\n';
-                }
-                alert(s);
-            }
-        });
-
+        this.props.changeFieldHandler(product);
+        // const state = this.state;
+        // this.props.changeState(state);
     }
 
     validateField(fieldName, value) {
@@ -122,10 +69,12 @@ class ProductComponent extends React.Component {
     }
 
     validateForm() {
+        let valid = this.state.nameValid && this.state.typeValid &&
+            this.state.amountValid && this.state.priceValid;
         this.setState({
-            formValid: this.state.nameValid && this.state.typeValid &&
-            this.state.amountValid && this.state.priceValid
+            formValid: valid
         });
+        this.props.validationHandlerProduct(valid);
     }
 
     render() {
@@ -133,7 +82,7 @@ class ProductComponent extends React.Component {
         return (
             <Container className="col-3">
                 <h1>Продукт</h1>
-                <Form onSubmit={this.handleSubmit}>
+                <Form>
                     <FormGroup>
                         <Label for="name">Название</Label>
                         <Input type="text" name="name" id="name" value={product.name || ''}
@@ -177,14 +126,10 @@ class ProductComponent extends React.Component {
                             <option value="LOST">Утерян</option>
                         </Input>
                     </FormGroup>
-                    <FormGroup>
-                        <Button color="primary" type="submit"
-                                disabled={!this.state.formValid}>Сохранить</Button>{' '}
-                    </FormGroup>
                 </Form>
             </Container>
         );
     }
 }
 
-export default ProductComponent;
+export default TempProductComponent;

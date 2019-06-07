@@ -33,6 +33,7 @@ public class ClientCompanyController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientCompanyController.class);
 
+    @PreAuthorize("hasAuthority('ADMIN' or hasAuthority('SYSADMIN'))")
     @PutMapping("/")
     public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ClientCompany clientCompany){
         LOGGER.info("REST request. Path:/client method: PUT. client: {}", clientCompany);
@@ -40,7 +41,7 @@ public class ClientCompanyController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @PostMapping("/")
     public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody ClientCompany clientCompany){
         LOGGER.info("REST request. Path:/client method: POST. client: {}", clientCompany);
@@ -48,7 +49,7 @@ public class ClientCompanyController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN' or hasAuthority('SYSADMIN'))")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id){
         LOGGER.info("REST request. Path:/client/{} method: GET.", id);
@@ -58,20 +59,7 @@ public class ClientCompanyController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-//<<<<<<< HEAD
-//    @PreAuthorize("hasAuthority('ADMIN')")
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal,@PathVariable("id") int id){
-//        LOGGER.info("REST request. Path:/client/{} method: DELETE.", id);
-//        clientCompanyService.deleteById(id);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
-//
-//    @PreAuthorize("hasAuthority('ADMIN')")
-//    @GetMapping("/all")
-//    public ResponseEntity<List<ClientCompanyDto>> getAll(@CurrentUser UserPrincipal userPrincipal) {
-//=======
-        @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
         @DeleteMapping("/{selectedClients}")
     public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal,@PathVariable("selectedClients") String selectedClients ) {
         LOGGER.info("REST request. Path:/client/{} method: DELETE.", selectedClients);
@@ -83,12 +71,11 @@ public class ClientCompanyController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-        @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
         @GetMapping("/list")
-    public ResponseEntity<Page<ClientCompanyDto>> getAll(@CurrentUser UserPrincipal userPrincipal,Pageable pageable) {
-//>>>>>>> master
+    public ResponseEntity<Page<ClientCompanyDto>> getAll(@CurrentUser UserPrincipal userPrincipal, ClientCompany.CompanyType companyType, Pageable pageable) {
         LOGGER.info("REST request. Path:/client method: GET.");
-        Page<ClientCompany> clientCompanies = clientCompanyService.findAll(pageable);
+        Page<ClientCompany> clientCompanies = clientCompanyService.findByCompanyType(companyType, pageable);
         Page<ClientCompanyDto> clientCompaniesDto = new PageImpl<>(clientCompanies.stream().map(ClientCompany::transform)
                 .sorted(Comparator.comparing(ClientCompanyDto :: getName))
                 .collect(Collectors.toList()), pageable, clientCompanies.getTotalElements());

@@ -3,6 +3,7 @@ import React from 'react';
 import "../../styles.css";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import AddressFields from "./AddressFields";
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 class WarehouseComponent extends React.Component {
     emptyWarehouse = {
@@ -87,7 +88,8 @@ class WarehouseComponent extends React.Component {
             method: warehouse.id ? 'PUT' : 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             },
             body: JSON.stringify(warehouse)
         }).then(resp => {

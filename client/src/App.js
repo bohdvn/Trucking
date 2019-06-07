@@ -1,5 +1,5 @@
 import React from 'react';
-import {Router, Route, Redirect} from 'react-router'
+import {Route, Router} from 'react-router'
 import createBrowserHistory from './helpers/history';
 import UserComponent from "./components/forms/UserComponent";
 import CarComponent from "./components/forms/CarComponent";
@@ -11,12 +11,12 @@ import ClientComponent from "./components/forms/ClientComponent";
 import LoginForm from "./components/forms/LoginForm";
 import Home from "./components/home/Home"
 import {connect} from 'react-redux';
-import { changeLoggedIn } from './actions/user';
-import ProtectedRoute from "./components/ProtectedRoute";
+import {changeLoggedIn} from './actions/user';
 import ClientListComponent from "./components/pages/ClientListComponent";
 import WaybillListComponent from "./components/pages/WaybillListComponent";
 import WarehouseListComponent from "./components/pages/WarehouseListComponent";
 import WarehouseComponent from "./components/forms/WarehouseComponent";
+import Navigation from "./components/Navigation";
 
 class App extends React.Component {
     constructor(props){
@@ -41,6 +41,9 @@ class App extends React.Component {
                     <Route path="/clients" component={ClientListComponent}/>
                     <Route path="/warehouses" component={WarehouseListComponent}/>
                     <Route path="/waybills" component={WaybillListComponent}/>
+                    <Route path="/home" component={Home}/>
+                    <Route path="/login" component={LoginForm}/>
+                    <Route path="/nav" component={Navigation}/>
                 </Router>
             </div>
         );

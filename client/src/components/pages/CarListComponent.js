@@ -3,6 +3,7 @@ import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 
 class CarListComponent extends React.Component {
@@ -38,6 +39,11 @@ class CarListComponent extends React.Component {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
+            },
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         })
             .then(response => {
@@ -119,7 +125,8 @@ class CarListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
             let updateCars = [...this.state.cars].filter(i => i.id !== id);
@@ -140,7 +147,8 @@ class CarListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
             let updateCars = [...this.state.cars].filter(car => !car.value);

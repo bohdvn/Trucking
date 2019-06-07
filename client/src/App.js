@@ -8,6 +8,13 @@ import ProductListComponent from "./components/pages/ProductListComponent";
 import UserListComponent from "./components/pages/UserListComponent";
 import ProductComponent from "./components/forms/ProductComponent";
 import ClientComponent from "./components/forms/ClientComponent";
+import RequestComponent from "./components/forms/RequestComponent";
+import Example from "./components/forms/Example";
+import RequestListComponent from "./components/pages/RequestListComponent";
+import InvoiceComponent from "./components/forms/InvoiceComponent";
+import InvoiceListComponent from "./components/pages/InvoiceListComponent";
+import WaybillListComponent from "./components/pages/WaybillListComponent";
+import WaybillComponent from "./components/forms/WaybillComponent";
 
 class App extends React.Component {
     render() {
@@ -21,6 +28,12 @@ class App extends React.Component {
                     <Route path="/users" component={UserListComponent}/>
                     <Route path="/products" component={ProductListComponent}/>
                     <Route path="/client/:id" component={ClientComponent}/>
+                    <Route path="/request/:id" component={RequestComponent}/>
+                    <Route path="/example" component={Example}/>
+                    <Route path="/requests" component={RequestListComponent}/>
+                    <Route path="/invoices" component={InvoiceListComponent}/>
+                    <Route path="/waybill/:id" component={WaybillComponent}/>
+                    <Route path="/waybills" component={WaybillListComponent}/>
                 </Router>
             </div>
         );

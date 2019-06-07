@@ -2,10 +2,15 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.CarDto;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -35,20 +40,10 @@ public class Car implements Transformable {
     private Status status;
 
     /**
-     * One car can be in different invoices in various dates.
+     * One car can be in different requests in various dates.
      */
-    @OneToMany( mappedBy = "dispatcherFrom", cascade = CascadeType.ALL)
-    private List<Invoice> invoices;
-
-    public enum Status {
-        AVAILABLE,
-        UNAVAILABLE
-    }
-
-    public enum CarType {
-        TILT, FRIDGE, TANKER
-    }
-
+//    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
+//    private List<Request> requests;
     @Override
     public CarDto transform() {
         return CarDto.builder()
@@ -57,6 +52,7 @@ public class Car implements Transformable {
                 .withConsumption(this.consumption)
                 .withName(this.name)
                 .withStatus(this.status)
+                //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
     }
 
@@ -100,13 +96,13 @@ public class Car implements Transformable {
         this.status = status;
     }
 
-    public List<Invoice> getInvoices() {
-        return invoices;
-    }
-
-    public void setInvoices(List<Invoice> invoices) {
-        this.invoices = invoices;
-    }
+//    public List<Request> getRequests() {
+//        return requests;
+//    }
+//
+//    public void setRequests(final List<Request> requests) {
+//        this.requests = requests;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -117,13 +113,13 @@ public class Car implements Transformable {
                 carType == car.carType &&
                 Objects.equals(name, car.name) &&
                 Objects.equals(consumption, car.consumption) &&
-                status == car.status &&
-                Objects.equals(invoices, car.invoices);
+                status == car.status;
+        //  Objects.equals(requests, car.requests);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, carType, name, consumption, status, invoices);
+        return Objects.hash(id, carType, name, consumption, status);
     }
 
     @Override
@@ -134,7 +130,16 @@ public class Car implements Transformable {
                 ", name='" + name + '\'' +
                 ", consumption=" + consumption +
                 ", status=" + status +
-                ", invoices=" + invoices +
+                //   ", requests=" + requests +
                 '}';
+    }
+
+    public enum Status {
+        AVAILABLE,
+        UNAVAILABLE
+    }
+
+    public enum CarType {
+        TILT, FRIDGE, TANKER
     }
 }

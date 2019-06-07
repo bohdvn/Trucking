@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface CarService {
     void save(Car car);
 
+    List<Car> findAll();
+
     Page<Car> findAll(Pageable pageable);
 
     Optional<Car> findById(int id);

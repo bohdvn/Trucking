@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "waybill")
@@ -20,32 +21,6 @@ public class WayBill implements Transformable {
     @Enumerated
     @Column(name = "status")
     private Status status;
-
-    @Column(name = "name")
-    private String name;
-
-    /**
-     * Several wayBills can be issued for one clientCompany.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_company_id")
-    private ClientCompany clientCompany;
-
-    /**
-     * One wayBill can have only one addressFrom.
-     */
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "address_from_id")
-    private Address addressFrom;
-
-    /**
-     * One wayBill can have only one addressTo.
-     */
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    @JoinColumn(name = "address_to_id")
-    private Address addressTo;
 
     /**
      * One waybill can only belong to one invoice.
@@ -82,9 +57,12 @@ public class WayBill implements Transformable {
     @Override
     public WayBillDto transform() {
         return WayBillDto.builder()
+                .withId(this.id)
+                .withCheckpoints(this.checkpoints.stream().map(Checkpoint::transform).collect(Collectors.toList()))
                 .withDateFrom(this.dateFrom)
                 .withDateTo(this.dateTo)
                 .withStatus(this.status)
+                .withInvoice(this.invoice.transform())
                 .build();
     }
 
@@ -102,30 +80,6 @@ public class WayBill implements Transformable {
 
     public void setStatus(final Status status) {
         this.status = status;
-    }
-
-    public ClientCompany getClientCompany() {
-        return clientCompany;
-    }
-
-    public void setClientCompany(final ClientCompany clientCompany) {
-        this.clientCompany = clientCompany;
-    }
-
-    public Address getAddressFrom() {
-        return addressFrom;
-    }
-
-    public void setAddressFrom(final Address addressFrom) {
-        this.addressFrom = addressFrom;
-    }
-
-    public Address getAddressTo() {
-        return addressTo;
-    }
-
-    public void setAddressTo(final Address addressTo) {
-        this.addressTo = addressTo;
     }
 
     public Invoice getInvoice() {
@@ -160,6 +114,7 @@ public class WayBill implements Transformable {
         this.checkpoints = checkpoints;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -167,10 +122,6 @@ public class WayBill implements Transformable {
         WayBill wayBill = (WayBill) o;
         return Objects.equals(id, wayBill.id) &&
                 Objects.equals(status, wayBill.status) &&
-                Objects.equals(name, wayBill.name) &&
-                Objects.equals(clientCompany, wayBill.clientCompany) &&
-                Objects.equals(addressFrom, wayBill.addressFrom) &&
-                Objects.equals(addressTo, wayBill.addressTo) &&
                 Objects.equals(invoice, wayBill.invoice) &&
                 Objects.equals(dateFrom, wayBill.dateFrom) &&
                 Objects.equals(dateTo, wayBill.dateTo) &&
@@ -179,7 +130,7 @@ public class WayBill implements Transformable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, status, name, clientCompany, addressFrom, addressTo, invoice, dateFrom, dateTo, checkpoints);
+        return Objects.hash(id, status, invoice, dateFrom, dateTo, checkpoints);
     }
 
     @Override
@@ -187,10 +138,6 @@ public class WayBill implements Transformable {
         return "WayBill{" +
                 "id=" + id +
                 ", status=" + status +
-                ", name='" + name + '\'' +
-                ", clientCompany=" + clientCompany +
-                ", addressFrom=" + addressFrom +
-                ", addressTo=" + addressTo +
                 ", invoice=" + invoice +
                 ", dateFrom=" + dateFrom +
                 ", dateTo=" + dateTo +

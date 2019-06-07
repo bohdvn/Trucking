@@ -28,29 +28,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     private ConfirmationTokenService confirmationTokenService;
+
     private EmailSenderService emailSenderService;
+
     private UserService userService;
-
-    public UserController() {
-
-    }
 
     public UserController(UserService userService, ConfirmationTokenService confirmationTokenService, EmailSenderService emailSenderService) {
         this.userService = userService;
         this.confirmationTokenService = confirmationTokenService;
         this.emailSenderService = emailSenderService;
-    }
-
-    public UserController(UserService userService) {
-        this.userService = userService;
     }
 
     @GetMapping("/{id}")
@@ -73,6 +70,19 @@ public class UserController {
         return users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
+
+    @GetMapping("/drivers")
+    public ResponseEntity<?> getDrivers() {
+        LOGGER.info("REST request. Path:/user method: GET.");
+        final List<User> all = userService.findAll();
+        final List<UserDto> users = all.stream().filter(user -> user.getRole().equals(User.Role.DRIVER))
+                .map(User::transform).collect(Collectors.toList());
+        return
+              //  users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+
 
     @Transactional
     @PostMapping("")

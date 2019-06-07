@@ -2,7 +2,9 @@ package by.itechart.Server.controller;
 
 import by.itechart.Server.dto.ProductDto;
 import by.itechart.Server.entity.Product;
+import by.itechart.Server.entity.Request;
 import by.itechart.Server.service.ProductService;
+import by.itechart.Server.service.RequestService;
 import by.itechart.Server.utils.ValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +42,8 @@ public class ProductController {
     @PutMapping("/")
     public ResponseEntity<?> create(@Valid @RequestBody Product product) {
         LOGGER.info("REST request. Path:/product method: POST. product: {}", product);
-        productService.save(product);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        final Product save = productService.save(product);
+        return new ResponseEntity<>(save.transform(), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
@@ -52,6 +54,7 @@ public class ProductController {
                 ResponseEntity.ok().body(product.get().transform()) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> remove(@PathVariable("id") int id) {

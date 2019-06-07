@@ -39,14 +39,34 @@ public class Checkpoint implements Transformable {
     @JoinColumn(name = "waybill_id")
     private WayBill wayBill;
 
+    @NotNull(message = "Status cannot be null")
+    @Column(name = "status")
+    private Checkpoint.Status status;
+
+    public enum Status {
+        PASSED,
+        NOT_PASSED
+    }
+
     @Override
     public CheckpointDto transform() {
         return CheckpointDto.builder()
+                .withId(this.id)
                 .withDate(this.date)
                 .withLatitude(this.latitude)
                 .withLongitude(this.longitude)
                 .withName(this.name)
+                .withStatus(this.status)
+                .withWayBill(this.wayBill.transform())
                 .build();
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(final Status status) {
+        this.status = status;
     }
 
     public Integer getId() {

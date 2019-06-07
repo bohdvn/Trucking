@@ -1,6 +1,8 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ProductDto;
+import by.itechart.Server.dto.RequestDto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -28,25 +30,20 @@ public class Product implements Transformable {
     @Column(name = "amount")
     private Integer amount;
 
+    @Column(name = "lost_amount")
+    private Integer lostAmount;
+
     @NotNull(message = "Price cannot be null")
     @Column(name = "price")
     private Integer price;
 
     /**
-     * Several products may be in the same invoice.
+     * Several products may be in the same request.
      */
-    @ManyToOne(fetch=FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    @JoinColumn(name = "invoice_id")
-    private Invoice invoice;
-
-    /**
-     * Several products may be in the same actOfLoss.
-     */
-    @ManyToOne(fetch = FetchType.LAZY,
-    cascade = CascadeType.ALL)
-    @JoinColumn(name = "act_of_loss_id")
-    private ActOfLoss actOfLoss;
+    @JsonBackReference
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "request_id")
+    private Request request;
 
     @Enumerated
     @Column(name = "status")
@@ -68,6 +65,8 @@ public class Product implements Transformable {
                 .withPrice(this.price)
                 .withStatus(this.status)
                 .withType(this.type)
+//                .withLostAmount(this.lostAmount )
+  //              .withRequest(this.request != null? this.request.transform() : RequestDto.builder().build())
                 .build();
     }
 
@@ -111,14 +110,6 @@ public class Product implements Transformable {
         this.price = price;
     }
 
-    public Invoice getInvoice() {
-        return invoice;
-    }
-
-    public void setInvoice(final Invoice invoice) {
-        this.invoice = invoice;
-    }
-
     public Status getStatus() {
         return status;
     }
@@ -126,6 +117,23 @@ public class Product implements Transformable {
     public void setStatus(final Status status) {
         this.status = status;
     }
+
+    public Integer getLostAmount() {
+        return lostAmount;
+    }
+
+    public void setLostAmount(Integer lostAmount) {
+        this.lostAmount = lostAmount;
+    }
+
+    public Request getRequest() {
+        return request;
+    }
+
+    public void setRequest(Request request) {
+        this.request = request;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -136,15 +144,15 @@ public class Product implements Transformable {
                 Objects.equals(name, product.name) &&
                 Objects.equals(type, product.type) &&
                 Objects.equals(amount, product.amount) &&
+                Objects.equals(lostAmount, product.lostAmount) &&
                 Objects.equals(price, product.price) &&
-                Objects.equals(invoice, product.invoice) &&
-                Objects.equals(actOfLoss, product.actOfLoss) &&
+                Objects.equals(request, product.request) &&
                 status == product.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, amount, price, invoice, actOfLoss, status);
+        return Objects.hash(id, name, type, amount, lostAmount, price, request, status);
     }
 
     @Override
@@ -152,11 +160,11 @@ public class Product implements Transformable {
         return "Product{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", typePackiging='" + type + '\'' +
+                ", type='" + type + '\'' +
                 ", amount=" + amount +
+                ", lostAmount=" + lostAmount +
                 ", price=" + price +
-                ", invoice=" + invoice +
-                ", actOfLoss=" + actOfLoss +
+                ", request=" + request +
                 ", status=" + status +
                 '}';
     }

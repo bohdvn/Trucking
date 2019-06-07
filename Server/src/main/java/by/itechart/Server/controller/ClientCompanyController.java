@@ -33,7 +33,6 @@ public class ClientCompanyController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientCompanyController.class);
 
-    @PreAuthorize("hasAuthority('ADMIN' or hasAuthority('SYSADMIN'))")
     @PutMapping("/")
     public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ClientCompany clientCompany){
         LOGGER.info("REST request. Path:/client method: PUT. client: {}", clientCompany);
@@ -51,7 +50,7 @@ public class ClientCompanyController {
 
     @PreAuthorize("hasAuthority('ADMIN' or hasAuthority('SYSADMIN'))")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOne(@PathVariable("id") int id){
+    public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/client/{} method: GET.", id);
         Optional<ClientCompany> clientCompany = clientCompanyService.findById(id);
         return clientCompany.isPresent()?

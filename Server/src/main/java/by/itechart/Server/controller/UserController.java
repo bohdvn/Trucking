@@ -22,15 +22,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,7 +47,9 @@ public class UserController {
 
     private UserService userService;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     private ConfirmationTokenService confirmationTokenService;
+
     private EmailSenderService emailSenderService;
 
     public UserController(UserService userService, ConfirmationTokenService confirmationTokenService, EmailSenderService emailSenderService) {
@@ -80,6 +80,19 @@ public class UserController {
         return users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/drivers")
+    public ResponseEntity<?> getDrivers() {
+        LOGGER.info("REST request. Path:/user method: GET.");
+        final List<User> all = userService.findAll();
+        final List<UserDto> users = all.stream().filter(user -> user.getRole().equals(User.Role.DRIVER))
+                .map(User::transform).collect(Collectors.toList());
+        return
+                //  users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
 
     @PreAuthorize("hasAuthority('SYSADMIN')")
     @Transactional
@@ -122,8 +135,9 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedUsers}")
-    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal,@PathVariable("selectedUsers") String selectedUsers ) {
+    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal, @PathVariable("selectedUsers") String selectedUsers ) {
         LOGGER.info("REST request. Path:/user/{} method: DELETE.", selectedUsers);
         final String delimeter = ",";
         final String[] usersId = selectedUsers.split(delimeter);

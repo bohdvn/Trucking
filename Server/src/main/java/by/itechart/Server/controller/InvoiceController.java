@@ -5,10 +5,15 @@ import by.itechart.Server.entity.Invoice;
 import by.itechart.Server.service.InvoiceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,5 +61,18 @@ public class InvoiceController {
         return invoices.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(invoicesDto,
                         HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list")
+    public ResponseEntity<Page<InvoiceDto>> getAll(Pageable pageable) {
+        LOGGER.info("REST request. Path:/invoice method: GET.");
+        final Page<Invoice> invoices = invoiceService.findAll(pageable);
+        Page<InvoiceDto> invoiceDtos = new PageImpl<>(invoices.stream().map(Invoice::transform)
+                .sorted(Comparator.comparing(InvoiceDto :: getStatus))
+                .collect(Collectors.toList()), pageable, invoices.getTotalElements());
+        LOGGER.info("Return carList.size:{}", invoiceDtos.getNumber());
+        return invoices.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(invoiceDtos, HttpStatus.OK);
     }
 }

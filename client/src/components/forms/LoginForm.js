@@ -4,6 +4,7 @@ import {ACCESS_TOKEN,ROLE} from '../../constants/auth';
 import {login} from '../../utils/APIUtils';
 import {connect} from "react-redux";
 import {changeLoggedIn} from "../../actions/user";
+import {setToken} from "../../utils/tokenParser";
 
 class LoginForm extends React.Component {
     loginRequest = {
@@ -27,7 +28,6 @@ class LoginForm extends React.Component {
         let loginRequest = {...this.state.loginRequest};
         loginRequest[name] = value;
         this.setState({loginRequest});
-        console.log(this.state);
     }
 
     handleSubmit(event) {
@@ -36,7 +36,6 @@ class LoginForm extends React.Component {
         login('/user/login', loginRequest)
             .then(response =>
                 response.json().then(json => {
-                    console.log(response.status);
                     if (!response.ok) {
                         return Promise.reject(json);
                     }
@@ -44,23 +43,12 @@ class LoginForm extends React.Component {
                 })
             )
             .then(data => {
-                console.log(data);
                 const token=data.accessToken;
-                localStorage.setItem(ACCESS_TOKEN, token);
                 const authDataEncrypted=token.split('.')[1];
-                const authDataDecrypted=JSON.parse(window.atob(authDataEncrypted))
-                console.log(authDataDecrypted);
-                const role=authDataDecrypted.roles[0].authority;
-                // this.props.setRole(role);
-                // localStorage.setItem('user',authDataDecrypted);
-                // this.props.
-                // connect(authDataDecrypted);
-                localStorage.setItem('loggedIn',JSON.stringify(authDataDecrypted));
-                const x=localStorage.getItem('loggedIn');
-                console.log(x);
-                this.props.changeLoggedIn(authDataDecrypted);
-                console.log(role);
-                this.props.history.push('/users');
+                const authDataDecrypted=JSON.parse(window.atob(authDataEncrypted));
+                setToken(token);
+                console.log(localStorage.getItem('accessToken'));
+                this.props.history.push('/home');
             });
     }
 
@@ -89,7 +77,6 @@ class LoginForm extends React.Component {
     }
 }
 
-// export default LoginForm;
 export default connect(
     state => ({
         loggedIn: state.loggedIn,

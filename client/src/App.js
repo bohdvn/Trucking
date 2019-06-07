@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Router} from 'react-router'
+import {Router, Route, Redirect} from 'react-router'
 import createBrowserHistory from './helpers/history';
 import UserComponent from "./components/forms/UserComponent";
 import CarComponent from "./components/forms/CarComponent";
@@ -11,12 +11,12 @@ import ClientComponent from "./components/forms/ClientComponent";
 import LoginForm from "./components/forms/LoginForm";
 import Home from "./components/home/Home"
 import {connect} from 'react-redux';
-import {changeLoggedIn} from './actions/user';
+import { changeLoggedIn } from './actions/user';
+import ProtectedRoute from "./components/ProtectedRoute";
 import ClientListComponent from "./components/pages/ClientListComponent";
 import WaybillListComponent from "./components/pages/WaybillListComponent";
 import WarehouseListComponent from "./components/pages/WarehouseListComponent";
 import WarehouseComponent from "./components/forms/WarehouseComponent";
-import Navigation from "./components/Navigation";
 
 class App extends React.Component {
     constructor(props){
@@ -28,24 +28,26 @@ class App extends React.Component {
         console.log(this.props.loggedIn.roles[0].authority);
         console.log(role);
         return (
-            <div>
-                <Router history={createBrowserHistory}>
-                    <Route path="/user/:id" component={UserComponent}/>
-                    <Route path="/car/:id" component={CarComponent}/>
-                    <Route path="/product/:id" component={ProductComponent}/>
-                    <Route path="/cars" component={CarListComponent}/>
-                    <Route path="/users" component={UserListComponent}/>
-                    <Route path="/products" component={ProductListComponent}/>
-                    <Route path="/client/:id" component={ClientComponent}/>
-                    <Route path="/warehouse/:id" component={WarehouseComponent}/>
-                    <Route path="/clients" component={ClientListComponent}/>
-                    <Route path="/warehouses" component={WarehouseListComponent}/>
-                    <Route path="/waybills" component={WaybillListComponent}/>
-                    <Route path="/home" component={Home}/>
-                    <Route path="/login" component={LoginForm}/>
-                    <Route path="/nav" component={Navigation}/>
-                </Router>
-            </div>
+            <Router history={createBrowserHistory}>
+                <Navigation/>
+                <Route path="/home" component={Home}/>
+                <Route path="/user/:id" component={UserComponent}/>
+                <Route path="/car/:id" component={CarComponent}/>
+                <Route path="/product/:id" component={ProductComponent}/>
+                <Route path="/cars" component={CarListComponent}/>
+                <Route path="/products" component={ProductListComponent}/>
+                <Route path="/client/:id" component={ClientComponent}/>
+                <Route path="/login" component={LoginForm}/>
+                <Route path="/clients" component={ClientListComponent}/>
+                <Route path="/waybills" component={WaybillListComponent}/>
+                <ProtectedRoute exact path="/users" allowed='SYSADMIN' component={UserListComponent}/>
+                <Route path="/request/:id" component={RequestComponent}/>
+                <Route path="/requests" component={RequestListComponent}/>
+                <Route path="/invoices" component={InvoiceListComponent}/>
+                <Route path="/waybill/:id" component={WaybillComponent}/>
+                <Route path="/warehouse/:id" component={WarehouseComponent}/>
+                <Route path="/warehouses" component={WarehouseListComponent}/>
+            </Router>
         );
     }
 }

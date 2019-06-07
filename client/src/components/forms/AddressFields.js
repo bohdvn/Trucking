@@ -32,6 +32,7 @@ class AddressFields extends React.Component {
             });
         const state = this.state;
         this.props.changeState(state);
+
     }
 
     validateField(fieldName, value) {

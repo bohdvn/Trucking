@@ -11,11 +11,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -64,6 +66,16 @@ public class CarController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<?> getAll() {
+        final List<CarDto> carDtos = carService.findAll().stream().map(Car::transform).collect(Collectors.toList());
+        return
+                carDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                        new ResponseEntity<>(carDtos, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/list")
     public ResponseEntity<Page<CarDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/car method: GET.");

@@ -1,16 +1,22 @@
 package by.itechart.Server.service.impl;
 
 import by.itechart.Server.entity.ClientCompany;
+import by.itechart.Server.entity.User;
 import by.itechart.Server.repository.ClientCompanyRepository;
 import by.itechart.Server.service.ClientCompanyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 public class ClientCompanyServiceImpl implements ClientCompanyService {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private ClientCompanyRepository clientCompanyRepository;
 
     public ClientCompanyServiceImpl(ClientCompanyRepository clientCompanyRepository) {
@@ -19,6 +25,9 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
 
     @Override
     public void save(final ClientCompany clientCompany) {
+        User user=clientCompany.getUsers().get(0);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setClientCompany(clientCompany);
         clientCompanyRepository.save(clientCompany);
     }
 

@@ -17,6 +17,7 @@ import WaybillListComponent from "./components/pages/WaybillListComponent";
 import Navigation from "./components/Navigation";
 import WarehouseListComponent from "./components/pages/WarehouseListComponent";
 import WarehouseComponent from "./components/forms/WarehouseComponent";
+import UserFields from "./components/forms/UserFields";
 
 class App extends React.Component {
     constructor(props){
@@ -36,6 +37,8 @@ class App extends React.Component {
                 <Route path="/login" component={LoginForm}/>
                 <Route path="/clients" component={ClientListComponent}/>
                 <Route path="/waybills" component={WaybillListComponent}/>
+                <Route path="/test" component={UserFields}/>
+                <ProtectedRoute exact path="/driver/:id" allowed='SYSADMIN' component={UserComponent}/>
                 <ProtectedRoute exact path="/users" allowed='SYSADMIN' component={UserListComponent}/>
             </Router>
         );

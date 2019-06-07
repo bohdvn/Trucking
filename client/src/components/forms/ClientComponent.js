@@ -2,6 +2,7 @@ import React from 'react';
 import "../../styles.css";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import AddressFields from "./AddressFields";
+import UserFields from "./UserFields";
 
 class ClientComponent extends React.Component {
     emptyClient = {
@@ -11,6 +12,21 @@ class ClientComponent extends React.Component {
         type: 'LEGAL',
         status: 'ACTIVE',
         companyType: 'CLIENT',
+    };
+
+    user = {
+        id: '',
+        surname: '',
+        name: '',
+        patronymic: '',
+        passportNumber: '',
+        passportIssued: '',
+        dateOfBirth: '',
+        email: '',
+        role: '',
+        login: '',
+        password: '',
+        address: {},
     };
 
     address = {
@@ -28,12 +44,16 @@ class ClientComponent extends React.Component {
             formErrors: {name: ''},
             nameValid: false,
             formValid: false,
+            userValid: false,
             addressValid: false,
+            users:[this.user]
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.validateField = this.validateField.bind(this);
         this.validateForm = this.validateForm.bind(this);
+        console.log(this.state);
+        console.log(this.props.match.params.id);
     }
 
     handleChange(event) {
@@ -68,7 +88,8 @@ class ClientComponent extends React.Component {
     validateForm() {
         this.setState({
             formValid: this.state.nameValid,
-            addressValid: this.state.addressValid
+            addressValid: this.state.addressValid,
+            userValid:this.state.userValid
         });
     }
 
@@ -79,6 +100,15 @@ class ClientComponent extends React.Component {
         this.setState({client: client});
     };
 
+    changeUserFields(value) {
+        console.log(value);
+        let client = {...this.state.client};
+        client.users=[];
+        client.users.push(value.user);
+        this.setState({client: client});
+        console.log(this.state);
+    };
+
     async handleSubmit(event) {
         event.preventDefault();
         const {client} = this.state;
@@ -86,7 +116,8 @@ class ClientComponent extends React.Component {
             method: client.id ? 'PUT' : 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization':'Bearer ' + localStorage.getItem('accessToken')
             },
             body: JSON.stringify(client)
         }).then(resp => {
@@ -111,16 +142,19 @@ class ClientComponent extends React.Component {
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
             const newClient = await (await fetch(`/client/${this.props.match.params.id}`)).json();
+            console.log(newClient);
             this.setState({client: newClient, nameValid: true, formValid: true, addressValid: true});
         } else {
             const client = this.state.client;
             client['address'] = this.address;
+            console.log(client);
             this.setState({client});
         }
     }
 
     render() {
         const {client} = this.state;
+        const user=this.state.users[0];
         return (
             <Container className="col-3">
                 <h1>Клиент</h1>
@@ -150,6 +184,15 @@ class ClientComponent extends React.Component {
                     </FormGroup>
 
                     <FormGroup>
+                        <Label for="status">Тип компании</Label>
+                        <Input type="select" name="companyType" id="companyType" value={client.companyType || ''}
+                               onChange={this.handleChange} autoComplete="companyType">
+                            <option value="CLIENT">Клиент</option>
+                            <option value="WAREHOUSE">Склад</option>
+                        </Input>
+                    </FormGroup>
+
+                    <FormGroup>
                         {client.address ? <AddressFields
                             name="address"
                             id="addressFields"
@@ -157,6 +200,17 @@ class ClientComponent extends React.Component {
                             changeState={this.changeAddressFields.bind(this)}
                             address={client.address}/> : null}
                     </FormGroup>
+
+                    <FormGroup>
+                        {(user && this.props.match.params.id === 'create')?<UserFields
+                            name="user"
+                            id="userFields"
+                            isUserComponent={false}
+                            validationHandler={this.validateForm}
+                            changeState={this.changeUserFields.bind(this)}
+                            user={user}/>:null}
+                    </FormGroup>
+
                     <FormGroup>
                         <Button color="primary" type="submit"
                                 disabled={!this.state.formValid}>Сохранить</Button>{' '}

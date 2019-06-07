@@ -1,29 +1,13 @@
 import React from 'react';
 import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
+import {ADMIN_OPTION,MANAGER_OPTION,DRIVER_OPTION,
+OWNER_OPTION,DISPATCHER_OPTION} from "../../constants/userRoleOprions";
 
 import "react-datepicker/dist/react-datepicker.css";
-import {ACCESS_TOKEN} from "../../constants/auth";
-import {ROLES} from '../../constants/userConstants';
-import {getUserById, saveUser} from "../../utils/APIUtils";
+import {connect} from "react-redux";
 
-
-class UserComponent extends React.Component {
-    emptyUser = {
-        id: '',
-        surname: '',
-        name: '',
-        patronymic: '',
-        passportNumber: '',
-        passportIssued: '',
-        dateOfBirth: '',
-        email: '',
-        role: '0',
-        login: '',
-        password: '',
-        address: '',
-    };
-
+class UserFields extends React.Component {
     address = {
         id: '',
         city: '',
@@ -34,9 +18,9 @@ class UserComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(props);
         this.state = {
-            user: this.emptyUser,
+            loggedIn:props.loggedIn,
+            user: props.user,
             formErrors: {
                 name: '', surname: '', patronymic: '', passportNumber: '', passportIssued: '',
                 dateOfBirth: '', email: '', login: '', password: ''
@@ -52,41 +36,37 @@ class UserComponent extends React.Component {
             passwordValid: false,
             addressValid: false,
             userFormValid: false,
-            isFields:props.isFields
+            isUserComponent:props.isUserComponent
         };
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentDidMount() {
-        if(this.state.isFields){
-            return;
+    getUserRoles(){
+        const roles=[];
+        const userRole=this.state.loggedIn.roles[0].authority;
+        const isUserComponent=this.state.isUserComponent;
+        console.log(isUserComponent);
+        switch(userRole){
+            case 'SYSADMIN':
+                isUserComponent?roles.push(DRIVER_OPTION):roles.push(ADMIN_OPTION)
+                break;
+            case 'ADMIN':
+                roles.push(ADMIN_OPTION,OWNER_OPTION,DISPATCHER_OPTION,MANAGER_OPTION);
+                break;
         }
-        if (this.props.match.params.id !== 'create') {
-            getUserById(`/user/${this.props.match.params.id}`)
-                .then(response =>
-                    response.json().then(json => {
-                        console.log(response.status);
-                        if (!response.ok) {
-                            return Promise.reject(json);
-                        }
-                        return json;
-                    })
-                )
-                .then(newUser=>{
-            this.setState({
-                user: newUser, surnameValid: true, nameValid: true, patronymicValid: true,
-                passportNumberValid: true, passportIssuedValid: true, dateOfBirthValid: true, emailValid: true,
-                loginValid: true, passwordValid: true, addressValid: true, userFormValid: true
-            });
-                });
-            console.log(this.state);
-        }
-        else {
-            const user = this.state.user;
-            user['address'] = this.address;
-            this.setState({user});
-        }
+        let user = {...this.state.user};
+        const role=(user.role||roles[0].props.value);
+        user.role=role;
+        this.state.user.role=role;
+        const select=
+            <FormGroup>
+                <Label for="role">Роль</Label>
+                <Input type="select" name="role" id="role" value={role}
+                       onChange={this.handleChange} autoComplete="role">
+                    {roles}
+                </Input>
+            </FormGroup>;
+        return select;
     }
 
     handleChange(event) {
@@ -99,6 +79,8 @@ class UserComponent extends React.Component {
             () => {
                 this.validateField(name, value)
             });
+        const state = this.state;
+        this.props.changeState(state);
     }
 
     validateField(fieldName, value) {
@@ -187,9 +169,9 @@ class UserComponent extends React.Component {
     validateUserForm() {
         this.setState({
             userFormValid: this.state.nameValid && this.state.surnameValid && this.state.patronymicValid
-            && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
-            && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid
-            && this.state.addressValid
+                && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
+                && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid
+                && this.state.addressValid
         });
 
     }
@@ -208,35 +190,11 @@ class UserComponent extends React.Component {
         this.setState({addressValid: formValid, userFormValid: pam && formValid});
     };
 
-    handleSubmit(event) {
-        event.preventDefault();
-        const {user} = this.state;
-
-        saveUser(user)
-            .then(resp => {
-            if (resp.status === 400) {
-                return resp.json();
-            }
-            else {
-                this.props.history.push('/users');
-                return null;
-            }
-        }).then(data => {
-            if (data) {
-                let s = '';
-                for (const k in data) {
-                    s += data[k] + '\n';
-                }
-                alert(s);
-            }
-        });
-    }
-
     render() {
         const {user} = this.state;
-        const {isFields}=this.state.isFields;
+        console.log(this.props);
         return (
-            <Container className="col-3">
+            <Container>
                 <h1>Пользователь</h1>
                 <Form onSubmit={this.handleSubmit}>
                     <FormGroup>
@@ -304,18 +262,7 @@ class UserComponent extends React.Component {
                             address={user.address}/> : null}
                     </FormGroup>
 
-                    <FormGroup>
-                        <Label for="role">Роль</Label>
-                        <Input type="select" name="role" id="role" value={user.role || ''}
-                               onChange={this.handleChange} autoComplete="role">
-                            <option value="0">Системный администратор</option>
-                            <option value="1">Администратор</option>
-                            <option value="2">Менеджер</option>
-                            <option value="3">Диспетчер</option>
-                            <option value="4">Водитель</option>
-                            <option value="5">Владелец</option>
-                        </Input>
-                    </FormGroup>
+                    {this.getUserRoles()}
 
                     <FormGroup>
                         <Label for="login">Логин</Label>
@@ -332,14 +279,14 @@ class UserComponent extends React.Component {
                         <p className={'error-message'}>{(this.state.formErrors.password === '') ? ''
                             : 'Пароль' + this.state.formErrors.password}</p>
                     </FormGroup>
-                    {isFields?'':<FormGroup>
-                        <Button color="primary" type="submit"
-                                disabled={!this.state.userFormValid}>Сохранить</Button>{' '}
-                    </FormGroup>}
                 </Form>
             </Container>
         );
     }
 }
 
-export default UserComponent;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    }),
+)(UserFields)

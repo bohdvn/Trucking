@@ -5,6 +5,9 @@
 // export const DRIVER='DRIVER';
 // export const OWNER='OWNER';
 
+import {Input} from "reactstrap";
+import React from "react";
+
 export const ROLES={
     SYSADMIN:{
         value:'SYSADMIN',
@@ -31,3 +34,4 @@ export const ROLES={
         identifier:'Владелец'
     },
 };
+

@@ -100,7 +100,7 @@ class RequestComponent extends React.Component {
         request['products'] = products;
         this.setState({request: request, product: this.emptyProduct});
     }
-    
+
     async getCar(id) {
         const newCar = await (await fetch(`/car/${id}`)).json();
         let request = {...this.state.request};

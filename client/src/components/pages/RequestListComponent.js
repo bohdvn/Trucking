@@ -93,7 +93,7 @@ class RequestListComponent extends React.Component {
                                 to={"/request/" + request.id}>Редактировать</Button>
                         <Button size="sm" color="danger" onClick={() => this.remove(request.id)}>Удалить</Button>
                         <Button size="sm" color="primary" onClick={() => this.handleShow(request.id)}
-                                 >ТТН</Button>
+                        >ТТН</Button>
                     </ButtonGroup>
                 </td>
 
@@ -129,7 +129,7 @@ class RequestListComponent extends React.Component {
         invoice.status = 'COMPLETED';
         invoice.number = this.state.request.id;
         invoice.dateOfIssue = dateStr;
-        this.setState({request:''});
+        this.setState({request: ''});
         this.saveInvoice(invoice);
         this.saveRequest(request);
         window.location.reload();
@@ -148,7 +148,7 @@ class RequestListComponent extends React.Component {
 
     }
 
-    async saveRequest(request){
+    async saveRequest(request) {
         await fetch('/request/', {
             method: 'PUT',
             headers: {

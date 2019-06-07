@@ -2,8 +2,6 @@ package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.ClientCompany;
 
-import java.util.List;
-
 public class ClientCompanyDto {
     private int id;
 
@@ -12,6 +10,10 @@ public class ClientCompanyDto {
     private ClientCompany.Status status;
 
     private ClientCompany.Type type;
+
+    private ClientCompany.CompanyType companyType;
+
+    private AddressDto address;
 
     private ClientCompanyDto() {
     }

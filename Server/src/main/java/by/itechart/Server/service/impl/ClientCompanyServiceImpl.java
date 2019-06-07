@@ -18,7 +18,7 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public void save(final ClientCompany clientCompany) {
+    public void save(ClientCompany clientCompany) {
         clientCompanyRepository.save(clientCompany);
     }
 

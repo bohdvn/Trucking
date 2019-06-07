@@ -22,9 +22,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -84,6 +81,7 @@ public class UserController {
                 new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/drivers")
     public ResponseEntity<?> getDrivers() {
         LOGGER.info("REST request. Path:/user method: GET.");
@@ -91,7 +89,7 @@ public class UserController {
         final List<UserDto> users = all.stream().filter(user -> user.getRole().equals(User.Role.DRIVER))
                 .map(User::transform).collect(Collectors.toList());
         return
-              //  users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                //  users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(users, HttpStatus.OK);
     }
 
@@ -137,8 +135,9 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedUsers}")
-    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal,@PathVariable("selectedUsers") String selectedUsers ) {
+    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal, @PathVariable("selectedUsers") String selectedUsers ) {
         LOGGER.info("REST request. Path:/user/{} method: DELETE.", selectedUsers);
         final String delimeter = ",";
         final String[] usersId = selectedUsers.split(delimeter);

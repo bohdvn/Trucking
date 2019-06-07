@@ -2,7 +2,18 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.UserDto;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -10,8 +21,6 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user")
@@ -105,13 +114,9 @@ public class User implements Transformable {
     @Column(name = "is_enabled")
     private Boolean isEnabled;
 
-    public enum Role {
-        SYSADMIN,
-        ADMIN,
-        MANAGER,
-        DISPATCHER,
-        DRIVER,
-        OWNER
+    public User() {
+        super();
+        this.isEnabled = false;
     }
 
     @Override
@@ -134,15 +139,14 @@ public class User implements Transformable {
                 //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
     }
-
     public User() {
         super();
         this.isEnabled = false;
     }
-
     public Boolean getEnabled() {
         return isEnabled;
     }
+
 
     public void setEnabled(Boolean enabled) {
         isEnabled = enabled;
@@ -236,6 +240,10 @@ public class User implements Transformable {
         this.address = address;
     }
 
+//    public List<Invoice> getCheckedByManagerInvoices() {
+//        return checkedByManagerInvoices;
+//    }
+
 //    public List<Invoice> getIssuedByDispatcherFromInvoices() {
 //        return issuedByDispatcherFromInvoices;
 //    }
@@ -252,12 +260,31 @@ public class User implements Transformable {
 //        this.issuedByDispatcherToInvoices = issuedByDispatcherToInvoices;
 //    }
 
-    public String getEmail() {
-        return email;
-    }
-
     public void setEmail(final String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(name, user.name) &&
+                Objects.equals(patronymic, user.patronymic) &&
+                Objects.equals(surname, user.surname) &&
+                Objects.equals(passportNumber, user.passportNumber) &&
+                Objects.equals(passportIssued, user.passportIssued) &&
+                Objects.equals(dateOfBirth, user.dateOfBirth) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(login, user.login) &&
+                Objects.equals(password, user.password) &&
+                role == user.role &&
+                Objects.equals(address, user.address) &&
+//                Objects.equals(checkedByManagerInvoices, user.checkedByManagerInvoices) &&
+//                Objects.equals(issuedByDispatcherFromInvoices, user.issuedByDispatcherFromInvoices) &&
+//                Objects.equals(issuedByDispatcherToInvoices, user.issuedByDispatcherToInvoices) &&
+                Objects.equals(isEnabled, user.isEnabled);
     }
 
 //    public List<Invoice> getCheckedByManagerInvoices() {
@@ -285,32 +312,8 @@ public class User implements Transformable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id) &&
-                Objects.equals(name, user.name) &&
-                Objects.equals(patronymic, user.patronymic) &&
-                Objects.equals(surname, user.surname) &&
-                Objects.equals(passportNumber, user.passportNumber) &&
-                Objects.equals(passportIssued, user.passportIssued) &&
-                Objects.equals(dateOfBirth, user.dateOfBirth) &&
-                Objects.equals(email, user.email) &&
-                Objects.equals(login, user.login) &&
-                Objects.equals(password, user.password) &&
-                role == user.role &&
-                Objects.equals(address, user.address) &&
-            //    Objects.equals(requests, user.requests) &&
-//                Objects.equals(issuedByDispatcherFromInvoices, user.issuedByDispatcherFromInvoices) &&
-//                Objects.equals(issuedByDispatcherToInvoices, user.issuedByDispatcherToInvoices) &&
-                Objects.equals(isEnabled, user.isEnabled);
-    }
-
-    @Override
     public int hashCode() {
-        return Objects.hash(id, name, patronymic, surname, passportNumber, passportIssued, dateOfBirth, email, login,
-                password, role, address, isEnabled);
+        return Objects.hash(id, name, patronymic, surname, passportNumber, passportIssued, dateOfBirth, email, login, password, role, address, checkedByManagerInvoices, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices, isEnabled);
     }
 
     @Override
@@ -328,10 +331,19 @@ public class User implements Transformable {
                 ", password='" + password + '\'' +
                 ", role=" + role +
                 ", address=" + address +
-              //  ", requests=" + requests +
-//                ", issuedByDispatcherFromInvoices=" + issuedByDispatcherFromInvoices +
-//                ", issuedByDispatcherToInvoices=" + issuedByDispatcherToInvoices +
+                ", checkedByManagerInvoices=" + checkedByManagerInvoices +
+                ", issuedByDispatcherFromInvoices=" + issuedByDispatcherFromInvoices +
+                ", issuedByDispatcherToInvoices=" + issuedByDispatcherToInvoices +
                 ", isEnabled=" + isEnabled +
                 '}';
+    }
+
+    public enum Role {
+        SYSADMIN,
+        ADMIN,
+        MANAGER,
+        DISPATCHER,
+        DRIVER,
+        OWNER
     }
 }

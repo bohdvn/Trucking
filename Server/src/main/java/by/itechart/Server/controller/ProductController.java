@@ -2,9 +2,7 @@ package by.itechart.Server.controller;
 
 import by.itechart.Server.dto.ProductDto;
 import by.itechart.Server.entity.Product;
-import by.itechart.Server.entity.Request;
 import by.itechart.Server.service.ProductService;
-import by.itechart.Server.service.RequestService;
 import by.itechart.Server.utils.ValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +58,17 @@ public class ProductController {
     public ResponseEntity<?> remove(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/product/{} method: DELETE.", id);
         productService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{selectedProducts}")
+    public ResponseEntity<?> remove(@PathVariable("selectedProducts") String selectedProducts) {
+        LOGGER.info("REST request. Path:/product/{} method: DELETE.", selectedProducts);
+        final String delimeter = ",";
+        final String[] productsId = selectedProducts.split(delimeter);
+        for (String id : productsId) {
+            productService.deleteById(Integer.valueOf(id));
+        }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

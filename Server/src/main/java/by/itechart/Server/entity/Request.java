@@ -77,7 +77,6 @@ public class Request implements Transformable {
         final List<ProductDto> productDtos = new ArrayList<>();
         for (Product product:
                 products2) {
-            System.out.println("1");
             productDtos.add(product.transform());
         }
         return RequestDto.builder()

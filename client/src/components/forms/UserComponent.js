@@ -3,6 +3,9 @@ import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 
 import "react-datepicker/dist/react-datepicker.css";
+import {ACCESS_TOKEN} from "../../constants/auth";
+import {ROLES} from '../../constants/userConstants';
+import {getUserById, saveUser} from "../../utils/APIUtils";
 
 
 class UserComponent extends React.Component {
@@ -53,14 +56,26 @@ class UserComponent extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            const newUser = await (await fetch(`/user/${this.props.match.params.id}`)).json();
+            getUserById(`/user/${this.props.match.params.id}`)
+                .then(response =>
+                    response.json().then(json => {
+                        console.log(response.status);
+                        if (!response.ok) {
+                            return Promise.reject(json);
+                        }
+                        return json;
+                    })
+                )
+                .then(newUser=>{
             this.setState({
                 user: newUser, surnameValid: true, nameValid: true, patronymicValid: true,
                 passportNumberValid: true, passportIssuedValid: true, dateOfBirthValid: true, emailValid: true,
                 loginValid: true, passwordValid: true, addressValid: true, userFormValid: true
             });
+                });
+            console.log(this.state);
         }
         else {
             const user = this.state.user;
@@ -95,7 +110,7 @@ class UserComponent extends React.Component {
 
         switch (fieldName) {
             case 'name':
-                nameValid = value.length >= 2 && value.length <= 150;
+                nameValid = value.length >= 1 && value.length <= 150;
                 fieldValidationErrors.name = nameValid ? '' : ' введено неверно';
                 break;
             case 'surname':
@@ -189,18 +204,12 @@ class UserComponent extends React.Component {
         this.setState({addressValid: formValid, userFormValid: pam && formValid});
     };
 
-    async handleSubmit(event) {
+    handleSubmit(event) {
         event.preventDefault();
         const {user} = this.state;
 
-        await fetch('/user/', {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user),
-        }).then(resp => {
+        saveUser(user)
+            .then(resp => {
             if (resp.status === 400) {
                 return resp.json();
             }
@@ -217,7 +226,6 @@ class UserComponent extends React.Component {
                 alert(s);
             }
         });
-
     }
 
     render() {

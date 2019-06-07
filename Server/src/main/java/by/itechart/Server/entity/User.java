@@ -11,7 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -19,7 +19,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -74,8 +73,8 @@ public class User implements Transformable {
     private Role role;
 
     /**
-    * One user can have only one address.
-    */
+     * One user can have only one address.
+     */
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "address")
     private Address address;
@@ -104,9 +103,10 @@ public class User implements Transformable {
 //    private List<Request> requests;
 
     /**
-     *One user can belong to only one clientCompany.
+     * One user can belong to only one clientCompany.
      * The same clientCompany may have many users.
      */
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_company_id")
     private ClientCompany clientCompany;
@@ -139,10 +139,11 @@ public class User implements Transformable {
                 //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
     }
-    public User() {
-        super();
-        this.isEnabled = false;
-    }
+
+    //    public User() {
+//        super();
+//        this.isEnabled = false;
+//    }
     public Boolean getEnabled() {
         return isEnabled;
     }
@@ -186,6 +187,10 @@ public class User implements Transformable {
 
     public String getPassportNumber() {
         return passportNumber;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public void setPassportNumber(final String passportNumber) {
@@ -313,7 +318,7 @@ public class User implements Transformable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, patronymic, surname, passportNumber, passportIssued, dateOfBirth, email, login, password, role, address, checkedByManagerInvoices, issuedByDispatcherFromInvoices, issuedByDispatcherToInvoices, isEnabled);
+        return Objects.hash(id, name, patronymic, surname, passportNumber, passportIssued, dateOfBirth, email, login, password, role, address, isEnabled);
     }
 
     @Override
@@ -331,9 +336,9 @@ public class User implements Transformable {
                 ", password='" + password + '\'' +
                 ", role=" + role +
                 ", address=" + address +
-                ", checkedByManagerInvoices=" + checkedByManagerInvoices +
-                ", issuedByDispatcherFromInvoices=" + issuedByDispatcherFromInvoices +
-                ", issuedByDispatcherToInvoices=" + issuedByDispatcherToInvoices +
+//                ", checkedByManagerInvoices=" + checkedByManagerInvoices +
+//                ", issuedByDispatcherFromInvoices=" + issuedByDispatcherFromInvoices +
+//                ", issuedByDispatcherToInvoices=" + issuedByDispatcherToInvoices +
                 ", isEnabled=" + isEnabled +
                 '}';
     }

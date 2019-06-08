@@ -2,18 +2,7 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ClientCompanyDto;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -41,6 +30,11 @@ public class ClientCompany implements Transformable {
     @Column(name = "status")
     private Status status;
 
+    @Enumerated
+    @NotNull(message = "CompanyType cannot be null")
+    @Column(name = "company_type")
+    private ClientCompany.CompanyType companyType;
+
     /**
      * One clientCompany can have only one address.
      */
@@ -50,6 +44,13 @@ public class ClientCompany implements Transformable {
 
     @OneToMany(mappedBy = "clientCompany", cascade = CascadeType.ALL)
     private List<User> users;
+    /**
+     * One clientCompany can be in different waybills.
+     */
+//    @OneToMany(fetch = FetchType.LAZY,
+//            mappedBy = "clientCompany")
+//    // cascade =  CascadeType.ALL)
+//    private List<WayBill> waybills = new ArrayList<>();
 
     @Override
     public ClientCompanyDto transform() {
@@ -58,7 +59,8 @@ public class ClientCompany implements Transformable {
                 .withName(this.name)
                 .withType(this.type)
                 .withStatus(this.status)
-                .withAddress(this.address.transform())
+                .withCompanyType(this.companyType)
+                .withAddressDto(this.address.transform())
 //                .withUsers(this.users.stream().map(User::transform).collect(Collectors.toList()))
                 .build();
     }
@@ -85,6 +87,22 @@ public class ClientCompany implements Transformable {
 
     public void setName(final String name) {
         this.name = name;
+    }
+
+//    public List<WayBill> getWaybills() {
+//        return waybills;
+//    }
+//
+//    public void setWaybills(final List<WayBill> waybills) {
+//        this.waybills = waybills;
+//    }
+
+    public CompanyType getCompanyType() {
+        return companyType;
+    }
+
+    public void setCompanyType(CompanyType companyType) {
+        this.companyType = companyType;
     }
 
     public Type getType() {
@@ -120,13 +138,16 @@ public class ClientCompany implements Transformable {
                 Objects.equals(name, that.name) &&
                 type == that.type &&
                 status == that.status &&
+                companyType == that.companyType &&
                 Objects.equals(address, that.address) &&
                 Objects.equals(users, that.users);
+//                &&
+//                Objects.equals(waybills, that.waybills);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, status, address, users);
+        return Objects.hash(id, name, type, status, companyType, address, users);
     }
 
     @Override
@@ -136,8 +157,10 @@ public class ClientCompany implements Transformable {
                 ", name='" + name + '\'' +
                 ", type=" + type +
                 ", status=" + status +
+                ", companyType=" + companyType +
                 ", address=" + address +
                 ", users=" + users +
+//                ", waybills=" + waybills +
                 '}';
     }
 
@@ -147,5 +170,9 @@ public class ClientCompany implements Transformable {
 
     public enum Status {
         ACTIVE, BLOCKED
+    }
+
+    public enum CompanyType {
+        CLIENT, WAREHOUSE
     }
 }

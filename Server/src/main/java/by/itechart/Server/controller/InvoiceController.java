@@ -1,8 +1,6 @@
 package by.itechart.Server.controller;
 
-import by.itechart.Server.dto.CarDto;
 import by.itechart.Server.dto.InvoiceDto;
-import by.itechart.Server.entity.Car;
 import by.itechart.Server.entity.Invoice;
 import by.itechart.Server.service.InvoiceService;
 import org.slf4j.Logger;
@@ -12,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
@@ -63,6 +62,8 @@ public class InvoiceController {
                 new ResponseEntity<>(invoicesDto,
                         HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/list")
     public ResponseEntity<Page<InvoiceDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/invoice method: GET.");

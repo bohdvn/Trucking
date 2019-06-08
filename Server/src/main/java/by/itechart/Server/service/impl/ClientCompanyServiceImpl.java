@@ -18,8 +18,13 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public void save(final ClientCompany clientCompany) {
+    public void save(ClientCompany clientCompany) {
         clientCompanyRepository.save(clientCompany);
+    }
+
+    @Override
+    public Page<ClientCompany> findByCompanyType(ClientCompany.CompanyType companyType, Pageable pageable) {
+        return clientCompanyRepository.findClientCompaniesByCompanyType(companyType, pageable);
     }
 
     @Override

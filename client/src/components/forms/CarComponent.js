@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import "../../styles.css";
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 class CarComponent extends React.Component {
     emptyCar = {
@@ -73,7 +74,8 @@ class CarComponent extends React.Component {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             },
             body: JSON.stringify(car)
         }).then(resp => {

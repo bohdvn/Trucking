@@ -44,13 +44,6 @@ public class ClientCompany implements Transformable {
 
     @OneToMany(mappedBy = "clientCompany", cascade = CascadeType.ALL)
     private List<User> users;
-    /**
-     * One clientCompany can be in different waybills.
-     */
-//    @OneToMany(fetch = FetchType.LAZY,
-//            mappedBy = "clientCompany")
-//    // cascade =  CascadeType.ALL)
-//    private List<WayBill> waybills = new ArrayList<>();
 
     @Override
     public ClientCompanyDto transform() {
@@ -61,7 +54,6 @@ public class ClientCompany implements Transformable {
                 .withStatus(this.status)
                 .withCompanyType(this.companyType)
                 .withAddressDto(this.address.transform())
-//                .withUsers(this.users.stream().map(User::transform).collect(Collectors.toList()))
                 .build();
     }
 
@@ -88,14 +80,6 @@ public class ClientCompany implements Transformable {
     public void setName(final String name) {
         this.name = name;
     }
-
-//    public List<WayBill> getWaybills() {
-//        return waybills;
-//    }
-//
-//    public void setWaybills(final List<WayBill> waybills) {
-//        this.waybills = waybills;
-//    }
 
     public CompanyType getCompanyType() {
         return companyType;
@@ -141,8 +125,6 @@ public class ClientCompany implements Transformable {
                 companyType == that.companyType &&
                 Objects.equals(address, that.address) &&
                 Objects.equals(users, that.users);
-//                &&
-//                Objects.equals(waybills, that.waybills);
     }
 
     @Override
@@ -160,7 +142,6 @@ public class ClientCompany implements Transformable {
                 ", companyType=" + companyType +
                 ", address=" + address +
                 ", users=" + users +
-//                ", waybills=" + waybills +
                 '}';
     }
 

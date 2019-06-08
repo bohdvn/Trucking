@@ -1,6 +1,5 @@
 import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
-import {ACCESS_TOKEN,ROLE} from '../../constants/auth';
 import {login} from '../../utils/APIUtils';
 import {connect} from "react-redux";
 import {changeLoggedIn} from "../../actions/user";
@@ -49,6 +48,7 @@ class LoginForm extends React.Component {
                 setToken(token);
                 console.log(localStorage.getItem('accessToken'));
                 this.props.history.push('/home');
+                alert(`${this.state.loginRequest.loginOrEmail}, добро пожаловать!`);
             });
     }
 

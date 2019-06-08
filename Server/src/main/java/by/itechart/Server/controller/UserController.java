@@ -110,7 +110,7 @@ public class UserController {
             ConfirmationToken confirmationToken = new ConfirmationToken(user);
             confirmationTokenService.save(confirmationToken);
             String message = String.format("Hello, %s! To confirm your account, " +
-                            "please visit next link: http://localhost:8080/user/confirm-account/%s",
+                            "please visit next link: http://localhost:3000/confirm/%s",
                     user.getName(), confirmationToken.getConfirmationToken());
 
             emailSenderService.sendEmail(user.getEmail(), "Complete Registration!", message);
@@ -137,7 +137,8 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedUsers}")
-    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal, @PathVariable("selectedUsers") String selectedUsers ) {
+    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal, @PathVariable("selectedUsers")
+            String selectedUsers) {
         LOGGER.info("REST request. Path:/user/{} method: DELETE.", selectedUsers);
         final String delimeter = ",";
         final String[] usersId = selectedUsers.split(delimeter);
@@ -147,6 +148,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/confirm-account/{confirmationToken}")
     public ResponseEntity<?> confirmUserAccount(@PathVariable String confirmationToken) {
         ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken);

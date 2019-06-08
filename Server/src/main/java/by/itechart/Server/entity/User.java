@@ -2,18 +2,7 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.UserDto;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -135,15 +124,11 @@ public class User implements Transformable {
                 .withRole(this.role.ordinal())
                 .withEmail(this.email)
                 .withAddressDto(this.address.transform())
-                .withClientCompany(this.clientCompany.transform())
+                //.withClientCompany(this.clientCompany.transform())
                 //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
     }
-
-    //    public User() {
-//        super();
-//        this.isEnabled = false;
-//    }
+    
     public Boolean getEnabled() {
         return isEnabled;
     }

@@ -34,13 +34,16 @@ class Navigation extends React.Component {
             case 'SYSADMIN':
                 navs.push(
                     <NavItem>
-                        <NavLink href="/client/create">Клиенты</NavLink>
+                        <NavLink href="/clients">Клиенты</NavLink>
                     </NavItem>,
                     <NavItem>
                         <NavLink href="/cars">Автомобили</NavLink>
                     </NavItem>,
                     <NavItem>
                         <NavLink href="/users">Водители</NavLink>
+                    </NavItem>,
+                    <NavItem>
+                        <NavLink href="/warehouses">Получатели</NavLink>
                     </NavItem>,
                     logout
                 );

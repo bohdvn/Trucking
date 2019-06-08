@@ -5,6 +5,7 @@ import axios from 'axios';
 import Pagination from "react-js-pagination";
 import Modal from 'react-bootstrap/Modal';
 import InvoiceComponent from "../forms/InvoiceComponent";
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 
 class RequestListComponent extends React.Component {
@@ -45,6 +46,11 @@ class RequestListComponent extends React.Component {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
+            },
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         })
             .then(response => {
@@ -133,7 +139,7 @@ class RequestListComponent extends React.Component {
         this.saveInvoice(invoice);
         this.saveRequest(request);
         window.location.reload();
-    }
+    };
 
     async saveInvoice(invoice) {
         await fetch('/invoice/', {

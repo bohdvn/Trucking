@@ -5,7 +5,6 @@ import by.itechart.Server.dto.ClientCompanyDto;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,26 +44,13 @@ public class ClientCompany implements Transformable {
 
     @OneToMany(mappedBy = "clientCompany", cascade = CascadeType.ALL)
     private List<User> users;
-
-    public enum Type {
-        LEGAL, INDIVIDUAL
-    }
-
-    public enum Status {
-        ACTIVE, BLOCKED
-    }
-
     /**
      * One clientCompany can be in different waybills.
      */
-    @OneToMany(fetch = FetchType.LAZY,
-            mappedBy = "clientCompany")
-    // cascade =  CascadeType.ALL)
-    private List<WayBill> waybills = new ArrayList<>();
-
-    public List<WayBill> getWaybills() {
-        return waybills;
-    }
+//    @OneToMany(fetch = FetchType.LAZY,
+//            mappedBy = "clientCompany")
+//    // cascade =  CascadeType.ALL)
+//    private List<WayBill> waybills = new ArrayList<>();
 
     @Override
     public ClientCompanyDto transform() {
@@ -103,12 +89,20 @@ public class ClientCompany implements Transformable {
         this.name = name;
     }
 
-    public void setWaybills(List<WayBill> waybills) {
-        this.waybills = waybills;
-    }
+//    public List<WayBill> getWaybills() {
+//        return waybills;
+//    }
+//
+//    public void setWaybills(final List<WayBill> waybills) {
+//        this.waybills = waybills;
+//    }
 
     public CompanyType getCompanyType() {
         return companyType;
+    }
+
+    public void setCompanyType(CompanyType companyType) {
+        this.companyType = companyType;
     }
 
     public Type getType() {
@@ -135,10 +129,6 @@ public class ClientCompany implements Transformable {
         this.users = users;
     }
 
-    public void setCompanyType(CompanyType companyType) {
-        this.companyType = companyType;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -150,13 +140,14 @@ public class ClientCompany implements Transformable {
                 status == that.status &&
                 companyType == that.companyType &&
                 Objects.equals(address, that.address) &&
-                Objects.equals(users, that.users) &&
-                Objects.equals(waybills, that.waybills);
+                Objects.equals(users, that.users);
+//                &&
+//                Objects.equals(waybills, that.waybills);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, status, companyType, address, users, waybills);
+        return Objects.hash(id, name, type, status, companyType, address, users);
     }
 
     @Override
@@ -169,8 +160,16 @@ public class ClientCompany implements Transformable {
                 ", companyType=" + companyType +
                 ", address=" + address +
                 ", users=" + users +
-                ", waybills=" + waybills +
+//                ", waybills=" + waybills +
                 '}';
+    }
+
+    public enum Type {
+        LEGAL, INDIVIDUAL
+    }
+
+    public enum Status {
+        ACTIVE, BLOCKED
     }
 
     public enum CompanyType {

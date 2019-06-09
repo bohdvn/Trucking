@@ -5,6 +5,7 @@ import NavLink from "reactstrap/es/NavLink";
 import Nav from "reactstrap/es/Nav";
 import {connect} from "react-redux";
 import {changeLoggedIn} from "../actions/user";
+import * as ROLE from "../constants/userConstants";
 
 class Navigation extends React.Component {
     constructor(props) {
@@ -20,33 +21,33 @@ class Navigation extends React.Component {
         this.setState({loggedIn: loggedIn});
     }
 
-    logout(){
+    logout=()=>{
         localStorage.removeItem('accessToken');
         localStorage.removeItem('loggedIn');
-    }
+    };
 
-    getNavs() {
+    getNavs=()=>{
         const navs = [];
         const role = this.state.loggedIn.roles[0].authority;
         console.log(role);
         const logout= <NavItem><NavLink onClick={this.logout} href="/home">Выйти</NavLink></NavItem>;
         switch (role) {
-            case 'SYSADMIN':
+            case ROLE.SYSADMIN:
                 navs.push(
                     <NavItem>
-                        <NavLink href="/client/create">Клиенты</NavLink>
+                        <NavLink href="/clients">Клиенты</NavLink>
                     </NavItem>,
                     <NavItem>
                         <NavLink href="/cars">Автомобили</NavLink>
                     </NavItem>,
                     <NavItem>
-                        <NavLink href="/users">Водители</NavLink>
+                        <NavLink href="/drivers">Водители</NavLink>
                     </NavItem>,
                     logout
                 );
                 break;
 
-            case 'ADMIN':
+            case ROLE.ADMIN:
                 navs.push(
                     <NavItem>
                         <NavLink href="/users">Пользователи</NavLink>
@@ -55,7 +56,7 @@ class Navigation extends React.Component {
                 );
                 break;
 
-            case 'DISPATCHER':
+            case ROLE.DISPATCHER:
                 navs.push(
                     <NavItem>
                         <NavLink href="/invoices">Список ТТН</NavLink>
@@ -64,7 +65,7 @@ class Navigation extends React.Component {
                 );
                 break;
 
-            case 'MANAGER':
+            case ROLE.MANAGER:
                 navs.push(
                     <NavItem>
                         <NavLink href="/invoices">Список ТТН</NavLink>
@@ -73,7 +74,7 @@ class Navigation extends React.Component {
                 );
                 break;
 
-            case 'DRIVER':
+            case ROLE.DRIVER:
                 navs.push(
                     <NavItem>
                         <NavLink href="/waybills">Путевые листы</NavLink>
@@ -82,16 +83,10 @@ class Navigation extends React.Component {
                 );
                 break;
 
-            case 'OWNER':
+            case ROLE.OWNER:
                 navs.push(
                     <NavItem>
-                        <NavLink href="/">Заявки</NavLink>
-                    </NavItem>,
-                    <NavItem>
-                        <NavLink href="/invoices">Список ТТН</NavLink>
-                    </NavItem>,
-                    <NavItem>
-                        <NavLink href="/users">Водители</NavLink>
+                        <NavLink href="/requests">Запросы</NavLink>
                     </NavItem>,
                     <NavItem>
                         <NavLink href="/invoices">Список ТТН</NavLink>
@@ -119,8 +114,6 @@ class Navigation extends React.Component {
         );
     }
 }
-
-// export default Navigation;
 
 export default connect(
     state => ({

@@ -1,37 +1,11 @@
-// export const SYSADMIN='SYSADMIN';
-// export const ADMIN='ADMIN';
-// export const MANAGER='MANAGER';
-// export const DISPATHCER='DISPATCHER';
-// export const DRIVER='DRIVER';
-// export const OWNER='OWNER';
+export const SYSADMIN='SYSADMIN';
 
-import {Input} from "reactstrap";
-import React from "react";
+export const ADMIN='ADMIN';
 
-export const ROLES={
-    SYSADMIN:{
-        value:'SYSADMIN',
-        identifier:'Системный администратор'
-    },
-    ADMIN:{
-        value:'ADMIN',
-        identifier:'Администратор'
-    },
-    MANAGER:{
-        value:'MANAGER',
-        identifier:'Мененджер'
-    },
-    DISPATCHER:{
-        value:'DISPATCHER',
-        identifier:'Диспетчер'
-    },
-    DRIVER:{
-        value:'DRIVER',
-        identifier:'Водитель'
-    },
-    OWNER:{
-        value:'OWNER',
-        identifier:'Владелец'
-    },
-};
+export const MANAGER='MANAGER';
 
+export const DISPATCHER='DISPATCHER';
+
+export const DRIVER='DRIVER';
+
+export const OWNER='OWNER';

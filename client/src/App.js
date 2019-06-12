@@ -23,6 +23,7 @@ import RequestListComponent from "./components/pages/RequestListComponent";
 import InvoiceListComponent from "./components/pages/InvoiceListComponent";
 import WaybillComponent from "./components/forms/WaybillComponent";
 import Confirm from './components/forms/Confirm';
+import SendEmail from "./components/forms/SendEmail";
 
 class App extends React.Component {
     constructor(props){
@@ -54,6 +55,7 @@ class App extends React.Component {
                 <Route path="/warehouse/:id" component={WarehouseComponent}/>
                 <Route path="/warehouses" component={WarehouseListComponent}/>
                 <Route path='/confirm/:id' component={Confirm}/>
+                <Route path='/email' component={SendEmail}/>
             </Router>
         );
     }

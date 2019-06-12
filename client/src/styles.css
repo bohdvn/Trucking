@@ -38,3 +38,12 @@
 .form-submit:hover{
     background-color: green;
 }
+
+.Email {
+    width: 600px;
+    padding: 30px
+}
+
+.Success {
+    color: green;
+}

@@ -222,7 +222,7 @@ public class UserDto {
             return this;
         }
 
-        public Builder withEnabled(final boolean isEnable) {
+        public Builder withEnabled(final boolean isEnabled) {
             UserDto.this.isEnabled = isEnabled;
             return this;
         }

@@ -35,6 +35,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -44,12 +47,8 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-
     private UserService userService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-
     private ConfirmationTokenService confirmationTokenService;
-
     private EmailSenderService emailSenderService;
 
     public UserController(UserService userService, ConfirmationTokenService confirmationTokenService, EmailSenderService emailSenderService) {
@@ -129,7 +128,7 @@ public class UserController {
     @Transactional
     @PutMapping("/")
     public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody User user) {
-        LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
+        LOGGER.info("REST request. Path:/user method: PUT. user: {}", user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user);
         return new ResponseEntity<>(HttpStatus.OK);

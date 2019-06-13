@@ -128,11 +128,10 @@ public class User implements Transformable {
                 //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
     }
-    
+
     public Boolean getEnabled() {
         return isEnabled;
     }
-
 
     public void setEnabled(Boolean enabled) {
         isEnabled = enabled;

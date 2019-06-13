@@ -17,11 +17,11 @@ import WaybillListComponent from "./components/pages/WaybillListComponent";
 import Navigation from "./components/Navigation";
 import WarehouseListComponent from "./components/pages/WarehouseListComponent";
 import WarehouseComponent from "./components/forms/WarehouseComponent";
-import UserFields from "./components/forms/UserFields";
 import RequestComponent from "./components/forms/RequestComponent";
 import RequestListComponent from "./components/pages/RequestListComponent";
 import InvoiceListComponent from "./components/pages/InvoiceListComponent";
 import WaybillComponent from "./components/forms/WaybillComponent";
+import "@kenshooui/react-multi-select/dist/style.css"
 
 class App extends React.Component {
     constructor(props) {
@@ -32,24 +32,42 @@ class App extends React.Component {
         return (
             <Router history={createBrowserHistory}>
                 <Navigation/>
+
                 <Route path="/home" component={Home}/>
-                <Route path="/user/:id" component={UserComponent}/>
+                <ProtectedRoute exact path="/driver/:id" allowed='SYSADMIN' component={UserComponent}/>
+                <ProtectedRoute exact path="/drivers" allowed='SYSADMIN' component={UserListComponent}/>
+                <ProtectedRoute exact path="/clients" allowed='SYSADMIN' component={ClientListComponent}/>
+                <ProtectedRoute exact path="/cars" allowed='SYSADMIN' component={CarListComponent}/>
+                <ProtectedRoute exact path="/admin/create" allowed='SYSADMIN' component={UserComponent}/>
+
+                {/*ADMIN*/}
+                {/*<ProtectedRoute exact path="/user/:id" allowed='ADMIN' component={UserComponent}/>*/}
+                <ProtectedRoute exact path="/users" allowed='ADMIN' component={UserListComponent}/>
+                <ProtectedRoute exact path="/user/:id" allowed='ADMIN' component={UserComponent}/>
+
+                {/*MANAGER*/}
+
+                {/*DRIVER*/}
+                <ProtectedRoute exact path="/waybills" allowed='DRIVER' component={WaybillListComponent}/>
+                <ProtectedRoute exact path="/waybill/:id" allowed='DRIVER' component={WaybillComponent}/>
+                {/*MANAGER*/}
+
+                {/*OWNER*/}
+                <ProtectedRoute exact path='/request/create' allowed='DRIVER' component={RequestComponent}/>
+
+                {/*<Route path="/user/:id" component={UserComponent}/>*/}
                 <Route path="/car/:id" component={CarComponent}/>
                 <Route path="/product/:id" component={ProductComponent}/>
-                <Route path="/cars" component={CarListComponent}/>
                 <Route path="/products" component={ProductListComponent}/>
                 <Route path="/client/:id" component={ClientComponent}/>
                 <Route path="/login" component={LoginForm}/>
-                <Route path="/clients" component={ClientListComponent}/>
                 <Route path="/waybills" component={WaybillListComponent}/>
-                <Route path="/test" component={UserFields}/>
-                <ProtectedRoute exact path="/driver/:id" allowed='SYSADMIN' component={UserComponent}/>
-                <ProtectedRoute exact path="/users" allowed='SYSADMIN' component={UserListComponent}/>
-                <Route path="/request/:id" component={RequestComponent}/>
+
+                {/*<Route path="/request/:id" component={RequestComponent}/>*/}
                 <Route path="/requests" component={RequestListComponent}/>
                 <Route path="/invoices" component={InvoiceListComponent}/>
-                <Route path="/waybill/:id" component={WaybillComponent}/>
-                <Route path="/waybills" component={WaybillListComponent}/>
+                {/*<Route path="/waybill/:id" component={WaybillComponent}/>*/}
+                {/*<Route path="/waybills" component={WaybillListComponent}/>*/}
 
             </Router>
         );

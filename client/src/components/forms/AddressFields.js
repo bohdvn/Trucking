@@ -7,7 +7,6 @@ class AddressFields extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(this.props.address);
         this.state = {
             address: props.address,
             formErrors: {city: '', flat: '', building: '', street: ''},
@@ -28,11 +27,9 @@ class AddressFields extends React.Component {
         address[name] = value;
         this.setState({address},
             () => {
-                this.validateField(name, value)
+                this.validateField(name, value);
+                this.props.changeState(this.state);
             });
-        const state = this.state;
-        this.props.changeState(state);
-
     }
 
     validateField(fieldName, value) {

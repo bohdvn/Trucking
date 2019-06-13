@@ -1,9 +1,11 @@
 package by.itechart.Server.controller;
 
 import by.itechart.Server.dto.UserDto;
+import by.itechart.Server.entity.ClientCompany;
 import by.itechart.Server.entity.ConfirmationToken;
 import by.itechart.Server.entity.User;
 import by.itechart.Server.security.*;
+import by.itechart.Server.service.ClientCompanyService;
 import by.itechart.Server.service.ConfirmationTokenService;
 import by.itechart.Server.service.EmailSenderService;
 import by.itechart.Server.service.UserService;
@@ -25,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +50,9 @@ public class UserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private ClientCompanyService clientCompanyService;
+
 
     private UserService userService;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
@@ -61,21 +67,30 @@ public class UserController {
         this.emailSenderService = emailSenderService;
     }
 
-    @PreAuthorize("hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('OWNER') or hasAuthority('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal,@PathVariable("id") int id) {
+    public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/user{} method: GET.", id);
-        Optional<User> user = userService.findById(id);
-        return user.isPresent() ?
-                ResponseEntity.ok().body(user.get().transform()) :
+        Optional<User> optional = userService.findById(id);
+        if (optional.isPresent()) {
+            User user = optional.get();
+            ClientCompany clientCompany = user.getClientCompany();
+            if (clientCompany != null && userPrincipal.getClientCompanyId() != clientCompany.getId()) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+            return ResponseEntity.ok().body(user.transform());
+        }
+        return
+//                user.isPresent() ?
+//                ResponseEntity.ok().body(user.get().transform()) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PreAuthorize("hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/list")
     public ResponseEntity<Page<UserDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
-        Page<User> users = userService.findAll(pageable);
+        Page<User> users = userService.findAllByClientCompanyId(userPrincipal.getClientCompanyId(), pageable);
         Page<UserDto> usersDto = new PageImpl<>(users.stream().map(User::transform)
                 .sorted(Comparator.comparing(UserDto::getSurname))
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
@@ -84,38 +99,62 @@ public class UserController {
                 new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
 
-    @GetMapping("/drivers")
-    public ResponseEntity<?> getDrivers() {
+    @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('OWNER')")
+    @GetMapping("/driverList")
+    public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
-        final List<User> all = userService.findAll();
-        final List<UserDto> users = all.stream().filter(user -> user.getRole().equals(User.Role.DRIVER))
-                .map(User::transform).collect(Collectors.toList());
-        return
-              //  users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(users, HttpStatus.OK);
+        Page<User> drivers = userService.findAllByRolesContains(User.Role.DRIVER, pageable);
+        Page<UserDto> usersDto = new PageImpl<>(drivers.stream().map(User::transform)
+                .sorted(Comparator.comparing(UserDto::getSurname))
+                .collect(Collectors.toList()), pageable, drivers.getTotalElements());
+
+        LOGGER.info("Return userList.size:{}", usersDto.getNumber());
+        return drivers.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(usersDto, HttpStatus.OK);
     }
 
 
-    @PreAuthorize("hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/drivers")
+    public ResponseEntity<?> getDrivers() {
+        LOGGER.info("REST request. Path:/user method: GET.");
+        final List<User> drivers = userService.findAllByRolesContains(User.Role.DRIVER);
+//        final List<UserDto> users = all.stream().filter(user -> user.getRoles().contains(User.Role.DRIVER))
+//                .map(User::transform).collect(Collectors.toList());
+        return
+                //  users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(drivers, HttpStatus.OK);
+    }
+
+
+    @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('ADMIN')")
     @Transactional
     @PostMapping("")
-    public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody User user) {
+    public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody User user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         User existingUser = userService.findByEmailIgnoreCase(user.getEmail());
         if (existingUser != null) {
             return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
+                    .status(HttpStatus.BAD_REQUEST)
                     .body("Error. This email already exists!");
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+            final Integer clientCompanyId = userPrincipal.getClientCompanyId();
+            if (clientCompanyId != null) {
+                final Optional<ClientCompany> clientCompanyOptional = clientCompanyService.findById(clientCompanyId);
+                user.setClientCompany(
+                        clientCompanyOptional.isPresent() ?
+                                clientCompanyOptional.get() : null);
+            }
             userService.save(user);
-            ConfirmationToken confirmationToken = new ConfirmationToken(user);
-            confirmationTokenService.save(confirmationToken);
-            String message = String.format("Hello, %s! To confirm your account, " +
-                            "please visit next link: http://localhost:8080/user/confirm-account/%s",
-                    user.getName(), confirmationToken.getConfirmationToken());
 
-            emailSenderService.sendEmail(user.getEmail(), "Complete Registration!", message);
+//            ConfirmationToken confirmationToken = new ConfirmationToken(user);
+//            confirmationTokenService.save(confirmationToken);
+//            String message = String.format("Hello, %s! To confirm your account, " +
+//                            "please visit next link: http://localhost:8080/user/confirm-account/%s",
+//                    user.getName(), confirmationToken.getConfirmationToken());
+//
+//            emailSenderService.sendEmail(user.getEmail(), "Complete Registration!", message);
             LOGGER.info("Success.Confirmation email was sent.");
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -130,7 +169,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @Transactional
     @PutMapping("/")
-    public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody User user) {
+    public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody User user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user);
@@ -138,7 +177,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{selectedUsers}")
-    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal,@PathVariable("selectedUsers") String selectedUsers ) {
+    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal, @PathVariable("selectedUsers") String selectedUsers) {
         LOGGER.info("REST request. Path:/user/{} method: DELETE.", selectedUsers);
         final String delimeter = ",";
         final String[] usersId = selectedUsers.split(delimeter);
@@ -148,28 +187,28 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/confirm-account/{confirmationToken}")
-    public ResponseEntity<?> confirmUserAccount(@PathVariable String confirmationToken) {
-        ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken);
-        if (token != null) {
-            User user = userService.findByEmailIgnoreCase(token.getUser().getEmail());
-            if (!user.getEnabled()) {
-                user.setEnabled(true);
-                userService.save(user);
-                LOGGER.info("Users field isEnabled was change.");
-                confirmationTokenService.delete(token);
-                LOGGER.info("Confirmation token was deleted.");
-            }
-
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .body("Error. The link is invalid or your account has been already confirmed.");
-        }
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Success! Account verified.");
-    }
+//    @GetMapping("/confirm-account/{confirmationToken}")
+//    public ResponseEntity<?> confirmUserAccount(@PathVariable String confirmationToken) {
+//        ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken);
+//        if (token != null) {
+//            User user = userService.findByEmailIgnoreCase(token.getUser().getEmail());
+//            if (!user.getEnabled()) {
+//                user.setEnabled(true);
+//                userService.save(user);
+//                LOGGER.info("Users field isEnabled was change.");
+//                confirmationTokenService.delete(token);
+//                LOGGER.info("Confirmation token was deleted.");
+//            }
+//
+//        } else {
+//            return ResponseEntity
+//                    .status(HttpStatus.FORBIDDEN)
+//                    .body("Error. The link is invalid or your account has been already confirmed.");
+//        }
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body("Success! Account verified.");
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -182,7 +221,7 @@ public class UserController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
-        JwtAuthenticationResponse response=new JwtAuthenticationResponse(jwt);
+        JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }

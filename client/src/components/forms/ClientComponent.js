@@ -2,31 +2,17 @@ import React from 'react';
 import "../../styles.css";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import AddressFields from "./AddressFields";
-import UserFields from "./UserFields";
+import * as CLIENT from "../../constants/clientConstants";
+import axios from 'axios';
 
 class ClientComponent extends React.Component {
     emptyClient = {
         id: '',
         name: '',
         address: '',
-        type: 'LEGAL',
-        status: 'ACTIVE',
-        companyType: 'CLIENT',
-    };
-
-    user = {
-        id: '',
-        surname: '',
-        name: '',
-        patronymic: '',
-        passportNumber: '',
-        passportIssued: '',
-        dateOfBirth: '',
-        email: '',
-        role: '',
-        login: '',
-        password: '',
-        address: {},
+        type: CLIENT.LEGAL,
+        status: CLIENT.ACTIVE,
+        companyType: CLIENT.CLIENT,
     };
 
     address = {
@@ -37,26 +23,12 @@ class ClientComponent extends React.Component {
         flat: '1'
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            client: this.emptyClient,
-            formErrors: {name: ''},
-            nameValid: false,
-            formValid: false,
-            userValid: false,
-            addressValid: false,
-            users:[this.user]
-        };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.validateField = this.validateField.bind(this);
-        this.validateForm = this.validateForm.bind(this);
-        console.log(this.state);
-        console.log(this.props.match.params.id);
-    }
+    state={
+        client:this.emptyClient,
+        formErrors: {name: ''},
+    };
 
-    handleChange(event) {
+    handleChange=(event)=>{
         const target = event.target;
         const value = target.value;
         const name = target.name;
@@ -66,9 +38,10 @@ class ClientComponent extends React.Component {
             () => {
                 this.validateField(name, value)
             });
-    }
+        console.log(this.state);
+    };
 
-    validateField(fieldName, value) {
+    validateField=(fieldName, value) => {
         let fieldValidationErrors = this.state.formErrors;
         let nameValid = this.state.nameValid;
         switch (fieldName) {
@@ -83,36 +56,45 @@ class ClientComponent extends React.Component {
             formErrors: fieldValidationErrors,
             nameValid: nameValid
         }, this.validateForm);
-    }
+    };
 
-    validateForm() {
+    validateForm=()=>{
         this.setState({
             formValid: this.state.nameValid,
             addressValid: this.state.addressValid,
             userValid:this.state.userValid
         });
-    }
+    };
 
-    changeAddressFields(value) {
+    changeAddressFields=value=> {
         console.log(value);
         let client = {...this.state.client};
         client['address'] = value.address;
         this.setState({client: client});
     };
 
-    changeUserFields(value) {
-        console.log(value);
-        let client = {...this.state.client};
-        client.users=[];
-        client.users.push(value.user);
-        this.setState({client: client});
-        console.log(this.state);
+    buttonClick=(event)=>{
+        const {client}=this.state;
+        console.log(client);
+        console.log(this.props);
+        const urlId=this.props.match.params.id;
+        console.log(urlId);
+        if(urlId==='create'){
+            this.props.history.push({
+                pathname:"/admin/create",
+                state:{client:client}
+            });
+        }
+        else{
+            this.handleSubmit(event);
+        }
     };
 
-    async handleSubmit(event) {
+    handleSubmit =(event)=>{
         event.preventDefault();
         const {client} = this.state;
-        await fetch('/client/', {
+        axios.post('/client/',{client})
+        fetch('/client/', {
             method: client.id ? 'PUT' : 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -120,7 +102,8 @@ class ClientComponent extends React.Component {
                 'Authorization':'Bearer ' + localStorage.getItem('accessToken')
             },
             body: JSON.stringify(client)
-        }).then(resp => {
+        })
+            .then(resp => {
             if (resp.status === 400) {
                 return resp.json();
             }
@@ -137,11 +120,15 @@ class ClientComponent extends React.Component {
                 alert(s);
             }
         });
-    }
+    };
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            const newClient = await (await fetch(`/client/${this.props.match.params.id}`)).json();
+            let newClient={};
+             await axios.get(`/client/${this.props.match.params.id}`)
+                 .then(response=>{
+                     newClient=response.data;
+                 });
             console.log(newClient);
             this.setState({client: newClient, nameValid: true, formValid: true, addressValid: true});
         } else {
@@ -154,41 +141,40 @@ class ClientComponent extends React.Component {
 
     render() {
         const {client} = this.state;
-        const user=this.state.users[0];
         return (
             <Container className="col-3">
                 <h1>Клиент</h1>
                 <Form onSubmit={this.handleSubmit}>
                     <FormGroup>
-                        <Label for="name">Имя/название</Label>
+                        <Label htmlFor="name">Имя/название</Label>
                         <Input type="text" name="name" id="name" value={client.name || ''}
                                onChange={this.handleChange} autoComplete="name"/>
                         <p className={'error-message'}>{(this.state.formErrors.name === '') ? ''
                             : 'Имя/название' + this.state.formErrors.name}</p>
                     </FormGroup>
                     <FormGroup>
-                        <Label for="type">Тип</Label>
+                        <Label htmlFor="type">Тип</Label>
                         <Input type="select" name="type" id="type" value={client.type || ''}
                                onChange={this.handleChange} autoComplete="type">
-                            <option value="INDIVIDUAL">Физическое лицо</option>
-                            <option value="LEGAL">Юридическое лицо</option>
+                            <option value={CLIENT.INDIVIDUAL}>{CLIENT.INDIVIDUAL_RU}</option>
+                            <option value={CLIENT.LEGAL}>{CLIENT.LEGAL_RU}</option>
                         </Input>
                     </FormGroup>
                     <FormGroup>
-                        <Label for="status">Статус</Label>
+                        <Label htmlFor="status">Статус</Label>
                         <Input type="select" name="status" id="status" value={client.status || ''}
                                onChange={this.handleChange} autoComplete="status">
-                            <option value="ACTIVE">Активен</option>
-                            <option value="BLOCKED">Заблокирован</option>
+                            <option value={CLIENT.ACTIVE}>{CLIENT.ACTIVE_RU}</option>
+                            <option value={CLIENT.BLOCKED}>{CLIENT.BLOCKED_RU}</option>
                         </Input>
                     </FormGroup>
 
                     <FormGroup>
-                        <Label for="status">Тип компании</Label>
+                        <Label htmlFor="status">Тип компании</Label>
                         <Input type="select" name="companyType" id="companyType" value={client.companyType || ''}
                                onChange={this.handleChange} autoComplete="companyType">
-                            <option value="CLIENT">Клиент</option>
-                            <option value="WAREHOUSE">Склад</option>
+                            <option value={CLIENT.CLIENT}>{CLIENT.CLIENT_RU}</option>
+                            <option value={CLIENT.WAREHOUSE}>{CLIENT.WAREHOUSE_RU}</option>
                         </Input>
                     </FormGroup>
 
@@ -202,18 +188,8 @@ class ClientComponent extends React.Component {
                     </FormGroup>
 
                     <FormGroup>
-                        {(user && this.props.match.params.id === 'create')?<UserFields
-                            name="user"
-                            id="userFields"
-                            isUserComponent={false}
-                            validationHandler={this.validateForm}
-                            changeState={this.changeUserFields.bind(this)}
-                            user={user}/>:null}
-                    </FormGroup>
-
-                    <FormGroup>
-                        <Button color="primary" type="submit"
-                                disabled={!this.state.formValid}>Сохранить</Button>{' '}
+                        <Button color="primary" type="button"
+                                disabled={!this.state.formValid} onClick={this.buttonClick}>Сохранить</Button>{' '}
                     </FormGroup>
                 </Form>
             </Container>

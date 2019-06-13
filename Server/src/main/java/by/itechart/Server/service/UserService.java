@@ -10,9 +10,11 @@ import java.util.Optional;
 public interface UserService {
     void save(User user);
 
-    Page<User> findAll(Pageable pageable);
+    Page<User> findAllByClientCompanyId(int id,Pageable pageable);
 
-    List<User> findAll();
+    Page<User> findAllByRolesContains(User.Role role,Pageable pageable);
+
+    List<User> findAllByRolesContains(User.Role role);
 
     Optional<User> findById(int id);
 

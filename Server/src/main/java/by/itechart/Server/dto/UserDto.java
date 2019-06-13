@@ -1,9 +1,12 @@
 package by.itechart.Server.dto;
 
+import by.itechart.Server.entity.User;
+import lombok.Data;
+
 import java.time.LocalDate;
 import java.util.List;
 
-
+@Data
 public class UserDto {
     private int id;
 
@@ -23,7 +26,7 @@ public class UserDto {
 
     private String email;
 
-    private int role;
+    private List<User.Role> roles;
 
     private String login;
 
@@ -46,150 +49,6 @@ public class UserDto {
 
     public static Builder builder() {
         return new UserDto().new Builder();
-    }
-
-    public Boolean getEnabled() {
-        return isEnabled;
-    }
-
-    public void setEnabled(final Boolean enabled) {
-        isEnabled = enabled;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(final String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(final String surname) {
-        this.surname = surname;
-    }
-
-    public String getPassportNumber() {
-        return passportNumber;
-    }
-
-    public void setPassportNumber(final String passportNumber) {
-        this.passportNumber = passportNumber;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(final LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(final String login) {
-        this.login = login;
-    }
-
-    public int getRole() {
-        return role;
-    }
-
-    public void setRole(int role) {
-        this.role = role;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(final String password) {
-        this.password = password;
-    }
-
-    public List<InvoiceDto> getCheckedByManagerInvoices() {
-        return checkedByManagerInvoices;
-    }
-
-    public void setCheckedByManagerInvoices(final List<InvoiceDto> checkedByManagerInvoices) {
-        this.checkedByManagerInvoices = checkedByManagerInvoices;
-    }
-
-    public List<InvoiceDto> getIssuedByDispatcherFromInvoices() {
-        return issuedByDispatcherFromInvoices;
-    }
-
-    public void setIssuedByDispatcherFromInvoices(final List<InvoiceDto> issuedByDispatcherFromInvoices) {
-        this.issuedByDispatcherFromInvoices = issuedByDispatcherFromInvoices;
-    }
-
-    public List<InvoiceDto> getIssuedByDispatcherToInvoices() {
-        return issuedByDispatcherToInvoices;
-    }
-
-    public void setIssuedByDispatcherToInvoices(final List<InvoiceDto> issuedByDispatcherToInvoices) {
-        this.issuedByDispatcherToInvoices = issuedByDispatcherToInvoices;
-    }
-
-    public List<RequestDto> getRequests() {
-        return requests;
-    }
-
-    public void setRequests(final List<RequestDto> requests) {
-        this.requests = requests;
-    }
-
-    public ClientCompanyDto getClientCompany() {
-        return clientCompany;
-    }
-
-    public void setClientCompany(final ClientCompanyDto clientCompany) {
-        this.clientCompany = clientCompany;
-    }
-
-    public String getPassportIssued() {
-        return passportIssued;
-    }
-
-    public void setPassportIssued(final String passportIssued) {
-        this.passportIssued = passportIssued;
-    }
-
-    public AddressDto getAddress() {
-        return address;
-    }
-
-    public void setAddress(final AddressDto address) {
-        this.address = address;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(final String email) {
-        this.email = email;
     }
 
     public class Builder {
@@ -262,8 +121,8 @@ public class UserDto {
             return this;
         }
 
-        public Builder withRole(final int role) {
-            UserDto.this.role = role;
+        public Builder withRoles(final List<User.Role> roles) {
+            UserDto.this.roles = roles;
             return this;
         }
 

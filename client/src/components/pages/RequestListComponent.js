@@ -41,12 +41,7 @@ class RequestListComponent extends React.Component {
     }
 
     fetchURL(page) {
-        axios.get(`/request/list?page=${page}&size=5`, {
-            proxy: {
-                host: 'http://localhost',
-                port: 8080
-            }
-        })
+        axios.get(`/request/list?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;

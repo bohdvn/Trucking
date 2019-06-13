@@ -24,13 +24,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
-    }
-
-    @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public Page<User> findAllByClientCompanyId(int id,Pageable pageable) {
+        return userRepository.findAllByClientCompanyId(id,pageable);
     }
 
     @Override
@@ -61,5 +56,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmailIgnoreCase(String email) {
         return userRepository.findByEmailIgnoreCase(email);
+    }
+
+    @Override
+    public Page<User> findAllByRolesContains(User.Role role,Pageable pageable) {
+        return userRepository.findAllByRolesContains(role, pageable);
+    }
+
+    @Override
+    public List<User> findAllByRolesContains(User.Role role) {
+        return userRepository.findAllByRolesContains(User.Role.DRIVER);
     }
 }

@@ -63,10 +63,7 @@ public class ClientCompany implements Transformable {
                 .withName(this.name)
                 .withType(this.type)
                 .withStatus(this.status)
-                .withCompanyType(this.companyType)
                 .withAddress(this.address.transform())
-                .withAddress(this.address.transform())
-//                .withUsers(this.users.stream().map(User::transform).collect(Collectors.toList()))
                 .build();
     }
 

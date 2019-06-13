@@ -25,9 +25,11 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
 
     @Override
     public void save(final ClientCompany clientCompany) {
-        User user=clientCompany.getUsers().get(0);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setClientCompany(clientCompany);
+        if(clientCompany.getUsers()!=null){
+            User user=clientCompany.getUsers().get(0);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setClientCompany(clientCompany);
+        }
         clientCompanyRepository.save(clientCompany);
     }
 

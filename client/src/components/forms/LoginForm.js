@@ -20,16 +20,16 @@ class LoginForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event) {
+    handleChange = (event) => {
         const target = event.target;
         const value = target.value;
         const name = target.name;
         let loginRequest = {...this.state.loginRequest};
         loginRequest[name] = value;
         this.setState({loginRequest});
-    }
+    };
 
-    handleSubmit(event) {
+    handleSubmit = (event) => {
         event.preventDefault();
         const {loginRequest} = this.state;
         login('/user/login', loginRequest)
@@ -42,15 +42,14 @@ class LoginForm extends React.Component {
                 })
             )
             .then(data => {
-                const token=data.accessToken;
-                const authDataEncrypted=token.split('.')[1];
-                const authDataDecrypted=JSON.parse(window.atob(authDataEncrypted));
-                setToken(token);
-                this.props.changeLoggedIn(authDataDecrypted);
+                const token = data.accessToken;
+                const loggedIn=setToken(token);
+                console.log(loggedIn);
+                this.props.changeLoggedIn(loggedIn);
                 console.log(localStorage.getItem('accessToken'));
                 this.props.history.push('/home');
             });
-    }
+    };
 
     render() {
         const {loginRequest} = this.state;

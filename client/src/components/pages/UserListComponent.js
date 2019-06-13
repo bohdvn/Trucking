@@ -14,37 +14,59 @@ class UserListComponent extends React.Component {
         'Менеджер',
         'Диспетчер',
         'Водитель',
-        'Владелец'
+        'Владелец',
+        'Администратор склада'
     ];
 
     constructor(props) {
         super(props);
+        console.log(props);
         this.state = {
             users: [],
-            activePage:0,
+            activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
-            totalItemsCount: null
+            totalItemsCount: null,
+            url: props.location.pathname
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.removeChecked = this.removeChecked.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        console.log(this.state);
     }
+
+    getUserUrl = () => {
+        const {url}=this.state;
+        switch(url){
+            case '/drivers':
+                return 'driver';
+
+            case '/users':
+                return 'user';
+
+            default:
+                return 'admin';
+        }
+    };
 
     fetchURL(page) {
         console.log(localStorage.getItem(ACCESS_TOKEN));
-        axios.get(`/user/list?page=${page}&size=5`, {
-            proxy: {
-                host: 'http://localhost',
-                port: 8080
-            },
-            headers:{
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            }
-        })
+        const {url} = this.state.url;
+        console.log(url);
+        let apiUrl;
+        console.log(url);
+        switch (this.state.url) {
+            case '/drivers':
+                apiUrl = 'driverList';
+                break;
+            case '/users':
+                apiUrl = 'list';
+                break;
+            default:
+                return;
+        }
+        axios.get(`/user/${apiUrl}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
@@ -73,7 +95,7 @@ class UserListComponent extends React.Component {
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber-1)
+        this.fetchURL(pageNumber - 1)
     }
 
     handleChange = e => {
@@ -100,13 +122,13 @@ class UserListComponent extends React.Component {
                     checked={user.value || ''}
                     onChange={this.handleChange}/></td>
                 <td style={{whiteSpace: 'nowrap'}}><Link
-                    to={"/user/" + user.id}>{user.surname} {user.name} {user.patronymic}</Link></td>
+                    to={`/${this.getUserUrl()}/${user.id}`}>{user.surname} {user.name} {user.patronymic}</Link></td>
                 <td>{this.userRoles[user.role]}</td>
                 <td>{user.dateOfBirth}</td>
                 <td>{user.login}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/user/" + user.id}>Редактировать</Button>
+                        <Button size="sm" color="primary" tag={Link} to={`/${this.getUserUrl()}/${user.id}`}>Редактировать</Button>
                         <Button size="sm" color="danger" onClick={() => this.remove(user.id)}>Удалить</Button>
                     </ButtonGroup>
                 </td>
@@ -147,51 +169,51 @@ class UserListComponent extends React.Component {
                 'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
-                let updateUsers = [...this.state.users].filter(user => !user.value);
-                this.setState({users: updateUsers});
-                this.handlePageChange(0);
+            let updateUsers = [...this.state.users].filter(user => !user.value);
+            this.setState({users: updateUsers});
+            this.handlePageChange(0);
         });
     }
 
     render() {
         return (
             <form name="users">
-            <div>
-                <Container fluid>
-                    <div className="float-right">
-                        <ButtonGroup>
-                        <Button color="success" tag={Link} to="/user/create">Добавить</Button>
-                            <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
-                        </ButtonGroup>
-                    </div>
-                    <Table className="mt-4">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th width="40%">Имя</th>
-                            <th width="15%">Роль</th>
-                            <th width="15%">Дата рождения</th>
-                            <th>Логин</th>
-                            <th width="10%"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {this.populateRowsWithData()}
-                        </tbody>
-                    </Table>
+                <div>
+                    <Container fluid>
+                        <div className="float-right">
+                            <ButtonGroup>
+                                <Button color="success" tag={Link} to={`/${this.getUserUrl()}/create`}>Добавить</Button>
+                                <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
+                            </ButtonGroup>
+                        </div>
+                        <Table className="mt-4">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th width="40%">Имя</th>
+                                <th width="15%">Роль</th>
+                                <th width="15%">Дата рождения</th>
+                                <th>Логин</th>
+                                <th width="10%"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {this.populateRowsWithData()}
+                            </tbody>
+                        </Table>
 
-                    <div className="d-flex justify-content-center">
-                        <Pagination
-                            activePage={this.state.activePage}
-                            itemsCountPerPage={this.state.itemsCountPerPage}
-                            totalItemsCount={this.state.totalItemsCount}
-                            itemClass='page-item'
-                            linkClass='btn btn-light'
-                            onChange={this.handlePageChange}
-                        />
-                    </div>
-                </Container>
-            </div>
+                        <div className="d-flex justify-content-center">
+                            <Pagination
+                                activePage={this.state.activePage}
+                                itemsCountPerPage={this.state.itemsCountPerPage}
+                                totalItemsCount={this.state.totalItemsCount}
+                                itemClass='page-item'
+                                linkClass='btn btn-light'
+                                onChange={this.handlePageChange}
+                            />
+                        </div>
+                    </Container>
+                </div>
             </form>
         );
     }

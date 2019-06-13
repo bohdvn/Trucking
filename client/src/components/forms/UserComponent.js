@@ -3,10 +3,14 @@ import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 
 import "react-datepicker/dist/react-datepicker.css";
-import {ACCESS_TOKEN} from "../../constants/auth";
-import {ROLES} from '../../constants/userConstants';
+// import {ACCESS_TOKEN, ROLE} from "../../constants/auth";
+import * as ROLE from '../../constants/userConstants';
 import {getUserById, saveUser} from "../../utils/APIUtils";
-
+import * as OPTION from "../../constants/userRoleOptions";
+import {connect} from "react-redux";
+import * as CLIENT from '../../constants/clientConstants';
+import axios from 'axios';
+import RoleSelect from "../RoleSelect";
 
 class UserComponent extends React.Component {
     emptyUser = {
@@ -18,7 +22,7 @@ class UserComponent extends React.Component {
         passportIssued: '',
         dateOfBirth: '',
         email: '',
-        role: '0',
+        roles: [],
         login: '',
         password: '',
         address: '',
@@ -36,6 +40,7 @@ class UserComponent extends React.Component {
         super(props);
         console.log(props);
         this.state = {
+            loggedIn: props.loggedIn,
             user: this.emptyUser,
             formErrors: {
                 name: '', surname: '', patronymic: '', passportNumber: '', passportIssued: '',
@@ -52,16 +57,18 @@ class UserComponent extends React.Component {
             passwordValid: false,
             addressValid: false,
             userFormValid: false,
-            isFields:props.isFields
         };
+        // const client=this.props.location.state.client;
+        const locationState = this.props.location.state;
+        const client = locationState ? locationState.client : null;
+        console.log(client);
+        this.state['client'] = client;
+        console.log(this.state);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
-        if(this.state.isFields){
-            return;
-        }
         if (this.props.match.params.id !== 'create') {
             getUserById(`/user/${this.props.match.params.id}`)
                 .then(response =>
@@ -73,16 +80,16 @@ class UserComponent extends React.Component {
                         return json;
                     })
                 )
-                .then(newUser=>{
-            this.setState({
-                user: newUser, surnameValid: true, nameValid: true, patronymicValid: true,
-                passportNumberValid: true, passportIssuedValid: true, dateOfBirthValid: true, emailValid: true,
-                loginValid: true, passwordValid: true, addressValid: true, userFormValid: true
-            });
+                .then(newUser => {
+                    console.log(newUser);
+                    this.setState({
+                        user: newUser, surnameValid: true, nameValid: true, patronymicValid: true,
+                        passportNumberValid: true, passportIssuedValid: true, dateOfBirthValid: true, emailValid: true,
+                        loginValid: true, passwordValid: true, addressValid: true, userFormValid: true
+                    });
                 });
             console.log(this.state);
-        }
-        else {
+        } else {
             const user = this.state.user;
             user['address'] = this.address;
             this.setState({user});
@@ -187,16 +194,14 @@ class UserComponent extends React.Component {
     validateUserForm() {
         this.setState({
             userFormValid: this.state.nameValid && this.state.surnameValid && this.state.patronymicValid
-            && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
-            && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid
-            && this.state.addressValid
+                && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
+                && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid
+                && this.state.addressValid
         });
 
     }
 
     changeAddressFields(value) {
-
-        console.log(value);
         let user = {...this.state.user};
         user['address'] = value.address;
         this.setState({user: user});
@@ -209,33 +214,47 @@ class UserComponent extends React.Component {
         this.setState({addressValid: formValid, userFormValid: pam && formValid});
     };
 
+    handleRoleChange = roles => {
+        let user = {...this.state.user};
+        user['roles'] = roles;
+        this.setState({user: user});
+        console.log(this.state);
+    };
+
     handleSubmit(event) {
         event.preventDefault();
         const {user} = this.state;
+        const {client} = this.state;
 
-        saveUser(user)
-            .then(resp => {
-            if (resp.status === 400) {
-                return resp.json();
-            }
-            else {
-                this.props.history.push('/users');
-                return null;
-            }
-        }).then(data => {
-            if (data) {
-                let s = '';
-                for (const k in data) {
-                    s += data[k] + '\n';
+        if (client) {
+            client.users = [];
+            client.users.push(user);
+            axios.post('/client/', client);
+            this.props.history.push('/clients');
+        } else {
+            saveUser(user)
+                .then(resp => {
+                    if (resp.status === 400) {
+                        return resp.json();
+                    } else {
+                        this.props.history.push('/home');
+                        return null;
+                    }
+                }).then(data => {
+                if (data) {
+                    let s = '';
+                    for (const k in data) {
+                        s += data[k] + '\n';
+                    }
+                    alert(s);
                 }
-                alert(s);
-            }
-        });
+            });
+            // this.props.history.push('/home');
+        }
     }
 
     render() {
         const {user} = this.state;
-        const {isFields}=this.state.isFields;
         return (
             <Container className="col-3">
                 <h1>Пользователь</h1>
@@ -305,18 +324,12 @@ class UserComponent extends React.Component {
                             address={user.address}/> : null}
                     </FormGroup>
 
-                    <FormGroup>
-                        <Label for="role">Роль</Label>
-                        <Input type="select" name="role" id="role" value={user.role || ''}
-                               onChange={this.handleChange} autoComplete="role">
-                            <option value="0">Системный администратор</option>
-                            <option value="1">Администратор</option>
-                            <option value="2">Менеджер</option>
-                            <option value="3">Диспетчер</option>
-                            <option value="4">Водитель</option>
-                            <option value="5">Владелец</option>
-                        </Input>
-                    </FormGroup>
+                    <RoleSelect
+                        roles={user.roles}
+                        client={this.state.client}
+                        onChange={this.handleRoleChange.bind(this)}
+                    />
+
 
                     <FormGroup>
                         <Label for="login">Логин</Label>
@@ -333,14 +346,18 @@ class UserComponent extends React.Component {
                         <p className={'error-message'}>{(this.state.formErrors.password === '') ? ''
                             : 'Пароль' + this.state.formErrors.password}</p>
                     </FormGroup>
-                    {isFields?'':<FormGroup>
+                    <FormGroup>
                         <Button color="primary" type="submit"
                                 disabled={!this.state.userFormValid}>Сохранить</Button>{' '}
-                    </FormGroup>}
+                    </FormGroup>
                 </Form>
             </Container>
         );
     }
 }
 
-export default UserComponent;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    }),
+)(UserComponent)

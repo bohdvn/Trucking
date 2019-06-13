@@ -2,6 +2,8 @@ package by.itechart.Server.controller;
 
 import by.itechart.Server.dto.CarDto;
 import by.itechart.Server.entity.Car;
+import by.itechart.Server.security.CurrentUser;
+import by.itechart.Server.security.UserPrincipal;
 import by.itechart.Server.service.CarService;
 import by.itechart.Server.utils.ValidationUtils;
 import org.slf4j.Logger;
@@ -11,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +34,7 @@ public class CarController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CarController.class);
 
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @PutMapping("/")
     public ResponseEntity<?> edit(final @Valid @RequestBody Car car) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", car);
@@ -38,6 +42,7 @@ public class CarController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @PostMapping("")
     public ResponseEntity<?> create(final @Valid @RequestBody Car car) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", car);
@@ -45,6 +50,7 @@ public class CarController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/car/{} method: GET.", id);
@@ -64,14 +70,17 @@ public class CarController {
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("/all")
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAll(@CurrentUser UserPrincipal userPrincipal) {
         final List<CarDto> carDtos = carService.findAll().stream().map(Car::transform).collect(Collectors.toList());
         return
                 //carDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(carDtos, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/list")
     public ResponseEntity<Page<CarDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/car method: GET.");

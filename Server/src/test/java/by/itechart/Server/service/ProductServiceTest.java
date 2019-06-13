@@ -31,14 +31,14 @@ public class ProductServiceTest {
         entityManager = entityManagerFactory.createEntityManager();
     }
 
-    @Test
-    public void testSave() {
-        productService.save(ProductUtil.createProduct());
-    }
+//    @Test
+//    public void testSave() {
+//        productService.save(ProductUtil.createProduct());
+//    }
 
-    @Test
-    public void testGetOne() {
-        Optional<Product> product=productService.findById(1);
-        Assert.assertNotNull(product);
-    }
+//    @Test
+//    public void testGetOne() {
+//        Optional<Product> product=productService.findById(1);
+//        Assert.assertNotNull(product);
+//    }
 }

@@ -10,7 +10,7 @@ const loggedInReducer = (state = parseToken(), action) => {
             return action.newValue;
         default:
             return state;
-    };
+    }
 };
 
 

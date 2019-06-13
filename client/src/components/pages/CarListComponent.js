@@ -1,8 +1,9 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, Input, Table, FormGroup} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 
 class CarListComponent extends React.Component {
@@ -21,8 +22,9 @@ class CarListComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            query: '',
             cars: [],
-            activePage:0,
+            activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null
@@ -30,14 +32,20 @@ class CarListComponent extends React.Component {
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.removeChecked = this.removeChecked.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleQueryChange = this.handleQueryChange.bind(this);
+        //this.handleChange = this.handleChange.bind(this);
     }
 
-    fetchURL(page) {
-        axios.get(`/car/list?page=${page}&size=5`, {
+    fetchURL(page, query) {
+        axios.get(`/car/list/${query}?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
+            },
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         })
             .then(response => {
@@ -53,9 +61,9 @@ class CarListComponent extends React.Component {
                     const results = response.data.content;
                     console.log(this.state);
 
-                    if (results != null){
-                    this.setState({cars: results});
-                    console.log(results);
+                    if (results != null) {
+                        this.setState({cars: results});
+                        console.log(results);
                     }
 
                     console.log(this.state.activePage);
@@ -65,27 +73,50 @@ class CarListComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchURL(this.state.activePage)
+        this.fetchURL(this.state.activePage, this.state.query)
     }
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber-1)
+        this.fetchURL(pageNumber - 1, this.state.query);
     }
 
-    handleChange = e => {
-        const id = e.target.id;
-        this.setState(prevState => {
-            return {
-                cars: prevState.cars.map(
-                    car => (car.id === +id ? {
-                        ...car, value: !car.value
-                    } : car)
-                )
-            }
-        })
-    };
+    handleQueryChange(event) {
+        const target = event.target;
+        const value = target.value;
+        this.setState(() =>({
+            query: value
+        }));
+        this.fetchURL(0, value);
+
+
+    }
+
+    // componentWillUpdate(nextProps, nextState){
+    //     console.log(nextState);
+    //     if(nextState.query !== this.state.query){
+    //         this.fetchURL(0);
+    //     }
+    // }
+    setQuery(value){
+        this.setState(() => ({
+            query:value
+        }));
+    }
+
+    // handleChange = e => {
+    //     const id = e.target.id;
+    //     this.setState(prevState => {
+    //         return {
+    //             cars: prevState.cars.map(
+    //                 car => (car.id === +id ? {
+    //                     ...car, value: !car.value
+    //                 } : car)
+    //             )
+    //         }
+    //     })
+    // };
 
     populateRowsWithData = () => {
         const cars = this.state.cars.map(car => {
@@ -119,7 +150,8 @@ class CarListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
             let updateCars = [...this.state.cars].filter(i => i.id !== id);
@@ -140,7 +172,8 @@ class CarListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
             let updateCars = [...this.state.cars].filter(car => !car.value);
@@ -155,6 +188,10 @@ class CarListComponent extends React.Component {
             <form name="cars">
                 <div>
                     <Container fluid>
+                        <FormGroup>
+                            <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                                   onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                        </FormGroup>
                         <div className="float-right">
                             <ButtonGroup>
                                 <Button color="success" tag={Link} to="/car/create">Добавить</Button>

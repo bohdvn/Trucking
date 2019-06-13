@@ -1,25 +1,30 @@
 package by.itechart.Server.service;
 
+import by.itechart.Server.dto.UserDto;
 import by.itechart.Server.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    void save(User user);
 
-    Page<User> findAll(Pageable pageable);
+    void save(final UserDto userDto);
 
-    Optional<User> findById(int id);
+    Page<UserDto> findAll(final Pageable pageable);
 
-    void delete(User user);
+    List<UserDto> findAll();
 
-    void deleteById(int id);
+    UserDto findById(int id);
 
-    boolean existsByLogin(String login);
+    void delete(final UserDto userDto);
 
-    boolean existsByEmail(String email);
+    void deleteById(final int id);
 
-    User findByEmailIgnoreCase(String email);
+    boolean existsByLogin(final String login);
+
+    boolean existsByEmail(final String email);
+
+    UserDto findByEmailIgnoreCase(final String email);
 }

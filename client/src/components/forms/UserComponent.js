@@ -190,6 +190,7 @@ class UserComponent extends React.Component {
     }
 
     changeAddressFields(value) {
+
         console.log(value);
         let user = {...this.state.user};
         user['address'] = value.address;

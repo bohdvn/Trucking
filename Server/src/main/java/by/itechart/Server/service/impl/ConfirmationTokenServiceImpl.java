@@ -1,5 +1,6 @@
 package by.itechart.Server.service.impl;
 
+import by.itechart.Server.dto.ConfirmationTokenDto;
 import by.itechart.Server.entity.ConfirmationToken;
 import by.itechart.Server.repository.ConfirmationTokenRepository;
 import by.itechart.Server.service.ConfirmationTokenService;
@@ -15,18 +16,18 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     }
 
     @Override
-    public void save(ConfirmationToken confirmationToken) {
-        confirmationTokenRepository.save(confirmationToken);
+    public void save(ConfirmationTokenDto confirmationTokenDto) {
+        confirmationTokenRepository.save(confirmationTokenDto.transformToEntity());
     }
 
     @Override
-    public void delete(ConfirmationToken confirmationToken) {
-        confirmationTokenRepository.delete(confirmationToken);
+    public void delete(ConfirmationTokenDto confirmationTokenDto) {
+        confirmationTokenRepository.delete(confirmationTokenDto.transformToEntity());
     }
 
     @Override
-    public ConfirmationToken findByConfirmationToken(String confirmationToken) {
-        return confirmationTokenRepository.findByConfirmationToken(confirmationToken);
+    public ConfirmationTokenDto findByConfirmationToken(String confirmationToken) {
+        return confirmationTokenRepository.findByConfirmationToken(confirmationToken).transformToDto();
     }
 
 

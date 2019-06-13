@@ -32,10 +32,10 @@ public class CarServiceTest {
         entityManager = entityManagerFactory.createEntityManager();
     }
 
-    @Test
-    public void testSave() {
-        carService.save(CarUtil.createCar());
-    }
+//    @Test
+//    public void testSave() {
+//        carService.save(CarUtil.createCar());
+//    }
 
     @Test
     public void testFindAll() {
@@ -43,9 +43,9 @@ public class CarServiceTest {
 //        Assert.assertTrue(cars.size() > 0);
     }
 
-    @Test
-    public void testGetOne() {
-        Optional<Car> car=carService.findById(1);
-        Assert.assertNotNull(car);
-    }
+//    @Test
+//    public void testGetOne() {
+//        Optional<Car> car=carService.findById(1);
+//        Assert.assertNotNull(car);
+//    }
 }

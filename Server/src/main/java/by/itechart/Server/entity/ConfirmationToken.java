@@ -1,16 +1,21 @@
 package by.itechart.Server.entity;
 
+import by.itechart.Server.dto.ConfirmationTokenDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
+import by.itechart.Server.transformers.ToEntityTransformer;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "confirmation_token")
-public class ConfirmationToken {
+public class ConfirmationToken implements ToDtoTransformer{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    //todo: why name equals name of class
     @Column(name = "confirmation_token")
     private String confirmationToken;
 
@@ -61,5 +66,16 @@ public class ConfirmationToken {
 
     public void setUser(final User user) {
         this.user = user;
+    }
+
+
+    @Override
+    public ConfirmationTokenDto transformToDto() {
+        return ConfirmationTokenDto.builder()
+                .withConfirmationToken(this.confirmationToken)
+                .withCreateDate(this.createDate)
+                .withId(this.id)
+                .withUser(this.user.transformToDto())
+                .build();
     }
 }

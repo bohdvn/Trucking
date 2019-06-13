@@ -31,10 +31,10 @@ public class ClientCompanyServiceTest {
         entityManager = entityManagerFactory.createEntityManager();
     }
 
-    @Test
-    public void testSave() {
-        clientCompanyService.save(ClientCompanyUtil.createClientCompany());
-    }
+//    @Test
+//    public void testSave() {
+//        clientCompanyService.save(ClientCompanyUtil.createClientCompany());
+//    }
 
     @Test
     public void testFindAll() {
@@ -42,9 +42,9 @@ public class ClientCompanyServiceTest {
         //Assert.assertTrue(clientCompanies.size() > 0);
     }
 
-    @Test
-    public void testGetOne() {
-        Optional<ClientCompany> clientCompany=clientCompanyService.findById(1);
-        Assert.assertNotNull(clientCompany);
-    }
+//    @Test
+//    public void testGetOne() {
+//        Optional<ClientCompany> clientCompany=clientCompanyService.findById(1);
+//        Assert.assertNotNull(clientCompany);
+//    }
 }

@@ -32,10 +32,10 @@ public class UserServiceTest {
         entityManager = entityManagerFactory.createEntityManager();
     }
 
-    @Test
-    public void testSave() {
-        userService.save(UserUtil.createUser());
-    }
+//    @Test
+//    public void testSave() {
+//        userService.save(UserUtil.createUser());
+//    }
 
     @Test
     public void testFindAll() {
@@ -43,9 +43,9 @@ public class UserServiceTest {
 //        Assert.assertTrue(users.size() > 0);
     }
 
-    @Test
-    public void testGetOne() {
-        Optional<User> user=userService.findById(1);
-        Assert.assertNotNull(user);
-    }
+//    @Test
+//    public void testGetOne() {
+//        Optional<User> user=userService.findById(1);
+//        Assert.assertNotNull(user);
+//    }
 }

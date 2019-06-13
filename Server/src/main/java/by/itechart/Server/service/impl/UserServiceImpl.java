@@ -1,59 +1,74 @@
 package by.itechart.Server.service.impl;
 
+import by.itechart.Server.dto.UserDto;
 import by.itechart.Server.entity.User;
 import by.itechart.Server.repository.UserRepository;
 import by.itechart.Server.service.UserService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     private UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository){
-        this.userRepository=userRepository;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
-    public void save(User user) {
-        userRepository.save(user);
+    public void save(final UserDto user) {
+        userRepository.save(user.transformToEntity());
     }
 
     @Override
-    public Page<User> findAll(Pageable pageable) {
-        return userRepository.findAll(pageable);
+    public Page<UserDto> findAll(final Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+        return new PageImpl<>(users.stream().map(User::transformToDto)
+                .sorted(Comparator.comparing(UserDto::getSurname))
+                .collect(Collectors.toList()), pageable, users.getTotalElements());
+        }
+
+    @Override
+    public List<UserDto> findAll() {
+        return userRepository.findAll().stream().map(User::transformToDto).collect(Collectors.toList());
     }
 
     @Override
-    public Optional<User> findById(int id) {
-        return userRepository.findById(id);
+    public UserDto findById(final int id) {
+        return userRepository.findById(id).isPresent() ? userRepository.findById(id).get().transformToDto() : null;
     }
 
     @Override
-    public void delete(User user) {
-        userRepository.delete(user);
+    public void delete(final UserDto user) {
+        userRepository.delete(user.transformToEntity());
     }
 
     @Override
-    public void deleteById(int id) {
+    public void deleteById(final int id) {
         userRepository.deleteById(id);
     }
 
     @Override
-    public boolean existsByLogin(String login) {
+    public boolean existsByLogin(final String login) {
         return userRepository.existsByLogin(login);
     }
 
     @Override
-    public boolean existsByEmail(String email) {
+    public boolean existsByEmail(final String email) {
         return userRepository.existsByEmail(email);
     }
 
     @Override
-    public User findByEmailIgnoreCase(String email) {
-        return userRepository.findByEmailIgnoreCase(email);
+    public UserDto findByEmailIgnoreCase(final String email) {
+        return userRepository.findByEmailIgnoreCase(email).transformToDto();
     }
 }

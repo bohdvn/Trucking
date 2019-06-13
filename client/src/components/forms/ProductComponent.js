@@ -27,6 +27,7 @@ class ProductComponent extends React.Component {
     }
 
     async componentDidMount() {
+        console.log(this.props.match.params.id);
         if (this.props.match.params.id !== 'create') {
             const newProduct = await (await fetch(`/product/${this.props.match.params.id}`)).json();
             this.setState({
@@ -48,6 +49,13 @@ class ProductComponent extends React.Component {
             });
     }
 
+    changeAddressFields(value) {
+        console.log(value);
+        let user = {...this.state.user};
+        user['address'] = value.address;
+        this.setState({user: user});
+    };
+
     async handleSubmit(event) {
         event.preventDefault();
         const {product} = this.state;
@@ -63,7 +71,7 @@ class ProductComponent extends React.Component {
                 return resp.json();
             }
             else {
-                this.props.history.push('/products');
+                this.props.history.push('/request/' + this.state.product.request_id);
                 return null;
             }
         }).then(data => {

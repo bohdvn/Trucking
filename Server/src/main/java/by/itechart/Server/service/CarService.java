@@ -1,21 +1,23 @@
 package by.itechart.Server.service;
 
-import by.itechart.Server.entity.Car;
-import by.itechart.Server.entity.User;
+import by.itechart.Server.dto.CarDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CarService {
-    void save(Car car);
+    void save(final CarDto carDto);
 
-    Page<Car> findAll(Pageable pageable);
+    List<CarDto> findAll();
 
-    Optional<Car> findById(int id);
+    Page<CarDto> findAll(final Pageable pageable);
 
-    void delete(Car car);
+    CarDto findById(final int id);
 
-    void deleteById(int id);
+    void delete(final CarDto carDto);
+
+    void deleteById(final int id);
+
+    Page<CarDto> findAllByQuery(final Pageable pageable, final String query);
 }

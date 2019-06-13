@@ -1,14 +1,16 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 
 class WaybillListComponent extends React.Component {
+
     waybillStatusMap = {
-        'STARTED': 'Перевозка начата',
-        'FINISHED': 'Перевозка завершена'
+        'STARTED': 'Начата',
+        'FINISHED': 'Завершена'
     };
 
     constructor(props) {
@@ -22,28 +24,19 @@ class WaybillListComponent extends React.Component {
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
-        this.removeChecked = this.removeChecked.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.remove = this.remove.bind(this);
     }
-
-    handleChange = e => {
-        const id = e.target.id;
-        this.setState(prevState => {
-            return {
-                waybills: prevState.waybills.map(
-                    waybill => (waybill.id === +id ? {
-                        ...waybill, value: !waybill.value
-                    } : waybill)
-                )
-            }
-        })
-    };
 
     fetchURL(page) {
         axios.get(`/waybill/list?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
+            },
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         })
             .then(response => {
@@ -83,28 +76,15 @@ class WaybillListComponent extends React.Component {
     populateRowsWithData = () => {
         const waybills = this.state.waybills.map(waybill => {
             return <tr key={waybill.id}>
-                <td><Input
-                    type="checkbox"
-                    id={waybill.id || ''}
-                    name="selected_waybills"
-                    value={waybill.id || ''}
-                    checked={waybill.value || ''}
-                    onChange={this.handleChange}/></td>
-                    <td style={{whiteSpace: 'nowrap'}}>
-                        {waybill.addressFrom.city} {waybill.addressFrom.street} {waybill.addressFrom.building}
-                    </td>
-                    <td>
-                        {waybill.addressTo.city} {waybill.addressTo.street} {waybill.addressTo.building}
-                    </td>
-                    <td>
-                        {waybill.invoice.carName}
-                    </td>
-                    <td>
-                        {waybill.invoice.number}
-                    </td>
-                    <td>{waybill.dateFrom}</td>
-                    <td>{this.waybillStatusMap[waybill.status]}</td>
-
+                <td>{waybill.invoice.number}</td>
+                <td>{waybill.invoice.request.clientCompanyFrom.address.city}
+                    {waybill.invoice.request.clientCompanyFrom.address.street}
+                    {waybill.invoice.request.clientCompanyFrom.address.building}</td>
+                <td>{waybill.invoice.request.clientCompanyTo.address.city}
+                    {waybill.invoice.request.clientCompanyTo.address.street}
+                    {waybill.invoice.request.clientCompanyTo.address.building}</td>
+                <td>{waybill.dateFrom}</td>
+                <td>{this.waybillStatusMap[waybill.status]}</td>
                 <td>
                     <ButtonGroup>
                         <Button size="sm" color="primary" tag={Link}
@@ -115,7 +95,7 @@ class WaybillListComponent extends React.Component {
             </tr>
         });
 
-        return waybills
+        return waybills;
     };
 
     async remove(id) {
@@ -128,75 +108,46 @@ class WaybillListComponent extends React.Component {
         }).then(() => {
             let updateWaybills = [...this.state.waybills].filter(i => i.id !== id);
             this.setState({waybills: updateWaybills});
-            this.handlePageChange(0);
-        });
-    }
-
-    async removeChecked() {
-        const selectedWaybills = Array.apply(null,
-            document.waybills.selected_waybills).filter(function (el) {
-            return el.checked === true
-        }).map(function (el) {
-            return el.value
-        });
-        console.log(selectedWaybills);
-        await fetch(`/waybill/${selectedWaybills}`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        }).then(() => {
-            let updateWaybills = [...this.state.waybills].filter(waybill => !waybill.value);
-            this.setState({products: updateWaybills});
-            this.handlePageChange(0);
         });
     }
 
 
     render() {
         return (
-            <form name="waybills">
-                <div>
-                    <Container fluid>
-                        <div className="float-right">
-                            <ButtonGroup>
-                                <Button color="success" tag={Link} to="/waybill/create">Добавить</Button>
-                                <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
-                            </ButtonGroup>
-                        </div>
-                        <Table className="mt-4">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th width="15%">Отправитель</th>
-                                <th width="15%">Получатель</th>
-                                <th width="15%">Номер автомобиля</th>
-                                <th width="15%">Номер ТТН</th>
-                                <th width="15%">Дата оформления</th>
-                                <th width="15%">Статус</th>
-                                <th width="10%"></th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {this.populateRowsWithData()}
-                            </tbody>
-                        </Table>
+            <div>
+                <Container fluid>
+                    <div className="float-right">
+                        <Button color="success" tag={Link} to="/waybill/create">Добавить</Button>
+                    </div>
+                    <Table className="mt-4">
+                        <thead>
+                        <tr>
+                            <th width="20%">Номер ТТН</th>
+                            <th width="20%">Пункт отправления</th>
+                            <th width="20%">Пункт назначения</th>
+                            <th width="20%">Дата отправления</th>
+                            <th>Статус</th>
+                            <th width="10%"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {this.populateRowsWithData()}
+                        </tbody>
+                    </Table>
 
-                        <div className="d-flex justify-content-center">
-                            <Pagination
-                                activePage={this.state.activePage}
-                                itemsCountPerPage={this.state.itemsCountPerPage}
-                                totalItemsCount={this.state.totalItemsCount}
-                                itemClass='page-item'
-                                linkClass='btn btn-light'
-                                onChange={this.handlePageChange}
+                    <div className="d-flex justify-content-center">
+                        <Pagination
+                            activePage={this.state.activePage}
+                            itemsCountPerPage={this.state.itemsCountPerPage}
+                            totalItemsCount={this.state.totalItemsCount}
+                            itemClass='page-item'
+                            linkClass='btn btn-light'
+                            onChange={this.handlePageChange}
 
-                            />
-                        </div>
-                    </Container>
-                </div>
-            </form>
+                        />
+                    </div>
+                </Container>
+            </div>
         );
     }
 }

@@ -1,6 +1,7 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.CheckpointDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -10,7 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "checkpoint")
-public class Checkpoint implements Transformable {
+public class Checkpoint implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -49,12 +50,15 @@ public class Checkpoint implements Transformable {
     }
 
     @Override
-    public CheckpointDto transform() {
+    public CheckpointDto transformToDto() {
         return CheckpointDto.builder()
+                .withId(this.id)
                 .withDate(this.date)
                 .withLatitude(this.latitude)
                 .withLongitude(this.longitude)
                 .withName(this.name)
+                .withStatus(this.status)
+                .withWayBill(this.wayBill.transformToDto())
                 .build();
     }
 

@@ -11,20 +11,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,24 +29,35 @@ public class ProductController {
         this.productService = productService;
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @PutMapping("/")
-    public ResponseEntity<?> create(@Valid @RequestBody Product product) {
-        LOGGER.info("REST request. Path:/product method: POST. product: {}", product);
-        productService.save(product);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<?> create(@Valid @RequestBody ProductDto productDto) {
+        LOGGER.info("REST request. Path:/product method: POST. product: {}", productDto);
+        final ProductDto save = productService.save(productDto);
+        return new ResponseEntity<>(save, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/product/{} method: GET.", id);
-        Optional<Product> product = productService.findById(id);
-        return product.isPresent() ?
-                ResponseEntity.ok().body(product.get().transform()) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        final ProductDto productDto = productService.findById(id);
+        return productDto == null ?
+                new ResponseEntity<>(HttpStatus.NOT_FOUND) : ResponseEntity.ok().body(productDto);
+
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> remove(@PathVariable("id") int id) {
+        LOGGER.info("REST request. Path:/product/{} method: DELETE.", id);
+        productService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedProducts}")
-    public ResponseEntity<?> remove(@PathVariable("selectedProducts") String selectedProducts ) {
+    public ResponseEntity<?> remove(@PathVariable("selectedProducts") String selectedProducts) {
         LOGGER.info("REST request. Path:/product/{} method: DELETE.", selectedProducts);
         final String delimeter = ",";
         final String[] productsId = selectedProducts.split(delimeter);
@@ -64,15 +67,13 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/list")
     public ResponseEntity<Page<ProductDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/product method: GET.");
-        Page<Product> products = productService.findAll(pageable);
-        Page<ProductDto> productsDto = new PageImpl<>(products.stream().map(Product::transform)
-                .sorted(Comparator.comparing(ProductDto::getName))
-                .collect(Collectors.toList()), pageable, products.getTotalElements());
+        Page<ProductDto> productsDto = productService.findAll(pageable);
         LOGGER.info("Return productList.size:{}", productsDto.getNumber());
-        return products.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+        return productsDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(productsDto, HttpStatus.OK);
     }
 

@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,7 +51,9 @@ public class UserController {
 
     private UserService userService;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     private ConfirmationTokenService confirmationTokenService;
+
     private EmailSenderService emailSenderService;
 
     public UserController(UserService userService, ConfirmationTokenService confirmationTokenService, EmailSenderService emailSenderService) {
@@ -62,31 +66,37 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal,@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/user{} method: GET.", id);
-        Optional<User> user = userService.findById(id);
-        return user.isPresent() ?
-                ResponseEntity.ok().body(user.get().transform()) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        final UserDto userDto = userService.findById(id);
+        return Objects.nonNull(userDto) ?
+                ResponseEntity.ok().body(userDto) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/list")
     public ResponseEntity<Page<UserDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
-        Page<User> users = userService.findAll(pageable);
-        Page<UserDto> usersDto = new PageImpl<>(users.stream().map(User::transform)
-                .sorted(Comparator.comparing(UserDto::getSurname))
-                .collect(Collectors.toList()), pageable, users.getTotalElements());
-        LOGGER.info("Return userList.size:{}", usersDto.getNumber());
-        return users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(usersDto, HttpStatus.OK);
+        Page<UserDto> users = userService.findAll(pageable);
+        return users.isEmpty() ?
+                new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(users, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAuthority('SYSADMIN')")
+    @GetMapping("/drivers")
+    public ResponseEntity<?> getDrivers() {
+        LOGGER.info("REST request. Path:/user method: GET.");
+        final List<UserDto> users = userService.findAll();
+        return
+              //  users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
 
     @PreAuthorize("hasAuthority('SYSADMIN')")
     @Transactional
     @PostMapping("")
-    public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody User user) {
+    public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody UserDto user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
-        User existingUser = userService.findByEmailIgnoreCase(user.getEmail());
+        UserDto existingUser = userService.findByEmailIgnoreCase(user.getEmail());
         if (existingUser != null) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
@@ -94,8 +104,8 @@ public class UserController {
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userService.save(user);
-            ConfirmationToken confirmationToken = new ConfirmationToken(user);
-            confirmationTokenService.save(confirmationToken);
+            ConfirmationToken confirmationToken = new ConfirmationToken(user.transformToEntity());
+            confirmationTokenService.save(confirmationToken.transformToDto());
             String message = String.format("Hello, %s! To confirm your account, " +
                             "please visit next link: http://localhost:8080/user/confirm-account/%s",
                     user.getName(), confirmationToken.getConfirmationToken());
@@ -115,13 +125,14 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @Transactional
     @PutMapping("/")
-    public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody User user) {
+    public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal,@Valid @RequestBody UserDto user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedUsers}")
     public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal,@PathVariable("selectedUsers") String selectedUsers ) {
         LOGGER.info("REST request. Path:/user/{} method: DELETE.", selectedUsers);
@@ -133,16 +144,17 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/confirm-account/{confirmationToken}")
     public ResponseEntity<?> confirmUserAccount(@PathVariable String confirmationToken) {
-        ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken);
+        final ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken).transformToEntity();
         if (token != null) {
-            User user = userService.findByEmailIgnoreCase(token.getUser().getEmail());
+            final UserDto user = userService.findByEmailIgnoreCase(token.getUser().getEmail());
             if (!user.getEnabled()) {
                 user.setEnabled(true);
                 userService.save(user);
                 LOGGER.info("Users field isEnabled was change.");
-                confirmationTokenService.delete(token);
+                confirmationTokenService.delete(token.transformToDto());
                 LOGGER.info("Confirmation token was deleted.");
             }
 

@@ -1,16 +1,29 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ClientCompanyDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "client_company")
-public class ClientCompany implements Transformable {
+public class ClientCompany implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -30,11 +43,6 @@ public class ClientCompany implements Transformable {
     @Column(name = "status")
     private Status status;
 
-    @Enumerated
-    @NotNull(message = "CompanyType cannot be null")
-    @Column(name = "company_type")
-    private CompanyType companyType;
-
     /**
      * One clientCompany can have only one address.
      */
@@ -45,54 +53,24 @@ public class ClientCompany implements Transformable {
     @OneToMany(mappedBy = "clientCompany", cascade = CascadeType.ALL)
     private List<User> users;
 
-    public enum Type {
-        LEGAL, INDIVIDUAL
-    }
-
     @Override
-    public ClientCompanyDto transform() {
+    public ClientCompanyDto transformToDto() {
         return ClientCompanyDto.builder()
                 .withId(this.id)
                 .withName(this.name)
                 .withType(this.type)
                 .withStatus(this.status)
-                .withCompanyType(this.companyType)
-                .withAddressDto(this.address.transform())
+                .withAddress(this.address.transformToDto())
+                .withUsers(this.users.stream().map(User::transformToDto).collect(Collectors.toList()))
                 .build();
-    }
-
-    public CompanyType getCompanyType() {
-        return companyType;
-    }
-
-    public void setCompanyType(final CompanyType companyType) {
-        this.companyType = companyType;
-    }
-
-    public void setAddress(final Address address) {
-        this.address = address;
-    }
-
-    public void setUsers(final List<User> users) {
-        this.users = users;
     }
 
     public Address getAddress() {
         return address;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClientCompany that = (ClientCompany) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
-                type == that.type &&
-                companyType == that.companyType &&
-                status == that.status &&
-                Objects.equals(address, that.address) &&
-                Objects.equals(users, that.users);
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     public Integer getId() {
@@ -131,9 +109,26 @@ public class ClientCompany implements Transformable {
         return users;
     }
 
+    public void setUsers(List<User> users) {
+        this.users = users;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ClientCompany that = (ClientCompany) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                type == that.type &&
+                status == that.status &&
+                Objects.equals(address, that.address) &&
+                Objects.equals(users, that.users);
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, companyType, status, address, users);
+        return Objects.hash(id, name, type, status, address, users);
     }
 
     @Override
@@ -142,18 +137,17 @@ public class ClientCompany implements Transformable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", type=" + type +
-                ", companyType=" + companyType +
                 ", status=" + status +
                 ", address=" + address +
                 ", users=" + users +
                 '}';
     }
 
-    public enum Status {
-        ACTIVE, BLOCKED
+    public enum Type {
+        LEGAL, INDIVIDUAL
     }
 
-    public enum CompanyType {
-        CLIENT, WAREHOUSE
+    public enum Status {
+        ACTIVE, BLOCKED
     }
 }

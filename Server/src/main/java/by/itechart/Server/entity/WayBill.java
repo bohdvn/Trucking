@@ -1,6 +1,7 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.WayBillDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,10 +10,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "waybill")
-public class WayBill implements Transformable {
+public class WayBill implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -54,12 +56,14 @@ public class WayBill implements Transformable {
     }
 
     @Override
-    public WayBillDto transform() {
+    public WayBillDto transformToDto() {
         return WayBillDto.builder()
+                .withId(this.id)
+                .withCheckpoints(this.checkpoints.stream().map(Checkpoint::transformToDto).collect(Collectors.toList()))
                 .withDateFrom(this.dateFrom)
                 .withDateTo(this.dateTo)
                 .withStatus(this.status)
-                .withInvoice(this.invoice.transform())
+                .withInvoice(this.invoice.transformToDto())
                 .build();
     }
 

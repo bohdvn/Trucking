@@ -42,8 +42,13 @@
 .Email {
     width: 600px;
     padding: 30px
+
 }
 
 .Success {
     color: green;
+}
+
+.formErrors {
+    color: red;
 }

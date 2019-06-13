@@ -15,18 +15,13 @@ import {changeLoggedIn} from './actions/user';
 import ProtectedRoute from "./components/ProtectedRoute";
 import ClientListComponent from "./components/pages/ClientListComponent";
 import WaybillListComponent from "./components/pages/WaybillListComponent";
-import Navigation from "./components/Navigation";
-import WarehouseListComponent from "./components/pages/WarehouseListComponent";
-import WarehouseComponent from "./components/forms/WarehouseComponent";
-import WarehouseListComponent from "./components/pages/WarehouseListComponent";
-import WarehouseComponent from "./components/forms/WarehouseComponent";
-import Navigation from "./components/Navigation";
 import RequestComponent from "./components/forms/RequestComponent";
 import RequestListComponent from "./components/pages/RequestListComponent";
 import InvoiceListComponent from "./components/pages/InvoiceListComponent";
 import WaybillComponent from "./components/forms/WaybillComponent";
 import "@kenshooui/react-multi-select/dist/style.css"
 import Confirm from './components/forms/Confirm';
+import Navigation from './components/Navigation'
 
 class App extends React.Component {
     constructor(props){
@@ -34,9 +29,6 @@ class App extends React.Component {
     }
     render() {
         console.log(this.props.loggedIn);
-        const {role}=this.props.loggedIn.roles[0].authority;
-        console.log(this.props.loggedIn.roles[0].authority);
-        console.log(role);
         return (
             <Router history={createBrowserHistory}>
                 <Navigation/>
@@ -76,8 +68,6 @@ class App extends React.Component {
                 <Route path="/invoices" component={InvoiceListComponent}/>
 
                 <Route path="/waybill/:id" component={WaybillComponent}/>
-                <Route path="/warehouse/:id" component={WarehouseComponent}/>
-                <Route path="/warehouses" component={WarehouseListComponent}/>
                 <Route path='/confirm/:id' component={Confirm}/>
             </Router>
         );

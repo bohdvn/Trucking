@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
 import Modal from 'react-bootstrap/Modal';
 import TempProductComponent from "./TempProductComponent";
-
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 class RequestComponent extends React.Component {
 
@@ -71,7 +71,6 @@ class RequestComponent extends React.Component {
     }
 
 
-
     handleShow() {
         this.setState({show: true});
     }
@@ -83,7 +82,8 @@ class RequestComponent extends React.Component {
             method: request.id === '' ? 'POST' : 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             },
             body: JSON.stringify(request)
         });
@@ -102,7 +102,9 @@ class RequestComponent extends React.Component {
     }
 
     async getCar(id) {
-        const newCar = await (await fetch(`/car/${id}`)).json();
+        const newCar = await (await fetch(`/car/${id}`),
+            {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
+            .json();
         let request = {...this.state.request};
         request['car'] = newCar;
         this.setState({request});
@@ -110,7 +112,8 @@ class RequestComponent extends React.Component {
     }
 
     async getDriver(id) {
-        const newDriver = await (await fetch(`/user/${id}`)).json();
+        const newDriver = await (await fetch(`/user/${id}`),
+            {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}}).json();
         let request = {...this.state.request};
         request['driver'] = newDriver;
         this.setState({request});
@@ -149,7 +152,7 @@ class RequestComponent extends React.Component {
     };
 
     fillDriverSelector() {
-        if (this.state.drivers.length == 0) {
+        if (this.state.drivers.length === 0) {
             return <option>Нет доступных водителей</option>
         }
         return this.state.drivers.map(driver => {
@@ -160,18 +163,20 @@ class RequestComponent extends React.Component {
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
             const newRequest = await(await
-                    fetch(`/request/${this.props.match.params.id}`)
+                    fetch(`/request/${this.props.match.params.id}`,
+                        {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
             ).json();
             this.setState({request: newRequest});
         }
         const cars = await(await
-                fetch(`/car/all`)
+                fetch(`/car/all`,
+            {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
         ).json();
         const drivers = await(await
-                fetch(`/user/drivers`)
+                fetch(`/user/drivers`,
+            {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
         ).json();
 
-        console.log(cars);
         this.setState({cars: cars, drivers: drivers});
         if (cars.length === 0 || drivers.length === 0) {
             this.setState({formValid: false});

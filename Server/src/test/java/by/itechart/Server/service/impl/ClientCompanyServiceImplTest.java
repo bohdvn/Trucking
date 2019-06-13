@@ -1,7 +1,8 @@
 package by.itechart.Server.service.impl;
 
-import by.itechart.Server.entity.ClientCompany;
-import by.itechart.Server.repository.ClientCompanyRepository;
+import by.itechart.server.entity.ClientCompany;
+import by.itechart.server.repository.ClientCompanyRepository;
+import by.itechart.server.service.impl.ClientCompanyServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

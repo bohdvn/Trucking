@@ -1,7 +1,8 @@
 package by.itechart.Server.service.impl;
 
-import by.itechart.Server.entity.Checkpoint;
-import by.itechart.Server.repository.CheckpointRepository;
+import by.itechart.server.entity.Checkpoint;
+import by.itechart.server.repository.CheckpointRepository;
+import by.itechart.server.service.impl.CheckpointServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

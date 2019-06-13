@@ -1,6 +1,6 @@
 package by.itechart.Server.util;
 
-import by.itechart.Server.entity.ClientCompany;
+import by.itechart.server.entity.ClientCompany;
 
 public class ClientCompanyUtil {
     public static ClientCompany createClientCompany() {

@@ -1,6 +1,6 @@
 package by.itechart.Server.util;
 
-import by.itechart.Server.entity.Product;
+import by.itechart.server.entity.Product;
 
 public class ProductUtil {
     public static Product createProduct() {

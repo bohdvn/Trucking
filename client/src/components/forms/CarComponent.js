@@ -99,7 +99,9 @@ class CarComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            const newCar = await (await fetch(`/car/${this.props.match.params.id}`)).json();
+            const newCar = await (await fetch(`/car/${this.props.match.params.id}`,
+                {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
+            ).json();
             this.setState({car: newCar, nameValid: true, consumptionValid: true, formValid: true});
         }
     }

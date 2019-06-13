@@ -1,10 +1,10 @@
 package by.itechart.Server.service.impl;
 
-import by.itechart.Server.entity.Address;
-import by.itechart.Server.repository.AddressRepository;
+import by.itechart.server.entity.Address;
+import by.itechart.server.repository.AddressRepository;
+import by.itechart.server.service.impl.AddressServiceImpl;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -54,7 +54,7 @@ public class AddressServiceImplTest {
     public void findById() {
         Optional<Address> optional=Optional.of(address);
         Mockito.when(addressRepository.findById(anyInt())).thenReturn(optional);
-        assertEquals(address,addressService.findById(1).get());
+        assertEquals(address,addressService.findById(1));
     }
 
     @Test

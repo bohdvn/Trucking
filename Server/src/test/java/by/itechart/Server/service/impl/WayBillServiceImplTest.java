@@ -1,7 +1,8 @@
 package by.itechart.Server.service.impl;
 
-import by.itechart.Server.entity.WayBill;
-import by.itechart.Server.repository.WayBillRepository;
+import by.itechart.server.entity.WayBill;
+import by.itechart.server.repository.WayBillRepository;
+import by.itechart.server.service.impl.WayBillServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

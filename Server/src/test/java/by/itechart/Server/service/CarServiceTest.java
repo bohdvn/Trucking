@@ -1,8 +1,6 @@
 package by.itechart.Server.service;
 
-import by.itechart.Server.entity.Car;
-import by.itechart.Server.util.CarUtil;
-import org.junit.Assert;
+import by.itechart.server.service.CarService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +11,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import java.util.Collection;
-import java.util.Optional;
 
 @DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)

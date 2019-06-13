@@ -1,7 +1,8 @@
 package by.itechart.Server.service.impl;
 
-import by.itechart.Server.entity.Car;
-import by.itechart.Server.repository.CarRepository;
+import by.itechart.server.entity.Car;
+import by.itechart.server.repository.CarRepository;
+import by.itechart.server.service.impl.CarServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.Assert.*;

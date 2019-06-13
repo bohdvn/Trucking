@@ -27,6 +27,7 @@
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.0",
+    "react-timeout": "^1.2.0",
     "reactstrap": "^8.0.0",
     "recompose": "^0.30.0",
     "redux": "^4.0.1",

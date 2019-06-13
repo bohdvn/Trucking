@@ -1,7 +1,8 @@
 package by.itechart.Server.service.impl;
 
-import by.itechart.Server.entity.Invoice;
-import by.itechart.Server.repository.InvoiceRepository;
+import by.itechart.server.entity.Invoice;
+import by.itechart.server.repository.InvoiceRepository;
+import by.itechart.server.service.impl.InvoiceServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

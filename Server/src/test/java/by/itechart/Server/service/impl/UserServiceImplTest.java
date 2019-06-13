@@ -1,7 +1,8 @@
 package by.itechart.Server.service.impl;
 
-import by.itechart.Server.entity.User;
-import by.itechart.Server.repository.UserRepository;
+import by.itechart.server.entity.User;
+import by.itechart.server.repository.UserRepository;
+import by.itechart.server.service.impl.UserServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.Assert.*;

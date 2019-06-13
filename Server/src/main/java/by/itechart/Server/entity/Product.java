@@ -1,7 +1,6 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ProductDto;
-import by.itechart.Server.dto.RequestDto;
 import by.itechart.Server.transformers.ToDtoTransformer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 

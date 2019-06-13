@@ -1,4 +1,4 @@
-package by.itechart.Server.controller;
+package by.itechart.Seserverrver.controller;
 
 import by.itechart.Server.dto.RequestDto;
 import by.itechart.Server.service.RequestService;

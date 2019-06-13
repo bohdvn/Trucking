@@ -1,9 +1,8 @@
 package by.itechart.Server.service;
 
 import by.itechart.Server.dto.AddressDto;
-import by.itechart.Server.entity.Address;
+
 import java.util.List;
-import java.util.Optional;
 
 public interface AddressService {
 

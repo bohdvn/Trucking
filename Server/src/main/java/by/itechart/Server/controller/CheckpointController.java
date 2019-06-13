@@ -1,7 +1,6 @@
 package by.itechart.Server.controller;
 
 import by.itechart.Server.dto.CheckpointDto;
-import by.itechart.Server.entity.Checkpoint;
 import by.itechart.Server.service.CheckpointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/checkpoint")

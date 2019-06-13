@@ -1,7 +1,6 @@
 package by.itechart.Server.service.impl;
 
 import by.itechart.Server.dto.ConfirmationTokenDto;
-import by.itechart.Server.entity.ConfirmationToken;
 import by.itechart.Server.repository.ConfirmationTokenRepository;
 import by.itechart.Server.service.ConfirmationTokenService;
 import org.springframework.stereotype.Service;

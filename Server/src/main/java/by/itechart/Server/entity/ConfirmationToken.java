@@ -2,7 +2,6 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ConfirmationTokenDto;
 import by.itechart.Server.transformers.ToDtoTransformer;
-import by.itechart.Server.transformers.ToEntityTransformer;
 
 import javax.persistence.*;
 import java.util.Date;

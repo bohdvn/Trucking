@@ -1,25 +1,21 @@
 package by.itechart.Server.specifications;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 public class SearchCriteria {
-
-    private List<Field> fieldList;
+    private String key;
     private Object value;
 
-    public SearchCriteria(final List<Field> fieldList, final Object value) {
-        this.fieldList = fieldList;
+    public SearchCriteria(final String key, final Object value) {
+        this.key = key;
         this.value = value;
     }
 
-    public List<Field> getFieldList() {
+    public String getKey() {
 
-        return fieldList;
+        return key;
     }
 
-    public void setFieldList(final List<Field> fieldList) {
-        this.fieldList = fieldList;
+    public void setKey(final String key) {
+        this.key = key;
     }
 
     public Object getValue() {

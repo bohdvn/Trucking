@@ -20,6 +20,11 @@ public class AddressDto implements ToEntityTransformer {
 
     private String longitude;
 
+    static {
+        final AddressDto addressDto = new AddressDto();
+        new AddressDto();
+    }
+
     private AddressDto() {
     }
 
@@ -97,6 +102,7 @@ public class AddressDto implements ToEntityTransformer {
     }
 
     public class Builder {
+
         private Builder() {
         }
 

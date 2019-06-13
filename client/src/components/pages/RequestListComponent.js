@@ -5,7 +5,7 @@ import axios from 'axios';
 import Pagination from "react-js-pagination";
 import Modal from 'react-bootstrap/Modal';
 import InvoiceComponent from "../forms/InvoiceComponent";
-
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 class RequestListComponent extends React.Component {
 
@@ -13,13 +13,6 @@ class RequestListComponent extends React.Component {
         'NOT_VIEWED': 'Не просмотрена',
         'REJECTED': 'Отклонена',
         'ISSUED': 'Оформлена'
-    };
-
-    invoiceStatusMap = {
-        'COMPLETED': 'Оформлена',
-        'CHECKED': 'Проверена',
-        'CHECKED_BY_DRIVER': 'Проверена водителем',
-        'DELIVERED': 'Доставлена'
     };
 
     constructor(props) {
@@ -45,7 +38,8 @@ class RequestListComponent extends React.Component {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
-            }
+            },
+            headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}
         })
             .then(response => {
                     console.log(response);
@@ -108,7 +102,8 @@ class RequestListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
             let updateRequests = [...this.state.requests].filter(i => i.id !== id);
@@ -140,7 +135,8 @@ class RequestListComponent extends React.Component {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             },
             body: JSON.stringify(invoice)
         });
@@ -153,7 +149,8 @@ class RequestListComponent extends React.Component {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             },
             body: JSON.stringify(request)
         });
@@ -161,7 +158,8 @@ class RequestListComponent extends React.Component {
 
     async handleShow(id) {
         const request = await(await
-                fetch(`/request/${id}`)
+                fetch(`/request/${id}`,
+                    {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
         ).json();
         this.setState({show: true, request: request});
     }

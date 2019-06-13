@@ -1,6 +1,7 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ClientCompanyDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,10 +19,11 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "client_company")
-public class ClientCompany implements Transformable {
+public class ClientCompany implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -52,14 +54,14 @@ public class ClientCompany implements Transformable {
     private List<User> users;
 
     @Override
-    public ClientCompanyDto transform() {
+    public ClientCompanyDto transformToDto() {
         return ClientCompanyDto.builder()
                 .withId(this.id)
                 .withName(this.name)
                 .withType(this.type)
                 .withStatus(this.status)
-                .withAddress(this.address.transform())
-//                .withUsers(this.users.stream().map(User::transform).collect(Collectors.toList()))
+                .withAddress(this.address.transformToDto())
+                .withUsers(this.users.stream().map(User::transformToDto).collect(Collectors.toList()))
                 .build();
     }
 

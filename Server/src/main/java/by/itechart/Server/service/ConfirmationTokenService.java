@@ -1,11 +1,13 @@
 package by.itechart.Server.service;
 
-import by.itechart.Server.entity.ConfirmationToken;
+import by.itechart.Server.dto.ConfirmationTokenDto;
 
 
 public interface ConfirmationTokenService {
 
-    void save(ConfirmationToken confirmationToken);
-    void delete(ConfirmationToken confirmationToken);
-    ConfirmationToken findByConfirmationToken(String confirmationToken);
+    void save(ConfirmationTokenDto confirmationTokenDto);
+
+    void delete(ConfirmationTokenDto confirmationTokenDto);
+
+    ConfirmationTokenDto findByConfirmationToken(String confirmationToken);
 }

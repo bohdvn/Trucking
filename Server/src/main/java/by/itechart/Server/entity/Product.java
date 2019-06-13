@@ -2,6 +2,7 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ProductDto;
 import by.itechart.Server.dto.RequestDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
@@ -11,7 +12,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "product")
-public class Product implements Transformable {
+public class Product implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -57,7 +58,7 @@ public class Product implements Transformable {
     }
 
     @Override
-    public ProductDto transform() {
+    public ProductDto transformToDto() {
         return ProductDto.builder()
                 .withId(this.id)
                 .withAmount(this.amount)

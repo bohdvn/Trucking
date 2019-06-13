@@ -2,6 +2,7 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ProductDto;
 import by.itechart.Server.dto.RequestDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "request")
-public class Request implements Transformable {
+public class Request implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -72,19 +73,18 @@ public class Request implements Transformable {
     private Status status;
 
     @Override
-    public RequestDto transform() {
-        final List<Product> products2 = this.products;
+    public RequestDto transformToDto() {
+        final List<Product> products = this.products;
         final List<ProductDto> productDtos = new ArrayList<>();
-        for (Product product:
-                products2) {
-            productDtos.add(product.transform());
+        for (Product product: products) {
+            productDtos.add(product.transformToDto());
         }
         return RequestDto.builder()
                 .withId(this.id)
-                .withCar(this.car.transform())
-                .withClientCompanyFrom(this.clientCompanyFrom.transform())
-                .withClientCompanyTo(this.clientCompanyTo.transform())
-                .withDriver(this.driver.transform())
+                .withCar(this.car.transformToDto())
+                .withClientCompanyFrom(this.clientCompanyFrom.transformToDto())
+                .withClientCompanyTo(this.clientCompanyTo.transformToDto())
+                .withDriver(this.driver.transformToDto())
                 .withStatus(this.status)
                 .withProducts(productDtos)
                 .build();

@@ -1,6 +1,7 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.UserDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,7 +24,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "user")
-public class User implements Transformable {
+public class User implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -120,7 +121,7 @@ public class User implements Transformable {
     }
 
     @Override
-    public UserDto transform() {
+    public UserDto transformToDto() {
         return UserDto.builder()
                 .withId(this.id)
                 .withEnabled(this.isEnabled)
@@ -132,10 +133,10 @@ public class User implements Transformable {
                 .withPassportIssued(this.passportIssued)
                 .withPatronymic(this.patronymic)
                 .withSurname(this.surname)
-                .withRole(this.role.ordinal())
+                .withRole(this.role)
                 .withEmail(this.email)
-                .withAddressDto(this.address.transform())
-                .withClientCompany(this.clientCompany.transform())
+                .withAddressDto(this.address.transformToDto())
+                //.withClientCompany(this.clientCompany.transformToDto())
                 //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
     }
@@ -189,12 +190,16 @@ public class User implements Transformable {
         return passportNumber;
     }
 
+    public void setPassportNumber(final String passportNumber) {
+        this.passportNumber = passportNumber;
+    }
+
     public String getEmail() {
         return email;
     }
 
-    public void setPassportNumber(final String passportNumber) {
-        this.passportNumber = passportNumber;
+    public void setEmail(final String email) {
+        this.email = email;
     }
 
     public String getPassportIssued() {
@@ -241,10 +246,6 @@ public class User implements Transformable {
         return address;
     }
 
-    public void setAddress(final Address address) {
-        this.address = address;
-    }
-
 //    public List<Invoice> getCheckedByManagerInvoices() {
 //        return checkedByManagerInvoices;
 //    }
@@ -265,8 +266,8 @@ public class User implements Transformable {
 //        this.issuedByDispatcherToInvoices = issuedByDispatcherToInvoices;
 //    }
 
-    public void setEmail(final String email) {
-        this.email = email;
+    public void setAddress(final Address address) {
+        this.address = address;
     }
 
     @Override

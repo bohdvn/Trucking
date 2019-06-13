@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,14 +32,14 @@ public class WayBillController {
     private static final Logger LOGGER = LoggerFactory.getLogger(WayBillController.class);
 
     @PutMapping("/")
-    public ResponseEntity<?> edit(@Valid @RequestBody WayBill wayBill) {
+    public ResponseEntity<?> edit(@Valid @RequestBody WayBillDto wayBill) {
         LOGGER.info("REST request. Path:/waybill method: POST. waybill: {}", wayBill);
         wayBillService.save(wayBill);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> create(@Valid @RequestBody WayBill wayBill) {
+    public ResponseEntity<?> create(@Valid @RequestBody WayBillDto wayBill) {
         LOGGER.info("REST request. Path:/waybill method: POST. waybill: {}", wayBill);
         wayBillService.save(wayBill);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -47,10 +48,9 @@ public class WayBillController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/waybill/{} method: GET.", id);
-        Optional<WayBill> wayBill = wayBillService.findById(id);
-        return wayBill.isPresent() ?
-                ResponseEntity.ok().body(wayBill.get().transform()) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        final WayBillDto wayBillDto = wayBillService.findById(id);
+        return Objects.nonNull(wayBillDto) ?
+                ResponseEntity.ok().body(wayBillDto) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("/{selectedWaybills}")
@@ -67,12 +67,9 @@ public class WayBillController {
     @GetMapping("/list")
     public ResponseEntity<Page<WayBillDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/waybill method: GET.");
-        Page<WayBill> wayBills = wayBillService.findAll(pageable);
-        Page<WayBillDto> wayBillsDto = new PageImpl<>(wayBills.stream().map(WayBill::transform)
-                .sorted(Comparator.comparing(WayBillDto::getDateFrom))
-                .collect(Collectors.toList()), pageable, wayBills.getTotalElements());
+        final Page<WayBillDto> wayBillsDto = wayBillService.findAll(pageable);
         LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
-        return wayBills.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+        return wayBillsDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
     }
 

@@ -1,6 +1,7 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.CarDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +16,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "car")
-public class Car implements Transformable {
+public class Car implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -46,7 +47,7 @@ public class Car implements Transformable {
 //    private List<Request> requests;
 
     @Override
-    public CarDto transform() {
+    public CarDto transformToDto() {
         return CarDto.builder()
                 .withId(this.id)
                 .withCarType(this.carType)

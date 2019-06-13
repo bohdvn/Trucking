@@ -54,7 +54,7 @@ public class AddressServiceImplTest {
     public void findById() {
         Optional<Address> optional=Optional.of(address);
         Mockito.when(addressRepository.findById(anyInt())).thenReturn(optional);
-        assertEquals(address,addressService.findById(1).get());
+        assertEquals(address,addressService.findById(1));
     }
 
     @Test

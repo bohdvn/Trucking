@@ -1,16 +1,15 @@
 package by.itechart.Server.controller;
 
 import by.itechart.Server.dto.RequestDto;
-import by.itechart.Server.entity.Request;
 import by.itechart.Server.service.RequestService;
 import by.itechart.Server.utils.ValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,9 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/request")
@@ -38,32 +35,33 @@ public class RequestController {
         this.requestService = requestService;
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @PutMapping("/")
-    public ResponseEntity<?> edit(final @RequestBody Request request) {
-        LOGGER.info("REST request. Path:/car method: POST. car: {}", request);
-        if(request.getStatus().equals(null)){
-            request.setStatus(Request.Status.ISSUED);
-        }
-        requestService.save(request);
+    public ResponseEntity<?> edit(final @RequestBody RequestDto requestDto) {
+        LOGGER.info("REST request. Path:/car method: POST. car: {}", requestDto);
+        requestService.save(requestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @PostMapping("")
-    public ResponseEntity<?> create(final @Valid @RequestBody Request request) {
-        LOGGER.info("REST request. Path:/car method: POST. car: {}", request);
-        requestService.save(request);
+    public ResponseEntity<?> create(final @Valid @RequestBody RequestDto requestDto) {
+        LOGGER.info("REST request. Path:/car method: POST. car: {}", requestDto);
+        requestService.save(requestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/request/{} method: GET.", id);
-        Optional<Request> request = requestService.findById(id);
-        return request.isPresent() ?
-                ResponseEntity.ok().body(request.get().transform()) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        final RequestDto requestDto = requestService.findById(id);
+        return Objects.nonNull(requestDto) ?
+                ResponseEntity.ok().body(requestDto) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedRequests}")
     public ResponseEntity<?> remove(@PathVariable("selectedRequests") String selectedRequests) {
         LOGGER.info("REST request. Path:/request/{} method: DELETE.", selectedRequests);
@@ -75,15 +73,12 @@ public class RequestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/list")
     public ResponseEntity<Page<RequestDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/request method: GET.");
-        Page<Request> requests = requestService.findAll(pageable);
-        Page<RequestDto> requestDtos = new PageImpl<>(requests.stream().map(Request::transform)
-                .sorted(Comparator.comparing(RequestDto::getStatus))
-                .collect(Collectors.toList()), pageable, requests.getTotalElements());
-        LOGGER.info("Return requestList.size:{}", requestDtos.getNumber());
-        return requests.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+        final Page<RequestDto> requestDtos = requestService.findAll(pageable);
+        return requestDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(requestDtos, HttpStatus.OK);
     }
 

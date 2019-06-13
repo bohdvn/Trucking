@@ -1,37 +1,43 @@
 package by.itechart.Server.service.impl;
 
+import by.itechart.Server.dto.InvoiceDto;
 import by.itechart.Server.entity.Invoice;
 import by.itechart.Server.repository.InvoiceRepository;
 import by.itechart.Server.service.InvoiceService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
     private InvoiceRepository invoiceRepository;
 
-    public InvoiceServiceImpl(InvoiceRepository invoiceRepository){
-        this.invoiceRepository=invoiceRepository;
+    public InvoiceServiceImpl(InvoiceRepository invoiceRepository) {
+        this.invoiceRepository = invoiceRepository;
     }
 
 
     @Override
     @Transactional
-    public void save(Invoice invoice) { invoiceRepository.save(invoice); }
-
-    @Override
-    public List<Invoice> findAll() {
-        return invoiceRepository.findAll();
+    public void save(InvoiceDto invoiceDto) {
+        invoiceRepository.save(invoiceDto.transformToEntity());
     }
 
     @Override
-    public Optional<Invoice> findById(int id) {
-        return invoiceRepository.findById(id);
+    public List<InvoiceDto> findAll() {
+        return invoiceRepository.findAll().stream().map(Invoice::transformToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public InvoiceDto findById(int id) {
+        return invoiceRepository.findById(id).isPresent() ?
+                invoiceRepository.findById(id).get().transformToDto() : null;
     }
 
     @Override
@@ -40,7 +46,11 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public Page<Invoice> findAll(Pageable pageable) {
-        return invoiceRepository.findAll(pageable);
+    public Page<InvoiceDto> findAll(Pageable pageable) {
+        final Page<Invoice> invoices = invoiceRepository.findAll(pageable);
+        return new PageImpl<>(invoices.stream().map(Invoice::transformToDto)
+                .sorted(Comparator.comparing(InvoiceDto::getStatus))
+                .collect(Collectors.toList()), pageable, invoices.getTotalElements());
+
     }
 }

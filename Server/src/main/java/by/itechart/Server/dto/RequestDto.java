@@ -1,11 +1,13 @@
 package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.Request;
+import by.itechart.Server.transformers.ToEntityTransformer;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
-public class RequestDto {
+public class RequestDto implements ToEntityTransformer{
     private Integer id;
 
     private Request.Status status;
@@ -79,6 +81,19 @@ public class RequestDto {
 
     public void setStatus(final Request.Status status) {
         this.status = status;
+    }
+
+    @Override
+    public Request transformToEntity() {
+        final Request request = new Request();
+        request.setClientCompanyFrom(this.clientCompanyFrom.transformToEntity());
+        request.setClientCompanyTo(this.clientCompanyTo.transformToEntity());
+        request.setDriver(this.driver.transformToEntity());
+        request.setCar(this.car.transformToEntity());
+        request.setStatus(this.status);
+        request.setProducts(this.products.stream().map(ProductDto::transformToEntity).collect(Collectors.toList()));
+        request.setId(this.id);
+        return request;
     }
 
     public class Builder {

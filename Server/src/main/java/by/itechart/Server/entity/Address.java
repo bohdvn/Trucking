@@ -1,6 +1,7 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.AddressDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -8,7 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "address")
-public class Address implements Transformable {
+public class Address implements ToDtoTransformer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +38,7 @@ public class Address implements Transformable {
     private String longitude;
 
     @Override
-    public AddressDto transform() {
+    public AddressDto transformToDto() {
         return AddressDto.builder()
                 .withId(this.id)
                 .withCity(this.city)

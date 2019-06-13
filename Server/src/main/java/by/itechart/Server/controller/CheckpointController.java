@@ -25,19 +25,20 @@ public class CheckpointController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CheckpointController.class);
 
     @PutMapping("/")
-    public ResponseEntity<?> create(@RequestBody Checkpoint checkpoint){
-        LOGGER.info("REST request. Path:/checkpoint method: POST. checkpoint: {}", checkpoint);
-        checkpointService.save(checkpoint);
+    public ResponseEntity<?> create(@RequestBody CheckpointDto checkpointDto){
+        LOGGER.info("REST request. Path:/checkpoint method: POST. checkpoint: {}", checkpointDto);
+        checkpointService.save(checkpointDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id){
         LOGGER.info("REST request. Path:/checkpoint/{} method: GET.", id);
-        Optional<Checkpoint> checkpoint = checkpointService.findById(id);
-        return checkpoint.isPresent()?
-                ResponseEntity.ok().body(checkpoint.get().transform()):
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        final CheckpointDto checkpointDto = checkpointService.findById(id);
+        return checkpointDto == null ?
+                new ResponseEntity<>(HttpStatus.NOT_FOUND):
+                ResponseEntity.ok().body(checkpointDto);
+
     }
 
     @DeleteMapping("/{id}")
@@ -50,10 +51,9 @@ public class CheckpointController {
     @GetMapping("/all")
     public ResponseEntity<List<CheckpointDto>> getAll() {
         LOGGER.info("REST request. Path:/checkpoint method: GET.");
-        List<Checkpoint> checkpoints = checkpointService.findAll();
-        List<CheckpointDto> checkpointsDto = checkpoints.stream().map(Checkpoint::transform).collect(Collectors.toList());
+        List<CheckpointDto> checkpointsDto = checkpointService.findAll();
         LOGGER.info("Return checkpointList.size:{}", checkpointsDto.size());
-        return checkpoints.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+        return checkpointsDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(checkpointsDto, HttpStatus.OK);
     }
 }

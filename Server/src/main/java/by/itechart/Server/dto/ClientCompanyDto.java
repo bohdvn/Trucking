@@ -1,10 +1,12 @@
 package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.ClientCompany;
+import by.itechart.Server.transformers.ToEntityTransformer;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class ClientCompanyDto {
+public class ClientCompanyDto implements ToEntityTransformer {
     private int id;
 
     private String name;
@@ -24,45 +26,16 @@ public class ClientCompanyDto {
         return new ClientCompanyDto().new Builder();
     }
 
-    public class Builder {
-
-        private Builder() {
-        }
-
-        public Builder withId(final int id){
-            ClientCompanyDto.this.id = id;
-            return this;
-        }
-
-        public Builder withName(final String name) {
-            ClientCompanyDto.this.name = name;
-            return this;
-        }
-
-        public Builder withAddress(final AddressDto address) {
-            ClientCompanyDto.this.address = address;
-            return this;
-        }
-
-        public Builder withUsers(final List<UserDto> users) {
-            ClientCompanyDto.this.users = users;
-            return this;
-        }
-
-        public Builder withStatus(final ClientCompany.Status status){
-            ClientCompanyDto.this.status = status;
-            return this;
-        }
-
-        public Builder withType(final ClientCompany.Type type){
-            ClientCompanyDto.this.type = type;
-            return this;
-        }
-
-
-        public ClientCompanyDto build() {
-            return ClientCompanyDto.this;
-        }
+    @Override
+    public ClientCompany transformToEntity() {
+        final ClientCompany clientCompany = new ClientCompany();
+        clientCompany.setAddress(this.address.transformToEntity());
+        clientCompany.setId(this.id);
+        clientCompany.setName(this.name);
+        clientCompany.setStatus(this.status);
+        clientCompany.setType(this.type);
+        //clientCompany.setUsers(this.users.stream().map(UserDto::transformToEntity).collect(Collectors.toList()));
+        return clientCompany;
     }
 
     public String getName() {
@@ -95,5 +68,46 @@ public class ClientCompanyDto {
 
     public void setType(final ClientCompany.Type type) {
         this.type = type;
+    }
+
+    public class Builder {
+
+        private Builder() {
+        }
+
+        public Builder withId(final int id) {
+            ClientCompanyDto.this.id = id;
+            return this;
+        }
+
+        public Builder withName(final String name) {
+            ClientCompanyDto.this.name = name;
+            return this;
+        }
+
+        public Builder withAddress(final AddressDto address) {
+            ClientCompanyDto.this.address = address;
+            return this;
+        }
+
+        public Builder withUsers(final List<UserDto> users) {
+            ClientCompanyDto.this.users = users;
+            return this;
+        }
+
+        public Builder withStatus(final ClientCompany.Status status) {
+            ClientCompanyDto.this.status = status;
+            return this;
+        }
+
+        public Builder withType(final ClientCompany.Type type) {
+            ClientCompanyDto.this.type = type;
+            return this;
+        }
+
+
+        public ClientCompanyDto build() {
+            return ClientCompanyDto.this;
+        }
     }
 }

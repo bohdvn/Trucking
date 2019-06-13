@@ -1,5 +1,6 @@
 package by.itechart.Server.service;
 
+import by.itechart.Server.dto.UserDto;
 import by.itechart.Server.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,21 +9,22 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    void save(User user);
 
-    Page<User> findAll(Pageable pageable);
+    void save(final UserDto userDto);
 
-    List<User> findAll();
+    Page<UserDto> findAll(final Pageable pageable);
 
-    Optional<User> findById(int id);
+    List<UserDto> findAll();
 
-    void delete(User user);
+    UserDto findById(int id);
 
-    void deleteById(int id);
+    void delete(final UserDto userDto);
 
-    boolean existsByLogin(String login);
+    void deleteById(final int id);
 
-    boolean existsByEmail(String email);
+    boolean existsByLogin(final String login);
 
-    User findByEmailIgnoreCase(String email);
+    boolean existsByEmail(final String email);
+
+    UserDto findByEmailIgnoreCase(final String email);
 }

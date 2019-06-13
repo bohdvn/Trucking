@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 import {ACCESS_TOKEN} from "../../constants/auth";
-
+import {getSelected} from "../../utils/APIUtils";
 
 class UserListComponent extends React.Component {
 
@@ -21,15 +21,17 @@ class UserListComponent extends React.Component {
         super(props);
         this.state = {
             users: [],
-            activePage:0,
+            activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
-            totalItemsCount: null
+            totalItemsCount: null,
+            selectedUsers: []
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.removeChecked = this.removeChecked.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.sendEmail = this.sendEmail.bind(this);
     }
 
     fetchURL(page) {
@@ -39,7 +41,7 @@ class UserListComponent extends React.Component {
                 host: 'http://localhost',
                 port: 8080
             },
-            headers:{
+            headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
@@ -73,7 +75,7 @@ class UserListComponent extends React.Component {
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber-1)
+        this.fetchURL(pageNumber - 1)
     }
 
     handleChange = e => {
@@ -87,6 +89,24 @@ class UserListComponent extends React.Component {
                 )
             }
         })
+    };
+
+    sendEmail = () => {
+        const selectedIds = getSelected();
+        const selectedUsers = [];
+        const {users} = this.state;
+        for (let selected = 0; selected < selectedIds.length; selected++) {
+            for (let userId = 0; userId < users.length; userId++) {
+                const user = users[userId];
+                if (selectedIds[selected] == user.id) {
+                    selectedUsers.push(user);
+                }
+            }
+        }
+        this.props.history.push({
+            pathname: "/email",
+            state: {users: selectedUsers}
+        });
     };
 
     populateRowsWithData = () => {
@@ -147,51 +167,54 @@ class UserListComponent extends React.Component {
                 'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
-                let updateUsers = [...this.state.users].filter(user => !user.value);
-                this.setState({users: updateUsers});
-                this.handlePageChange(0);
+            let updateUsers = [...this.state.users].filter(user => !user.value);
+            this.setState({users: updateUsers});
+            this.handlePageChange(0);
         });
     }
 
     render() {
         return (
             <form name="users">
-            <div>
-                <Container fluid>
-                    <div className="float-right">
-                        <ButtonGroup>
-                        <Button color="success" tag={Link} to="/user/create">Добавить</Button>
-                            <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
-                        </ButtonGroup>
-                    </div>
-                    <Table className="mt-4">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th width="40%">Имя</th>
-                            <th width="15%">Роль</th>
-                            <th width="15%">Дата рождения</th>
-                            <th>Логин</th>
-                            <th width="10%"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {this.populateRowsWithData()}
-                        </tbody>
-                    </Table>
+                <div>
+                    <Container fluid>
+                        <div className="float-right">
+                            <ButtonGroup>
+                                <Button color="success" tag={Link} to="/user/create">Добавить</Button>
+                                <Button color="info" onClick={() => this.sendEmail()}>Отправить письмо</Button>
+                                <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
 
-                    <div className="d-flex justify-content-center">
-                        <Pagination
-                            activePage={this.state.activePage}
-                            itemsCountPerPage={this.state.itemsCountPerPage}
-                            totalItemsCount={this.state.totalItemsCount}
-                            itemClass='page-item'
-                            linkClass='btn btn-light'
-                            onChange={this.handlePageChange}
-                        />
-                    </div>
-                </Container>
-            </div>
+                            </ButtonGroup>
+                        </div>
+                        <Table className="mt-4">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th width="40%">Имя</th>
+                                <th width="15%">Роль</th>
+                                <th width="15%">Дата рождения</th>
+                                <th>Логин</th>
+                                <th width="10%"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {this.populateRowsWithData()}
+                            </tbody>
+                        </Table>
+
+                        <div className="d-flex justify-content-center">
+                            <Pagination
+                                activePage={this.state.activePage}
+                                itemsCountPerPage={this.state.itemsCountPerPage}
+                                totalItemsCount={this.state.totalItemsCount}
+                                itemClass='page-item'
+                                linkClass='btn btn-light'
+                                onChange={this.handlePageChange}
+                            />
+                        </div>
+                        {/*<SendEmail email={this.state.selectedUsers}/>*/}
+                    </Container>
+                </div>
             </form>
         );
     }

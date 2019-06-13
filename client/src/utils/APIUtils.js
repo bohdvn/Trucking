@@ -44,3 +44,14 @@ export function saveUser(user){
         body: JSON.stringify(user),
     })
 }
+
+export function getSelected() {
+    const selectedUsers = Array.apply(null,
+        document.users.selected_users)
+        .filter(function (el) {
+            return el.checked === true
+        }).map(function (el) {
+            return el.value
+        });
+    return selectedUsers;
+}

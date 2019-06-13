@@ -3,8 +3,6 @@ import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 
 import "react-datepicker/dist/react-datepicker.css";
-import {ACCESS_TOKEN} from "../../constants/auth";
-import {ROLES} from '../../constants/userConstants';
 import {getUserById, saveUser} from "../../utils/APIUtils";
 
 

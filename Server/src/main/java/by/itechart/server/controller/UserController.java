@@ -49,9 +49,12 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtTokenProvider tokenProvider;
+
     @Autowired
     private AuthenticationManager authenticationManager;
+
     private UserService userService;
+
     private ConfirmationTokenService confirmationTokenService;
 
     private EmailSenderService emailSenderService;

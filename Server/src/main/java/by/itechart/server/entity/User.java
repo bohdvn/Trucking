@@ -140,11 +140,7 @@ public class User implements ToDtoTransformer {
                 //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
     }
-
-    //    public User() {
-//        super();
-//        this.isEnabled = false;
-//    }
+    
     public Boolean getEnabled() {
         return isEnabled;
     }

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, Input, Table, FormGroup} from 'reactstrap';
+import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
@@ -24,7 +24,7 @@ class CarListComponent extends React.Component {
         this.state = {
             query: '',
             cars: [],
-            activePage:0,
+            activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null
@@ -43,6 +43,8 @@ class CarListComponent extends React.Component {
                 port: 8080
             },
             headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         })
@@ -59,9 +61,9 @@ class CarListComponent extends React.Component {
                     const results = response.data.content;
                     console.log(this.state);
 
-                    if (results != null){
-                    this.setState({cars: results});
-                    console.log(results);
+                    if (results != null) {
+                        this.setState({cars: results});
+                        console.log(results);
                     }
 
                     console.log(this.state.activePage);
@@ -77,7 +79,7 @@ class CarListComponent extends React.Component {
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber-1, this.state.query);
+        this.fetchURL(pageNumber - 1, this.state.query);
     }
 
     handleQueryChange(event) {

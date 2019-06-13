@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/invoice")
 public class InvoiceController {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(InvoiceController.class);
+
     private InvoiceService invoiceService;
 
     public InvoiceController(InvoiceService invoiceService) {
@@ -63,6 +65,7 @@ public class InvoiceController {
         return invoicesDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(invoicesDto, HttpStatus.OK);
     }
+
 
     @GetMapping("/list")
     public ResponseEntity<Page<InvoiceDto>> getAll(Pageable pageable) {

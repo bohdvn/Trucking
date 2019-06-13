@@ -132,6 +132,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedUsers}")
     public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal,@PathVariable("selectedUsers") String selectedUsers ) {
         LOGGER.info("REST request. Path:/user/{} method: DELETE.", selectedUsers);
@@ -143,6 +144,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/confirm-account/{confirmationToken}")
     public ResponseEntity<?> confirmUserAccount(@PathVariable String confirmationToken) {
         final ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken).transformToEntity();

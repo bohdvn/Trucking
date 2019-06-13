@@ -112,7 +112,7 @@ class AddressFields extends React.Component {
                 </FormGroup>
 
                 <FormGroup>
-                    <Label for="flat">Квартира</Label>
+                    <Label for="flat">Помещение/Квартира</Label>
                     <Input type="number" name="flat" id="flat" value={address.flat || ''}
                            onChange={this.handleChange} autoComplete="flat" min="1"/>
                     <p className={'error-message'}>{(this.state.formErrors.flat === '') ? ''

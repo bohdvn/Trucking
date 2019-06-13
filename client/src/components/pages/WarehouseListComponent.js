@@ -1,3 +1,4 @@
+//Dmitry Gorlach
 import React from 'react';
 import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
@@ -5,29 +6,22 @@ import axios from 'axios';
 import Pagination from "react-js-pagination";
 import {ACCESS_TOKEN} from "../../constants/auth";
 
+const address = <th width="30%">Адрес</th>;
+const name = <th width="30%">Название</th>;
 
-class ClientListComponent extends React.Component {
+class WarehouseListComponent extends React.Component {
 
-    clientTypeMap = {
-        'INDIVIDUAL': 'Физическое лицо',
-        'LEGAL': 'Юридическое лицо'
-    };
-
-    clientStatusMap = {
-        'ACTIVE': 'Активен',
-        'BLOCKED': 'Заблокирован'
-    };
 
     constructor(props) {
         super(props);
         this.state = {
-            clients: [],
+            warehouses: [],
             activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
-            client: {
-                companyType: 'CLIENT'
+            warehouse: {
+                companyType: 'WAREHOUSE'
             }
         };
         this.handlePageChange = this.handlePageChange.bind(this);
@@ -40,17 +34,17 @@ class ClientListComponent extends React.Component {
         const id = e.target.id;
         this.setState(prevState => {
             return {
-                clients: prevState.clients.map(
-                    client => (client.id === +id ? {
-                        ...client, value: !client.value
-                    } : client)
+                warehouses: prevState.warehouses.map(
+                    warehouse => (warehouse.id === +id ? {
+                        ...warehouse, value: !warehouse.value
+                    } : warehouse)
                 )
             }
         })
     };
 
     fetchURL(page) {
-        axios.get(`/client/list?page=${page}&size=5&companyType=${this.state.client.companyType}`, {
+        axios.get(`/client/list?page=${page}&size=5&companyType=${this.state.warehouse.companyType}`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
@@ -75,7 +69,7 @@ class ClientListComponent extends React.Component {
                     console.log(this.state);
 
                     if (results != null) {
-                        this.setState({clients: results});
+                        this.setState({warehouses: results});
                         console.log(results);
                     }
 
@@ -96,28 +90,27 @@ class ClientListComponent extends React.Component {
     }
 
     populateRowsWithData = () => {
-        const clients = this.state.clients.map(client => {
-            return <tr key={client.id}>
+        const warehouses = this.state.warehouses.map(warehouse => {
+            return <tr key={warehouse.id}>
                 <td><Input
                     type="checkbox"
-                    id={client.id || ''}
-                    name="selected_clients"
-                    value={client.id || ''}
-                    checked={client.value || ''}
+                    id={warehouse.id || ''}
+                    name="selected_warehouses"
+                    value={warehouse.id || ''}
+                    checked={warehouse.value || ''}
                     onChange={this.handleChange}/></td>
-                <td style={{whiteSpace: 'nowrap'}}><Link to={"/client/" + client.id}>{client.name}</Link></td>
-                <td>{this.clientTypeMap[client.type]}</td>
-                <td>{this.clientStatusMap[client.status]}</td>
+                <td style={{whiteSpace: 'nowrap'}}><Link to={"/warehouse/" + warehouse.id}>{warehouse.name}</Link></td>
+                <td>{warehouse.address.city}, {warehouse.address.street}, {warehouse.address.building}-{warehouse.address.flat}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/client/" + client.id}>Редактировать</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(client.id)}>Удалить</Button>
+                        <Button size="sm" color="primary" tag={Link}
+                                to={"/warehouse/" + warehouse.id}>Редактировать</Button>
+                        <Button size="sm" color="danger" onClick={() => this.remove(warehouse.id)}>Удалить</Button>
                     </ButtonGroup>
                 </td>
             </tr>
         });
-
-        return clients
+        return warehouses
     };
 
     async remove(id) {
@@ -125,45 +118,46 @@ class ClientListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
-            let updateClients = [...this.state.clients].filter(i => i.id !== id);
-            this.setState({clients: updateClients});
+            let updateWarehouses = [...this.state.warehouses].filter(i => i.id !== id);
+            this.setState({warehouses: updateWarehouses});
             this.handlePageChange(0);
         });
     }
 
     async removeChecked() {
-        const selectedClients = Array.apply(null,
-            document.clients.selected_clients).filter(function (el) {
+        const selectedWarehouses = Array.apply(null,
+            document.warehouses.selected_warehouses).filter(function (el) {
             return el.checked === true
         }).map(function (el) {
             return el.value
         });
-        console.log(selectedClients);
-        await fetch(`/client/${selectedClients}`, {
+        console.log(selectedWarehouses);
+        await fetch(`/client/${selectedWarehouses}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             }
         }).then(() => {
-            let updateClients = [...this.state.clients].filter(client => !client.value);
-            this.setState({clients: updateClients});
+            let updateWarehouses = [...this.state.warehouses].filter(warehouse => !warehouse.value);
+            this.setState({warehouses: updateWarehouses});
             this.handlePageChange(0);
         });
     }
 
-
     render() {
         return (
-            <form name="clients">
+            <form name="warehouses">
                 <div>
                     <Container fluid>
                         <div className="float-right">
                             <ButtonGroup>
-                                <Button color="success" tag={Link} to="/client/create">Добавить</Button>
+                                <Button color="success" tag={Link} to="/warehouse/create">Добавить</Button>
                                 <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
                             </ButtonGroup>
                         </div>
@@ -171,9 +165,8 @@ class ClientListComponent extends React.Component {
                             <thead>
                             <tr>
                                 <th></th>
-                                <th width="30%">Название</th>
-                                <th width="30%">Тип</th>
-                                <th>Статус</th>
+                                {name}
+                                {address}
                                 <th width="10%"></th>
                             </tr>
                             </thead>
@@ -190,7 +183,6 @@ class ClientListComponent extends React.Component {
                                 itemClass='page-item'
                                 linkClass='btn btn-light'
                                 onChange={this.handlePageChange}
-
                             />
                         </div>
                     </Container>
@@ -200,4 +192,4 @@ class ClientListComponent extends React.Component {
     }
 }
 
-export default ClientListComponent;
+export default WarehouseListComponent;

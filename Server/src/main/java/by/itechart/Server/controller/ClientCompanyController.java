@@ -1,7 +1,6 @@
 package by.itechart.Server.controller;
 
 import by.itechart.Server.dto.ClientCompanyDto;
-import by.itechart.Server.entity.ClientCompany;
 import by.itechart.Server.security.CurrentUser;
 import by.itechart.Server.security.UserPrincipal;
 import by.itechart.Server.service.ClientCompanyService;
@@ -9,7 +8,6 @@ import by.itechart.Server.utils.ValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +25,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/client")
@@ -48,7 +44,7 @@ public class ClientCompanyController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @PostMapping("/")
     public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal,
                                     @Valid @RequestBody ClientCompanyDto clientCompanyDto) {
@@ -57,7 +53,7 @@ public class ClientCompanyController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN' or hasAuthority('SYSADMIN'))")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/client/{} method: GET.", id);

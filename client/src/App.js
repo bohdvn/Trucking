@@ -23,14 +23,16 @@ import RequestListComponent from "./components/pages/RequestListComponent";
 import InvoiceListComponent from "./components/pages/InvoiceListComponent";
 import WaybillComponent from "./components/forms/WaybillComponent";
 import Confirm from './components/forms/Confirm';
+import ReportComponent from './components/forms/ReportComponent';
 
 class App extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
     }
+
     render() {
         console.log(this.props.loggedIn);
-        const {role}=this.props.loggedIn.roles[0].authority;
+        const {role} = this.props.loggedIn.roles[0].authority;
         console.log(this.props.loggedIn.roles[0].authority);
         console.log(role);
         return (
@@ -54,6 +56,7 @@ class App extends React.Component {
                 <Route path="/warehouse/:id" component={WarehouseComponent}/>
                 <Route path="/warehouses" component={WarehouseListComponent}/>
                 <Route path='/confirm/:id' component={Confirm}/>
+                <Route path='/report' component={ReportComponent}/>
             </Router>
         );
     }

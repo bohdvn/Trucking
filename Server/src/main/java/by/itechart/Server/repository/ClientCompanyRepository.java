@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClientCompanyRepository extends JpaRepository<ClientCompany,Integer> {
 
-    Page<ClientCompany> findClientCompaniesByCompanyType(ClientCompany.CompanyType companyType, Pageable pageable);
+    //Page<ClientCompany> findClientCompaniesByCompanyType(ClientCompany.CompanyType companyType, Pageable pageable);
 }

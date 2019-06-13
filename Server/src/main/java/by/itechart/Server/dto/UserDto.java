@@ -2,12 +2,13 @@ package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.User;
 import lombok.Data;
-
+import by.itechart.Server.transformers.ToEntityTransformer;
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class UserDto {
+public class UserDto implements ToEntityTransformer {
+
     private int id;
 
     private String name;
@@ -34,14 +35,6 @@ public class UserDto {
 
     private AddressDto address;
 
-    private List<InvoiceDto> checkedByManagerInvoices;
-
-    private List<InvoiceDto> issuedByDispatcherFromInvoices;
-
-    private List<InvoiceDto> issuedByDispatcherToInvoices;
-
-    private List<RequestDto> requests;
-
     private ClientCompanyDto clientCompany;
 
     private UserDto() {
@@ -51,33 +44,32 @@ public class UserDto {
         return new UserDto().new Builder();
     }
 
+    @Override
+    public User transformToEntity() {
+        final User user = new User();
+        user.setAddress(this.address.transformToEntity());
+        user.setClientCompany(this.clientCompany.transformToEntity());
+        user.setDateOfBirth(this.dateOfBirth);
+        user.setEmail(this.email);
+        user.setIsEnabled(this.isEnabled);
+        user.setId(this.id);
+        user.setLogin(this.login);
+        user.setName(this.name);
+        user.setPassportIssued(this.passportIssued);
+        user.setPassportNumber(this.passportNumber);
+        user.setPassword(this.password);
+        user.setPatronymic(this.patronymic);
+        user.setRoles(this.roles);
+        user.setSurname(this.surname);
+        return user;
+    }
+
     public class Builder {
         private Builder() {
         }
 
-        public Builder withCheckedByManagerInvoices(final List<InvoiceDto> checkedByManagerInvoices) {
-            UserDto.this.checkedByManagerInvoices = checkedByManagerInvoices;
-            return this;
-        }
-
-        public Builder withIssuedByDispatcherFromInvoices(final List<InvoiceDto> issuedByDispatcherFromInvoices) {
-            UserDto.this.issuedByDispatcherFromInvoices = issuedByDispatcherFromInvoices;
-            return this;
-        }
-
-        public Builder withIssuedByDispatcherToInvoices(final List<InvoiceDto> issuedByDispatcherToInvoices) {
-            UserDto.this.issuedByDispatcherToInvoices = issuedByDispatcherToInvoices;
-            return this;
-        }
-
         public Builder withClientCompany(final ClientCompanyDto clientCompany) {
             UserDto.this.clientCompany = clientCompany;
-            return this;
-        }
-
-
-        public Builder withRequests(final List<RequestDto> requests) {
-            UserDto.this.requests = requests;
             return this;
         }
 

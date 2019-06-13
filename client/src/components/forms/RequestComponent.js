@@ -4,7 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import TempProductComponent from "./TempProductComponent";
 import axios from 'axios';
 import {HEADERS} from '../../constants/requestConstants'
-
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 class RequestComponent extends React.Component {
 
@@ -85,7 +85,7 @@ class RequestComponent extends React.Component {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization':'Bearer ' + localStorage.getItem('accessToken')
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             },
             body: JSON.stringify(request)
         });
@@ -104,13 +104,10 @@ class RequestComponent extends React.Component {
     };
 
     async getCar(id) {
-        // const newCar = await (await fetch(`/car/${id}`),{
-        //     headers:HEADERS
-        // }).json();
-        let newCar={};
+        let newCar = {};
         await axios.get(`/car/${id}`)
-            .then(response=>{
-                newCar=response.data;
+            .then(response => {
+                newCar = response.data;
             });
         let request = {...this.state.request};
         request['car'] = newCar;
@@ -119,10 +116,10 @@ class RequestComponent extends React.Component {
     }
 
     async getDriver(id) {
-        let newDriver={};
+        let newDriver = {};
         await axios.get(`/user/${id}`)
-            .then(response=>{
-                newDriver=response.data;
+            .then(response => {
+                newDriver = response.data;
             });
         let request = {...this.state.request};
         request['driver'] = newDriver;
@@ -162,7 +159,7 @@ class RequestComponent extends React.Component {
     };
 
     fillDriverSelector() {
-        if (this.state.drivers.length == 0) {
+        if (this.state.drivers.length === 0) {
             return <option>Нет доступных водителей</option>
         }
         return this.state.drivers.map(driver => {
@@ -177,27 +174,23 @@ class RequestComponent extends React.Component {
                 .then(response => {
                     newRequest = response.data;
                 });
-            // const newRequest = await(await
-            //         fetch(`/request/${this.props.match.params.id}`)
-            // ).json();
             this.setState({request: newRequest});
         }
 
-        let cars=[];
+        let cars = [];
         await axios.get(`/car/all`)
-            .then(response=>{
+            .then(response => {
                 console.log(response.data);
-                cars=response.data;
+                cars = response.data;
                 console.log(cars);
             });
 
-        let drivers=[];
+        let drivers = [];
         await axios.get(`/user/drivers`)
-            .then(response=>{
-                drivers=response.data;
+            .then(response => {
+                drivers = response.data;
             });
 
-        console.log(cars);
         this.setState({cars: cars, drivers: drivers});
         if (cars.length === 0 || drivers.length === 0) {
             this.setState({formValid: false});

@@ -48,6 +48,7 @@ class LoginForm extends React.Component {
                 this.props.changeLoggedIn(loggedIn);
                 console.log(localStorage.getItem('accessToken'));
                 this.props.history.push('/home');
+                alert(`${this.state.loginRequest.loginOrEmail}, добро пожаловать!`);
             });
     };
 

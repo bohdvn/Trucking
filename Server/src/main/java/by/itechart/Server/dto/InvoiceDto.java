@@ -1,10 +1,11 @@
 package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.Invoice;
+import by.itechart.Server.transformers.ToEntityTransformer;
 
 import java.time.LocalDate;
 
-public class InvoiceDto {
+public class InvoiceDto implements ToEntityTransformer {
 
     private int id;
 
@@ -102,6 +103,21 @@ public class InvoiceDto {
 
     public void setRequest(final RequestDto request) {
         this.request = request;
+    }
+
+    @Override
+    public Invoice transformToEntity() {
+        final Invoice invoice = new Invoice();
+        invoice.setDateOfCheck(this.dateOfCheck);
+        invoice.setDateOfIssue(this.dateOfIssue);
+        invoice.setDispatcherFrom(this.dispatcherFrom.transformToEntity());
+        invoice.setDispatcherTo(this.dispatcherTo.transformToEntity());
+        invoice.setManager(this.manager.transformToEntity());
+        invoice.setId(this.id);
+        invoice.setNumber(this.number);
+        invoice.setRequest(this.request.transformToEntity());
+        invoice.setStatus(this.status);
+        return invoice;
     }
 
     public class Builder {

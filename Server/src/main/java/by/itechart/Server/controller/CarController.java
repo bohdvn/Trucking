@@ -26,71 +26,74 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/car")
 public class CarController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CarController.class);
     private CarService carService;
 
     public CarController(CarService carService) {
         this.carService = carService;
     }
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CarController.class);
-
     @PreAuthorize("hasAuthority('SYSADMIN')")
     @PutMapping("/")
-    public ResponseEntity<?> edit(final @Valid @RequestBody Car car) {
-        LOGGER.info("REST request. Path:/car method: POST. car: {}", car);
-        carService.save(car);
+    public ResponseEntity<?> edit(final @Valid @RequestBody CarDto carDto) {
+        LOGGER.info("REST request. Path:/car method: POST. car: {}", carDto);
+        carService.save(carDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAuthority('SYSADMIN')")
     @PostMapping("")
-    public ResponseEntity<?> create(final @Valid @RequestBody Car car) {
-        LOGGER.info("REST request. Path:/car method: POST. car: {}", car);
-        carService.save(car);
+    public ResponseEntity<?> create(final @Valid @RequestBody CarDto carDto) {
+        LOGGER.info("REST request. Path:/car method: POST. car: {}", carDto);
+        carService.save(carDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/car/{} method: GET.", id);
-        Optional<Car> car = carService.findById(id);
-        return car.isPresent() ?
-                ResponseEntity.ok().body(car.get().transform()) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        final CarDto carDto = carService.findById(id);
+        return carDto == null ?
+                new ResponseEntity<>(HttpStatus.NOT_FOUND) :
+                ResponseEntity.ok().body(carDto);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedCars}")
-    public ResponseEntity<?> remove(@PathVariable("selectedCars") String selectedCars ) {
+    public ResponseEntity<?> remove(@PathVariable("selectedCars") String selectedCars) {
         LOGGER.info("REST request. Path:/car/{} method: DELETE.", selectedCars);
-       final String delimeter = ",";
-       final String[] carsId = selectedCars.split(delimeter);
+        final String delimeter = ",";
+        final String[] carsId = selectedCars.split(delimeter);
         for (String id : carsId) {
             carService.deleteById(Integer.valueOf(id));
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('SYSADMIN')")
     @GetMapping("/all")
     public ResponseEntity<?> getAll(@CurrentUser UserPrincipal userPrincipal) {
-        final List<CarDto> carDtos = carService.findAll().stream().map(Car::transform).collect(Collectors.toList());
-        return
-                //carDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(carDtos, HttpStatus.OK);
+        final List<CarDto> carDtos = carService.findAll();
+        return new ResponseEntity<>(carDtos, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('SYSADMIN')")
-    @GetMapping("/list")
-    public ResponseEntity<Page<CarDto>> getAll(Pageable pageable) {
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list/{query}")
+    public ResponseEntity<Page<CarDto>> getAll(Pageable pageable, @PathVariable("query") String query) {
         LOGGER.info("REST request. Path:/car method: GET.");
-        Page<Car> cars = carService.findAll(pageable);
-        Page<CarDto> carsDto = new PageImpl<>(cars.stream().map(Car::transform)
-                .sorted(Comparator.comparing(CarDto :: getStatus))
-                .collect(Collectors.toList()), pageable, cars.getTotalElements());
+        final Page<CarDto> carsDto = carService.findAllByQuery(pageable, query);
         LOGGER.info("Return carList.size:{}", carsDto.getNumber());
-        return cars.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(carsDto, HttpStatus.OK);
+        return new ResponseEntity<>(carsDto, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list/")
+    public ResponseEntity<Page<CarDto>> getAllWithoutQuery(Pageable pageable) {
+        LOGGER.info("REST request. Path:/car method: GET.");
+        final Page<CarDto> carsDto = carService.findAll(pageable);
+        LOGGER.info("Return carList.size:{}", carsDto.getNumber());
+        return new ResponseEntity<>(carsDto, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

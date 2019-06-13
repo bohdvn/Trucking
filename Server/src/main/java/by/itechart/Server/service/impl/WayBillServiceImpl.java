@@ -1,14 +1,18 @@
 package by.itechart.Server.service.impl;
 
+import by.itechart.Server.dto.WayBillDto;
 import by.itechart.Server.entity.WayBill;
 import by.itechart.Server.repository.WayBillRepository;
 import by.itechart.Server.service.WayBillService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class WayBillServiceImpl implements WayBillService {
@@ -19,18 +23,21 @@ public class WayBillServiceImpl implements WayBillService {
     }
 
     @Override
-    public void save(WayBill wayBill) {
-        wayBillRepository.save(wayBill);
+    public void save(final WayBillDto wayBillDto) {
+        wayBillRepository.save(wayBillDto.transformToEntity());
     }
 
     @Override
-    public Page<WayBill> findAll(Pageable pageable) {
-        return wayBillRepository.findAll(pageable);
+    public Page<WayBillDto> findAll(final Pageable pageable) {
+        final Page<WayBill> wayBills = wayBillRepository.findAll(pageable);
+        return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
+                .sorted(Comparator.comparing(WayBillDto::getDateFrom))
+                .collect(Collectors.toList()), pageable, wayBills.getTotalElements());
     }
 
     @Override
-    public Optional<WayBill> findById(int id) {
-        return wayBillRepository.findById(id);
+    public WayBillDto findById(int id) {
+        return wayBillRepository.findById(id).isPresent()? wayBillRepository.findById(id).get().transformToDto() : null;
     }
 
     @Override

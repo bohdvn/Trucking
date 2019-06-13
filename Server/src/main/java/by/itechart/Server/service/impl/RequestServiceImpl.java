@@ -1,18 +1,20 @@
 package by.itechart.Server.service.impl;
 
-import by.itechart.Server.entity.Car;
+import by.itechart.Server.dto.ProductDto;
+import by.itechart.Server.dto.RequestDto;
 import by.itechart.Server.entity.Request;
 import by.itechart.Server.repository.ClientCompanyRepository;
 import by.itechart.Server.repository.RequestRepository;
 import by.itechart.Server.service.RequestService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
+import java.util.Comparator;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -27,22 +29,22 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional
-    public void save(final Request request) {
-        if (Objects.isNull(request.getId())) {
+    public void save(final RequestDto requestDto) {
+        if (Objects.isNull(requestDto.getId())) {
             //костыыыыль
-            request.setClientCompanyTo(clientCompanyRepository.getOne(1));
-            request.setClientCompanyFrom(clientCompanyRepository.getOne(1));
-
-            requestRepository.save(request);
+            requestDto.setClientCompanyTo(clientCompanyRepository.getOne(1).transformToDto());
+            requestDto.setClientCompanyFrom(clientCompanyRepository.getOne(1).transformToDto());
+            requestRepository.save(requestDto.transformToEntity());
         } else {
-            final Request entity = requestRepository.findById(request.getId()).orElseThrow(IllegalStateException::new);
-            request.getProducts().forEach(prod -> prod.setRequest(entity));
-            entity.setStatus(request.getStatus());
-            entity.setClientCompanyFrom(request.getClientCompanyFrom());
-            entity.setClientCompanyTo(request.getClientCompanyTo());
-            entity.setCar(request.getCar());
-            entity.setDriver(request.getDriver());
-            entity.setProducts(request.getProducts());
+            final Request entity = requestRepository.findById(requestDto.getId()).orElseThrow(IllegalStateException::new);
+            requestDto.getProducts().forEach(prod -> prod.setRequest(entity.transformToDto()));
+            entity.setStatus(requestDto.getStatus());
+            entity.setClientCompanyFrom(requestDto.getClientCompanyFrom().transformToEntity());
+            entity.setClientCompanyTo(requestDto.getClientCompanyTo().transformToEntity());
+            entity.setCar(requestDto.getCar().transformToEntity());
+            entity.setDriver(requestDto.getDriver().transformToEntity());
+            entity.setProducts(requestDto.getProducts()
+                    .stream().map(ProductDto::transformToEntity).collect(Collectors.toList()));
             requestRepository.save(entity);
         }
         /*
@@ -51,18 +53,22 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Page<Request> findAll(final Pageable pageable) {
-        return requestRepository.findAll(pageable);
+    public Page<RequestDto> findAll(final Pageable pageable) {
+        final Page<Request> requests = requestRepository.findAll(pageable);
+        return new PageImpl<>(requests.stream().map(Request::transformToDto)
+                .sorted(Comparator.comparing(RequestDto::getStatus))
+                .collect(Collectors.toList()), pageable, requests.getTotalElements());
     }
 
     @Override
-    public Optional<Request> findById(final int id) {
-        return requestRepository.findById(id);
+    public RequestDto findById(final int id) {
+        return requestRepository.findById(id).isPresent() ?
+                requestRepository.findById(id).get().transformToDto() : null;
     }
 
     @Override
-    public void delete(final Request request) {
-        requestRepository.delete(request);
+    public void delete(final RequestDto requestDto) {
+        requestRepository.delete(requestDto.transformToEntity());
     }
 
     @Override

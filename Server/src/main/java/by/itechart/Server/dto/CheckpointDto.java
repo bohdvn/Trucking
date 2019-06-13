@@ -1,13 +1,12 @@
 package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.Checkpoint;
+import by.itechart.Server.transformers.ToEntityTransformer;
 
 import java.time.LocalDate;
 
-/**
- * @author Arina Suhorukova
- */
-public class CheckpointDto {
+
+public class CheckpointDto implements ToEntityTransformer {
 
     private Integer id;
 
@@ -68,6 +67,19 @@ public class CheckpointDto {
 
     public void setDate(final LocalDate date) {
         this.date = date;
+    }
+
+    @Override
+    public Checkpoint transformToEntity() {
+        final Checkpoint checkpoint = new Checkpoint();
+        checkpoint.setDate(this.date);
+        checkpoint.setId(this.id);
+        checkpoint.setLatitude(this.latitude);
+        checkpoint.setLongitude(this.longitude);
+        checkpoint.setName(this.name);
+        checkpoint.setStatus(this.status);
+        //checkpoint.setWayBill(this.wayBill.transformToEntity());
+        return checkpoint;
     }
 
     public class Builder {

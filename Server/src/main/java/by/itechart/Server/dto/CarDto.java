@@ -1,11 +1,10 @@
 package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.Car;
+import by.itechart.Server.transformers.ToEntityTransformer;
 
-import java.util.List;
 
-
-public class CarDto {
+public class CarDto implements ToEntityTransformer {
     private int id;
 
     private Car.CarType carType;
@@ -16,7 +15,7 @@ public class CarDto {
 
     private Car.Status status;
 
-    private List<RequestDto> requests;
+    // private List<RequestDto> requests;
 
     private CarDto() {
     }
@@ -65,14 +64,25 @@ public class CarDto {
         this.id = id;
     }
 
+    @Override
+    public Car transformToEntity() {
+        final Car car = new Car();
+        car.setId(this.id);
+        car.setCarType(this.carType);
+        car.setConsumption(this.consumption);
+        car.setName(this.name);
+        car.setStatus(this.status);
+        return car;
+    }
+
     public class Builder {
         private Builder() {
         }
 
-        public Builder withRequests(final List<RequestDto> requests) {
-            CarDto.this.requests = requests;
-            return this;
-        }
+//        public Builder withRequests(final List<RequestDto> requests) {
+//            CarDto.this.requests = requests;
+//            return this;
+//        }
 
         public Builder withId(final int id) {
             CarDto.this.id = id;

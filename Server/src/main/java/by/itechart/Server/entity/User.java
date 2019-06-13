@@ -2,6 +2,7 @@ package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.UserDto;
 import lombok.Data;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -14,7 +15,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "user")
-public class User implements Transformable {
+public class User implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -91,9 +92,10 @@ public class User implements Transformable {
     }
 
     @Override
-    public UserDto transform() {
-        UserDto.Builder userDtoBuilder = UserDto.builder().withId(this.id)
-//                .withEnabled(this.isEnabled)
+    public UserDto transformToDto() {
+        UserDto.Builder userDtoBuilder=UserDto.builder()
+                .withId(this.id)
+                .withEnabled(this.isEnabled)
                 .withDateOfBirth(this.dateOfBirth)
                 .withLogin(this.login)
                 .withPassword(this.password)
@@ -104,14 +106,14 @@ public class User implements Transformable {
                 .withSurname(this.surname)
                 .withRoles(this.roles)
                 .withEmail(this.email)
-                .withAddressDto(this.address.transform());
+                .withAddressDto(this.address.transformToDto());
         if (this.clientCompany != null) {
-            userDtoBuilder.withClientCompany(this.clientCompany.transform());
+            userDtoBuilder.withClientCompany(this.clientCompany.transformToDto());
         }
         return userDtoBuilder.build();
     }
 
-    public enum Role{
+    public enum Role {
         SYSADMIN,
         ADMIN,
         MANAGER,

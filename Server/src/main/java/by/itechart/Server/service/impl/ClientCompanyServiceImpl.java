@@ -1,16 +1,19 @@
 package by.itechart.Server.service.impl;
 
+import by.itechart.Server.dto.ClientCompanyDto;
 import by.itechart.Server.entity.ClientCompany;
 import by.itechart.Server.entity.User;
 import by.itechart.Server.repository.ClientCompanyRepository;
 import by.itechart.Server.service.ClientCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientCompanyServiceImpl implements ClientCompanyService {
@@ -24,9 +27,10 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public void save(final ClientCompany clientCompany) {
-        if(clientCompany.getUsers()!=null){
-            User user=clientCompany.getUsers().get(0);
+    public void save(final ClientCompanyDto clientCompanyDto) {
+        final ClientCompany clientCompany = clientCompanyDto.transformToEntity();
+        if (clientCompany.getUsers() != null) {
+            User user = clientCompany.getUsers().get(0);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setClientCompany(clientCompany);
         }
@@ -34,23 +38,22 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public Page<ClientCompany> findByCompanyType(ClientCompany.CompanyType companyType, Pageable pageable) {
-        return clientCompanyRepository.findClientCompaniesByCompanyType(companyType, pageable);
+    public Page<ClientCompanyDto> findAll(Pageable pageable) {
+        final Page<ClientCompany> companies = clientCompanyRepository.findAll(pageable);
+        return new PageImpl<>(companies.stream().map(ClientCompany::transformToDto)
+                .sorted(Comparator.comparing(ClientCompanyDto::getName))
+                .collect(Collectors.toList()), pageable, companies.getTotalElements());
     }
 
     @Override
-    public Page<ClientCompany> findAll(Pageable pageable) {
-        return clientCompanyRepository.findAll(pageable);
+    public ClientCompanyDto findById(int id) {
+        return clientCompanyRepository.findById(id).isPresent() ?
+                clientCompanyRepository.findById(id).get().transformToDto() : null;
     }
 
     @Override
-    public Optional<ClientCompany> findById(int id) {
-        return clientCompanyRepository.findById(id);
-    }
-
-    @Override
-    public void delete(ClientCompany clientCompany) {
-        clientCompanyRepository.delete(clientCompany);
+    public void delete(ClientCompanyDto clientCompanyDto) {
+        clientCompanyRepository.delete(clientCompanyDto.transformToEntity());
     }
 
     @Override

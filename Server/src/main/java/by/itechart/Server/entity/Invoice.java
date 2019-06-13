@@ -1,6 +1,7 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.InvoiceDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,7 +20,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "invoice")
-public class Invoice implements Transformable {
+public class Invoice implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -72,17 +73,17 @@ public class Invoice implements Transformable {
     private Request request;
 
     @Override
-    public InvoiceDto transform() {
+    public InvoiceDto transformToDto() {
         return InvoiceDto.builder()
                 .withId(this.id)
                 .withDateOfCheck(this.dateOfCheck)
                 .withDateOfIssue(this.dateOfIssue)
                 .withNumber(this.number)
                 .withStatus(this.status)
-                .withDispatcherFrom((this.dispatcherFrom == null) ? null : this.dispatcherFrom.transform())
-                .withDispatcherTo((this.dispatcherTo == null) ? null : this.dispatcherTo.transform())
-                .withManager((this.manager == null) ? null : this.manager.transform())
-                .withRequest(this.request.transform())
+                .withDispatcherFrom((this.dispatcherFrom == null) ? null : this.dispatcherFrom.transformToDto())
+                .withDispatcherTo((this.dispatcherTo == null) ? null : this.dispatcherTo.transformToDto())
+                .withManager((this.manager == null) ? null : this.manager.transformToDto())
+                .withRequest(this.request.transformToDto())
                 .build();
     }
 

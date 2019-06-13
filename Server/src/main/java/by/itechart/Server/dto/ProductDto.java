@@ -1,8 +1,9 @@
 package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.Product;
+import by.itechart.Server.transformers.ToEntityTransformer;
 
-public class ProductDto {
+public class ProductDto implements ToEntityTransformer{
     private int id;
 
     private String name;
@@ -88,6 +89,20 @@ public class ProductDto {
 
     public void setId(final int id) {
         this.id = id;
+    }
+
+    @Override
+    public Product transformToEntity() {
+        final Product product = new Product();
+        //product.setRequest(this.request.transformToEntity());
+        product.setAmount(this.amount);
+        product.setId(this.id);
+        product.setLostAmount(this.lostAmount);
+        product.setName(this.name);
+        product.setPrice(this.price);
+        product.setStatus(this.status);
+        product.setType(this.type);
+        return product;
     }
 
     public class Builder {

@@ -1,5 +1,6 @@
 package by.itechart.Server.service;
 
+import by.itechart.Server.dto.WayBillDto;
 import by.itechart.Server.entity.WayBill;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,11 +9,11 @@ import java.util.Optional;
 
 public interface WayBillService {
 
-    void save(WayBill wayBill);
+    void save(final WayBillDto wayBillDto);
 
-    Page<WayBill> findAll(Pageable pageable);
+    Page<WayBillDto> findAll(final Pageable pageable);
 
-    Optional<WayBill> findById(int id);
+    WayBillDto findById(final int id);
 
-    void deleteById(int id);
+    void deleteById(final int id);
 }

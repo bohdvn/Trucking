@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import "../../styles.css";
 import axios from 'axios';
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 class CarComponent extends React.Component {
     emptyCar = {
@@ -99,7 +100,6 @@ class CarComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            // const newCar = await (await fetch(`/car/${this.props.match.params.id}`)).json();
             let newCar = {};
             await axios.get(`/car/${this.props.match.params.id}`)
                 .then(response => {

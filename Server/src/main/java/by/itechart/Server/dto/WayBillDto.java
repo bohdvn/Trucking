@@ -1,11 +1,13 @@
 package by.itechart.Server.dto;
 
 import by.itechart.Server.entity.WayBill;
+import by.itechart.Server.transformers.ToEntityTransformer;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class WayBillDto {
+public class WayBillDto implements ToEntityTransformer{
 
     private Integer id;
 
@@ -72,6 +74,19 @@ public class WayBillDto {
 
     public void setInvoice(InvoiceDto invoice) {
         this.invoice = invoice;
+    }
+
+    @Override
+    public WayBill transformToEntity() {
+        final WayBill wayBill = new WayBill();
+        wayBill.setCheckpoints(this.checkpoints.stream()
+                .map(CheckpointDto::transformToEntity).collect(Collectors.toList()));
+        wayBill.setDateFrom(this.dateFrom);
+        wayBill.setDateTo(this.dateTo);
+        wayBill.setId(this.id);
+        wayBill.setStatus(this.status);
+        wayBill.setInvoice(this.invoice.transformToEntity());
+        return null;
     }
 
     public class Builder {

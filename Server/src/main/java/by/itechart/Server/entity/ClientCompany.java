@@ -1,6 +1,8 @@
 package by.itechart.Server.entity;
 
 import by.itechart.Server.dto.ClientCompanyDto;
+import by.itechart.Server.transformers.ToDtoTransformer;
+import lombok.Data;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,10 +20,12 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
+@Data
 @Table(name = "client_company")
-public class ClientCompany implements Transformable {
+public class ClientCompany implements ToDtoTransformer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -41,11 +45,6 @@ public class ClientCompany implements Transformable {
     @Column(name = "status")
     private Status status;
 
-    @Enumerated
-    @NotNull(message = "CompanyType cannot be null")
-    @Column(name = "company_type")
-    private CompanyType companyType;
-
     /**
      * One clientCompany can have only one address.
      */
@@ -57,34 +56,15 @@ public class ClientCompany implements Transformable {
     private List<User> users;
 
     @Override
-    public ClientCompanyDto transform() {
+    public ClientCompanyDto transformToDto() {
         return ClientCompanyDto.builder()
                 .withId(this.id)
                 .withName(this.name)
                 .withType(this.type)
                 .withStatus(this.status)
-                .withAddress(this.address.transform())
+                .withAddress(this.address.transformToDto())
+                .withUsers(this.users.stream().map(User::transformToDto).collect(Collectors.toList()))
                 .build();
-    }
-
-    public CompanyType getCompanyType() {
-        return companyType;
-    }
-
-    public void setCompanyType(final CompanyType companyType) {
-        this.companyType = companyType;
-    }
-
-    public void setAddress(final Address address) {
-        this.address = address;
-    }
-
-    public void setUsers(final List<User> users) {
-        this.users = users;
-    }
-
-    public Address getAddress() {
-        return address;
     }
 
     @Override
@@ -95,51 +75,14 @@ public class ClientCompany implements Transformable {
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
                 type == that.type &&
-                companyType == that.companyType &&
                 status == that.status &&
                 Objects.equals(address, that.address) &&
                 Objects.equals(users, that.users);
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(final Type type) {
-        this.type = type;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Status status) {
-        this.status = status;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, type, companyType, status, address, users);
+        return Objects.hash(id, name, type, status, address, users);
     }
 
     @Override
@@ -148,22 +91,17 @@ public class ClientCompany implements Transformable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", type=" + type +
-                ", companyType=" + companyType +
                 ", status=" + status +
                 ", address=" + address +
                 ", users=" + users +
                 '}';
     }
 
-    public enum Status {
-        ACTIVE, BLOCKED
-    }
-
-    public enum CompanyType {
-        CLIENT, WAREHOUSE
-    }
-
     public enum Type {
         LEGAL, INDIVIDUAL
+    }
+
+    public enum Status {
+        ACTIVE, BLOCKED
     }
 }

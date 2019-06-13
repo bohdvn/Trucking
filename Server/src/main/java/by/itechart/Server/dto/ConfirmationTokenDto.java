@@ -1,9 +1,12 @@
 package by.itechart.Server.dto;
 
+import by.itechart.Server.entity.ConfirmationToken;
+import by.itechart.Server.transformers.ToEntityTransformer;
+
 import java.util.Date;
 
 
-public class ConfirmationTokenDto {
+public class ConfirmationTokenDto implements ToEntityTransformer {
 
     private Integer id;
 
@@ -41,6 +44,16 @@ public class ConfirmationTokenDto {
         this.createDate = createDate;
     }
 
+    @Override
+    public ConfirmationToken transformToEntity() {
+        final ConfirmationToken confirmationToken = new ConfirmationToken();
+        confirmationToken.setConfirmationToken(this.confirmationToken);
+        confirmationToken.setCreateDate(this.createDate);
+        confirmationToken.setId(this.id);
+        //confirmationToken.setUser(this.user.transformToEntity());
+        return confirmationToken;
+    }
+
     public class Builder {
         private Builder() {
         }
@@ -50,7 +63,7 @@ public class ConfirmationTokenDto {
             return this;
         }
 
-        public Builder withUser (final UserDto user){
+        public Builder withUser(final UserDto user) {
             ConfirmationTokenDto.this.user = user;
             return this;
         }

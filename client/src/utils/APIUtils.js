@@ -16,15 +16,6 @@ const request = (url,options) => {
     options = Object.assign({}, defaults, options);
 
     return fetch(url, options);
-//         .then(response =>
-//             response.json().then(json => {
-//                 console.log(response.status);
-//                 if (!response.ok) {
-//                     return Promise.reject(json);
-//                 }
-//                 return json;
-//             })
-//         );
 };
 
 export function login(url,loginRequest) {
@@ -47,10 +38,13 @@ export function saveUser(user){
     })
 }
 
-// export default function setAuthToken(token) {
-//     if (token) {
-//         axios.defaults.headers.common['Authorization'] = `JWT ${token}`;
-//     } else {
-//         delete axios.defaults.headers.common['Authorization'];
-//     }
-// }
+export function getSelected() {
+    const selectedUsers = Array.apply(null,
+        document.users.selected_users)
+        .filter(function (el) {
+            return el.checked === true
+        }).map(function (el) {
+            return el.value
+        });
+    return selectedUsers;
+}

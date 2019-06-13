@@ -22,13 +22,19 @@ import WaybillComponent from "./components/forms/WaybillComponent";
 import "@kenshooui/react-multi-select/dist/style.css"
 import Confirm from './components/forms/Confirm';
 import Navigation from './components/Navigation'
+import ReportComponent from './components/forms/ReportComponent';
+import SendEmail from "./components/forms/SendEmail";
 
 class App extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
     }
+
     render() {
-        console.log(this.props.loggedIn);
+        // console.log(this.props.claims.loggedIn);
+        // const {role} = this.props.loggedIn.roles[0].authority;
+        // console.log(this.props.loggedIn.roles[0].authority);
+        // console.log(role);
         return (
             <Router history={createBrowserHistory}>
                 <Navigation/>
@@ -69,6 +75,8 @@ class App extends React.Component {
 
                 <Route path="/waybill/:id" component={WaybillComponent}/>
                 <Route path='/confirm/:id' component={Confirm}/>
+                <Route path='/report' component={ReportComponent}/>
+                <Route path='/email' component={SendEmail}/>
             </Router>
         );
     }

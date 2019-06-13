@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 import {ACCESS_TOKEN} from "../../constants/auth";
-
+import {getSelected} from "../../utils/APIUtils";
 
 class UserListComponent extends React.Component {
 
@@ -27,13 +27,15 @@ class UserListComponent extends React.Component {
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
-            url: props.location.pathname
+            url: props.location.pathname,
+            selectedUsers: []
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.removeChecked = this.removeChecked.bind(this);
         this.handleChange = this.handleChange.bind(this);
         console.log(this.state);
+        this.sendEmail = this.sendEmail.bind(this);
     }
 
     getUserUrl = () => {
@@ -66,6 +68,7 @@ class UserListComponent extends React.Component {
             default:
                 return;
         }
+
         axios.get(`/user/${apiUrl}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
@@ -109,6 +112,24 @@ class UserListComponent extends React.Component {
                 )
             }
         })
+    };
+
+    sendEmail = () => {
+        const selectedIds = getSelected();
+        const selectedUsers = [];
+        const {users} = this.state;
+        for (let selected = 0; selected < selectedIds.length; selected++) {
+            for (let userId = 0; userId < users.length; userId++) {
+                const user = users[userId];
+                if (selectedIds[selected] == user.id) {
+                    selectedUsers.push(user);
+                }
+            }
+        }
+        this.props.history.push({
+            pathname: "/email",
+            state: {users: selectedUsers}
+        });
     };
 
     populateRowsWithData = () => {
@@ -183,6 +204,7 @@ class UserListComponent extends React.Component {
                         <div className="float-right">
                             <ButtonGroup>
                                 <Button color="success" tag={Link} to={`/${this.getUserUrl()}/create`}>Добавить</Button>
+                                <Button color="info" onClick={() => this.sendEmail()}>Отправить письмо</Button>
                                 <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
                             </ButtonGroup>
                         </div>
@@ -212,6 +234,7 @@ class UserListComponent extends React.Component {
                                 onChange={this.handlePageChange}
                             />
                         </div>
+                        {/*<SendEmail email={this.state.selectedUsers}/>*/}
                     </Container>
                 </div>
             </form>

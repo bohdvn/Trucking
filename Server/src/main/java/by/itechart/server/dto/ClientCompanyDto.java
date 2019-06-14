@@ -1,16 +1,19 @@
 package by.itechart.server.dto;
 
+import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.ClientCompany;
+import by.itechart.server.interfaces.FieldsInterface;
 import by.itechart.server.transformers.ToEntityTransformer;
 import lombok.Data;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
-public class ClientCompanyDto implements ToEntityTransformer {
+public class ClientCompanyDto implements ToEntityTransformer, FieldsInterface {
+
     private int id;
 
+    @CriteriaAnnotation
     private String name;
 
     private ClientCompany.Status status;
@@ -28,6 +31,49 @@ public class ClientCompanyDto implements ToEntityTransformer {
         return new ClientCompanyDto().new Builder();
     }
 
+    @Override
+    public ClientCompany transformToEntity() {
+        final ClientCompany clientCompany = new ClientCompany();
+        clientCompany.setAddress(this.address.transformToEntity());
+        clientCompany.setId(this.id);
+        clientCompany.setName(this.name);
+        clientCompany.setStatus(this.status);
+        clientCompany.setType(this.type);
+        //clientCompany.setUsers(this.users.stream().map(UserDto::transformToEntity).collect(Collectors.toList()));
+        return clientCompany;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(final int id) {
+        this.id = id;
+    }
+
+    public ClientCompany.Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(final ClientCompany.Status status) {
+        this.status = status;
+    }
+
+    public ClientCompany.Type getType() {
+        return type;
+    }
+
+    public void setType(final ClientCompany.Type type) {
+        this.type = type;
+    }
 
     public class Builder {
 
@@ -64,23 +110,9 @@ public class ClientCompanyDto implements ToEntityTransformer {
             return this;
         }
 
+
         public ClientCompanyDto build() {
             return ClientCompanyDto.this;
         }
-
-    }
-
-    @Override
-    public ClientCompany transformToEntity() {
-        final ClientCompany clientCompany = new ClientCompany();
-        clientCompany.setAddress(this.address.transformToEntity());
-        clientCompany.setId(this.id);
-        clientCompany.setName(this.name);
-        clientCompany.setStatus(this.status);
-        clientCompany.setType(this.type);
-        clientCompany.setUsers(this.users!=null?
-                this.users.stream().map(UserDto::transformToEntity).collect(Collectors.toList()):null);
-//        clientCompany.setUsers(this.users.stream().map(UserDto::transformToEntity).collect(Collectors.toList()));
-        return clientCompany;
     }
 }

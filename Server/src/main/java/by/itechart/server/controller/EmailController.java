@@ -1,7 +1,7 @@
 package by.itechart.server.controller;
 
-import by.itechart.server.entity.Email;
 import by.itechart.server.entity.User;
+import by.itechart.server.entity.Email;
 import by.itechart.server.service.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

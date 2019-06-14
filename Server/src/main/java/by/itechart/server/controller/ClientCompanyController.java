@@ -76,13 +76,23 @@ public class ClientCompanyController {
     }
 
     @PreAuthorize("hasAuthority('SYSADMIN')")
-    @GetMapping("/list")
-    public ResponseEntity<Page<ClientCompanyDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
+    @GetMapping("/list/{query}")
+    public ResponseEntity<Page<ClientCompanyDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable,
+                                                         @PathVariable("query") String query) {
         LOGGER.info("REST request. Path:/client method: GET.");
-        Page<ClientCompanyDto> clientCompaniesDto = clientCompanyService.findAll(pageable);
+        Page<ClientCompanyDto> clientCompaniesDto = clientCompanyService.findAllByQuery(pageable, query);
         LOGGER.info("Return clientCompanyList.size:{}", clientCompaniesDto.getNumber());
-        return clientCompaniesDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(clientCompaniesDto, HttpStatus.OK);
+        return new ResponseEntity<>(clientCompaniesDto, HttpStatus.OK);
+    }
+
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list/")
+    public ResponseEntity<Page<ClientCompanyDto>> getAllWithoutQuery(Pageable pageable) {
+        LOGGER.info("REST request. Path:/car method: GET.");
+        Page<ClientCompanyDto> clientCompaniesDto = clientCompanyService.findAll(pageable);
+        LOGGER.info("Return carList.size:{}", clientCompaniesDto.getNumber());
+        return new ResponseEntity<>(clientCompaniesDto, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

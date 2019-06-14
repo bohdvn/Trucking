@@ -5,7 +5,9 @@ import java.util.List;
 public class Email {
 
     private List<User> recipients;
+
     private String subject;
+
     private String message;
 
     public Email() {

@@ -20,7 +20,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -95,6 +94,60 @@ public class ClientCompany implements ToDtoTransformer {
                 ", address=" + address +
                 ", users=" + users +
                 '}';
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public ClientCompany setId(final Integer id) {
+        this.id = id;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ClientCompany setName(final String name) {
+        this.name = name;
+        return this;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public ClientCompany setType(final Type type) {
+        this.type = type;
+        return this;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public ClientCompany setStatus(final Status status) {
+        this.status = status;
+        return this;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public ClientCompany setAddress(final Address address) {
+        this.address = address;
+        return this;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public ClientCompany setUsers(final List<User> users) {
+        this.users = users;
+        return this;
     }
 
     public enum Type {

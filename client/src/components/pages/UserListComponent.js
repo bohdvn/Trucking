@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, FormGroup, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
@@ -20,22 +20,38 @@ class UserListComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(props);
         this.state = {
             users: [],
             activePage: 0,
+            query: '',
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
             url: props.location.pathname,
             selectedUsers: []
         };
+        this.queryTimeout = -1;
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.removeChecked = this.removeChecked.bind(this);
         this.handleChange = this.handleChange.bind(this);
-        console.log(this.state);
         this.sendEmail = this.sendEmail.bind(this);
+        this.handleQueryChange = this.handleQueryChange.bind(this);
+        this.changeQuery = this.changeQuery.bind(this);
+    }
+
+    changeQuery() {
+        this.fetchURL(0, this.state.query);
+    }
+
+    handleQueryChange(event) {
+        clearTimeout(this.queryTimeout);
+        const target = event.target;
+        const value = target.value;
+        this.setState(() => ({
+            query: value
+        }));
+        this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
     getUserUrl = () => {
@@ -52,7 +68,8 @@ class UserListComponent extends React.Component {
         }
     };
 
-    fetchURL(page) {
+
+    fetchURL(page, query) {
         console.log(localStorage.getItem(ACCESS_TOKEN));
         const {url} = this.state.url;
         console.log(url);
@@ -69,7 +86,18 @@ class UserListComponent extends React.Component {
                 return;
         }
 
-        axios.get(`/user/${apiUrl}?page=${page}&size=5`)
+        // axios.get(`/user/list/${query}?page=${page}&size=5`, {
+        //     proxy: {
+        //         host: 'http://localhost',
+        //         port: 8080
+        //     },
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json',
+        //         'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
+        //     }
+        // })
+        axios.get(`/user/${apiUrl}/${query}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
@@ -92,13 +120,13 @@ class UserListComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchURL(this.state.activePage)
+        this.fetchURL(this.state.activePage, this.state.query);
     }
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber - 1)
+        this.fetchURL(pageNumber - 1, this.state.query);
     }
 
     handleChange = e => {
@@ -201,6 +229,10 @@ class UserListComponent extends React.Component {
             <form name="users">
                 <div>
                     <Container fluid>
+                        <FormGroup>
+                            <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                                   onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                        </FormGroup>
                         <div className="float-right">
                             <ButtonGroup>
                                 <Button color="success" tag={Link} to={`/${this.getUserUrl()}/create`}>Добавить</Button>

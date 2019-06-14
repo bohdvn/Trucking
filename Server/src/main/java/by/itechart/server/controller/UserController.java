@@ -189,8 +189,8 @@ public class UserController {
                 confirmationTokenService.findByConfirmationToken(confirmationToken).transformToEntity();
         if (token != null) {
             final UserDto user = userService.findByEmailIgnoreCase(token.getUser().getEmail());
-            if (!user.getIsEnabled()) {
-                user.setIsEnabled(true);
+            if (!user.getEnabled()) {
+                user.setEnabled(true);
                 userService.save(user);
                 LOGGER.info("Users field isEnabled was change.");
                 confirmationTokenService.delete(token.transformToDto());
@@ -219,8 +219,7 @@ public class UserController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken(authentication);
         JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")

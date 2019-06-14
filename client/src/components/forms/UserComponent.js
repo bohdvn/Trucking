@@ -3,11 +3,8 @@ import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 
 import "react-datepicker/dist/react-datepicker.css";
-import * as ROLE from '../../constants/userConstants';
 import {getUserById, saveUser} from "../../utils/APIUtils";
-import * as OPTION from "../../constants/userRoleOptions";
 import {connect} from "react-redux";
-import * as CLIENT from '../../constants/clientConstants';
 import axios from 'axios';
 import RoleSelect from "../RoleSelect";
 
@@ -193,9 +190,9 @@ class UserComponent extends React.Component {
     validateUserForm() {
         this.setState({
             userFormValid: this.state.nameValid && this.state.surnameValid && this.state.patronymicValid
-                && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
-                && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid
-                && this.state.addressValid
+            && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
+            && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid
+            && this.state.addressValid
         });
 
     }

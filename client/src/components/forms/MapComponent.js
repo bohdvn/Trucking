@@ -1,8 +1,10 @@
 /*global google*/
 import React from 'react';
-import {withScriptjs, withGoogleMap, GoogleMap, Marker} from 'react-google-maps';
 import SearchBox from 'react-google-maps/lib/components/places/SearchBox';
-
+import withScriptjs from "react-google-maps/lib/withScriptjs";
+import withGoogleMap from "react-google-maps/lib/withGoogleMap";
+import Marker from "react-google-maps/lib/components/Marker";
+import GoogleMap from "react-google-maps/lib/components/GoogleMap";
 const _ = require("lodash");
 
 class WrappedMapComponent extends React.Component {

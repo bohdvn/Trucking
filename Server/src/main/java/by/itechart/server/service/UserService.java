@@ -15,6 +15,8 @@ public interface UserService {
 
     List<UserDto> findAllByRolesContains(User.Role role);
 
+    Page<UserDto> findAll(final Pageable pageable);
+
     void save(final UserDto userDto);
 
     UserDto findById(int id);
@@ -22,6 +24,8 @@ public interface UserService {
     void delete(final UserDto userDto);
 
     void deleteById(final int id);
+
+    List<UserDto> findAll();
 
     boolean existsByLogin(final String login);
 

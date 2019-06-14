@@ -31,12 +31,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> findAllByClientCompanyId(final int clientCompanyId,final Pageable pageable) {
-        Page<User> users = userRepository.findAllByClientCompanyId(clientCompanyId,pageable);
+    public Page<UserDto> findAllByClientCompanyId(final int clientCompanyId, final Pageable pageable) {
+        Page<User> users = userRepository.findAllByClientCompanyId(clientCompanyId, pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)
                 .sorted(Comparator.comparing(UserDto::getSurname))
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
-        }
+    }
 
     @Override
     public List<UserDto> findAll() {
@@ -52,6 +52,13 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
     }
 
+    @Override
+    public Page<UserDto> findAll(final Pageable pageable) {
+        final Page<User> users = userRepository.findAll(pageable);
+        return new PageImpl<>(users.stream().map(User::transformToDto)
+                .sorted(Comparator.comparing(UserDto::getSurname))
+                .collect(Collectors.toList()), pageable, users.getTotalElements());
+    }
     @Override
     public UserDto findById(final int id) {
         return userRepository.findById(id).isPresent() ? userRepository.findById(id).get().transformToDto() : null;
@@ -83,8 +90,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> findAllByRolesContains(User.Role role,Pageable pageable) {
-        Page<User> users = userRepository.findAllByRolesContains(role,pageable);
+    public Page<UserDto> findAllByRolesContains(User.Role role, Pageable pageable) {
+        Page<User> users = userRepository.findAllByRolesContains(role, pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
     }

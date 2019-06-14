@@ -97,7 +97,7 @@ class UserListComponent extends React.Component {
         //         'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
         //     }
         // })
-        axios.get(`/user/${apiUrl}?page=${page}&size=5`)
+        axios.get(`/user/${apiUrl}/${query}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;

@@ -4,9 +4,11 @@ import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.ClientCompany;
 import by.itechart.server.interfaces.FieldsInterface;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class ClientCompanyDto implements ToEntityTransformer, FieldsInterface {
 
     private int id;

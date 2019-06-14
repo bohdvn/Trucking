@@ -31,8 +31,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> findAll(final Pageable pageable) {
-        Page<User> users = userRepository.findAll(pageable);
+    public Page<UserDto> findAllByClientCompanyId(final int clientCompanyId,final Pageable pageable) {
+        Page<User> users = userRepository.findAllByClientCompanyId(clientCompanyId,pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)
                 .sorted(Comparator.comparing(UserDto::getSurname))
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
@@ -80,5 +80,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findByEmailIgnoreCase(final String email) {
         return userRepository.findByEmailIgnoreCase(email).transformToDto();
+    }
+
+    @Override
+    public Page<UserDto> findAllByRolesContains(User.Role role,Pageable pageable) {
+        Page<User> users = userRepository.findAllByRolesContains(role,pageable);
+        return new PageImpl<>(users.stream().map(User::transformToDto)
+                .collect(Collectors.toList()), pageable, users.getTotalElements());
+    }
+
+    @Override
+    public List<UserDto> findAllByRolesContains(User.Role role) {
+        return userRepository.findAllByRolesContains(User.Role.DRIVER)
+                .stream().map(User::transformToDto)
+                .collect(Collectors.toList());
     }
 }

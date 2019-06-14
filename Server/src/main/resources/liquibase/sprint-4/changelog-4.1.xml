@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="11" author="yakutsin.aliaksandr">
+        <createTable tableName="user_role">
+            <column name="user_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="role_id" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="12" author="yakutsin.aliaksandr">
+        <insert tableName="address">
+            <column name="id">99999</column>
+            <column name="city">Минск</column>
+            <column name="street">Толстого</column>
+            <column name="building">10</column>
+            <column name="flat">709</column>
+            <column name="longitude">53.8882836</column>
+            <column name="latitude">27.5420729</column>
+        </insert>
+    </changeSet>
+
+    <changeSet author="yakutsin.aliaksandr" id="13">
+        <insert tableName="user">
+            <column name="id">99999</column>
+            <column name="surname">Sysadmin</column>
+            <column name="name">Sysadmin</column>
+            <column name="patronymic">Sysadmin</column>
+            <column name="passport_number">QQ1234567</column>
+            <column name="passport_issued">test</column>
+            <column name="date_of_birth">1990-11-11</column>
+            <column name="login">superuser</column>
+            <column name="password">$2a$10$yssZ8BV01COovfJx9AtiretQQVMWRRGNJxnKM1jXPF4tVdvV0KWY2</column>
+            <column name="address">99999</column>
+            <column name="email">testmail@test.by</column>
+            <column name="is_enabled">0</column>
+        </insert>
+    </changeSet>
+    
+    <changeSet id="14" author="yakutsin.aliaksandr">
+        <insert tableName="user_role">
+            <column name="user_id">99999</column>
+            <column name="role_id">0</column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

@@ -1,6 +1,8 @@
 package by.itechart.server.controller;
 
 import by.itechart.server.dto.CarDto;
+import by.itechart.server.security.CurrentUser;
+import by.itechart.server.security.UserPrincipal;
 import by.itechart.server.service.CarService;
 import by.itechart.server.utils.ValidationUtils;
 import org.slf4j.Logger;
@@ -26,7 +28,7 @@ public class CarController {
         this.carService = carService;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @PutMapping("/")
     public ResponseEntity<?> edit(final @Valid @RequestBody CarDto carDto) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", carDto);
@@ -34,7 +36,7 @@ public class CarController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @PostMapping("")
     public ResponseEntity<?> create(final @Valid @RequestBody CarDto carDto) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", carDto);
@@ -64,13 +66,11 @@ public class CarController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('SYSADMIN')")
     @GetMapping("/all")
-    public ResponseEntity<?> getAll() {
+    public ResponseEntity<?> getAll(@CurrentUser UserPrincipal userPrincipal) {
         final List<CarDto> carDtos = carService.findAll();
-        return
-                //carDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(carDtos, HttpStatus.OK);
+        return new ResponseEntity<>(carDtos, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
@@ -79,9 +79,7 @@ public class CarController {
         LOGGER.info("REST request. Path:/car method: GET.");
         final Page<CarDto> carsDto = carService.findAllByQuery(pageable, query);
         LOGGER.info("Return carList.size:{}", carsDto.getNumber());
-        return
-                //carsDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(carsDto, HttpStatus.OK);
+        return new ResponseEntity<>(carsDto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
@@ -90,9 +88,7 @@ public class CarController {
         LOGGER.info("REST request. Path:/car method: GET.");
         final Page<CarDto> carsDto = carService.findAll(pageable);
         LOGGER.info("Return carList.size:{}", carsDto.getNumber());
-        return
-                //carsDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(carsDto, HttpStatus.OK);
+        return new ResponseEntity<>(carsDto, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

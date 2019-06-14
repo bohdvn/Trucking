@@ -3,11 +3,13 @@ package by.itechart.server.dto;
 import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.User;
 import by.itechart.server.interfaces.FieldsInterface;
+import lombok.Data;
 import by.itechart.server.transformers.ToEntityTransformer;
 
 import java.time.LocalDate;
+import java.util.List;
 
-
+@Data
 public class UserDto implements ToEntityTransformer, FieldsInterface {
 
     private int id;
@@ -31,21 +33,13 @@ public class UserDto implements ToEntityTransformer, FieldsInterface {
 
     private String email;
 
-    private User.Role role;
+    private List<User.Role> roles;
 
     private String login;
 
     private String password;
 
     private AddressDto address;
-
-//    private List<InvoiceDto> checkedByManagerInvoices;
-//
-//    private List<InvoiceDto> issuedByDispatcherFromInvoices;
-//
-//    private List<InvoiceDto> issuedByDispatcherToInvoices;
-//
-//    private List<RequestDto> requests;
 
     private ClientCompanyDto clientCompany;
 
@@ -120,13 +114,6 @@ public class UserDto implements ToEntityTransformer, FieldsInterface {
         this.login = login;
     }
 
-    public User.Role getRole() {
-        return role;
-    }
-
-    public void setRole(final User.Role role) {
-        this.role = role;
-    }
 
     public String getPassword() {
         return password;
@@ -215,7 +202,7 @@ public class UserDto implements ToEntityTransformer, FieldsInterface {
         user.setPassportNumber(this.passportNumber);
         user.setPassword(this.password);
         user.setPatronymic(this.patronymic);
-        user.setRole(this.role);
+        user.setRoles(this.roles);
         user.setSurname(this.surname);
         return user;
     }
@@ -224,31 +211,11 @@ public class UserDto implements ToEntityTransformer, FieldsInterface {
         private Builder() {
         }
 
-//        public Builder withCheckedByManagerInvoices(final List<InvoiceDto> checkedByManagerInvoices) {
-//            UserDto.this.checkedByManagerInvoices = checkedByManagerInvoices;
-//            return this;
-//        }
-//
-//        public Builder withIssuedByDispatcherFromInvoices(final List<InvoiceDto> issuedByDispatcherFromInvoices) {
-//            UserDto.this.issuedByDispatcherFromInvoices = issuedByDispatcherFromInvoices;
-//            return this;
-//        }
-//
-//        public Builder withIssuedByDispatcherToInvoices(final List<InvoiceDto> issuedByDispatcherToInvoices) {
-//            UserDto.this.issuedByDispatcherToInvoices = issuedByDispatcherToInvoices;
-//            return this;
-//        }
-
         public Builder withClientCompany(final ClientCompanyDto clientCompany) {
             UserDto.this.clientCompany = clientCompany;
             return this;
         }
 
-
-//        public Builder withRequests(final List<RequestDto> requests) {
-//            UserDto.this.requests = requests;
-//            return this;
-//        }
 
         public Builder withEnabled(final boolean isEnabled) {
             UserDto.this.isEnabled = isEnabled;
@@ -290,8 +257,8 @@ public class UserDto implements ToEntityTransformer, FieldsInterface {
             return this;
         }
 
-        public Builder withRole(final User.Role role) {
-            UserDto.this.role = role;
+        public Builder withRoles(final List<User.Role> roles) {
+            UserDto.this.roles = roles;
             return this;
         }
 

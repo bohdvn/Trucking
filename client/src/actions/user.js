@@ -1,7 +1,7 @@
 export const CHANGE_LOGGED_IN = 'CHANGE_LOGGED_IN';
 
 
-export const changeLoggedIn = (newValue) => ({
+export const changeLoggedIn = (loggedIn) => ({
     type: CHANGE_LOGGED_IN,
-    newValue: newValue,
+    loggedIn: loggedIn,
 });

@@ -7,12 +7,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer>, JpaSpecificationExecutor<User> {
 
-    Page<User> findAll(Pageable pageable);
+    Page<User> findAllByClientCompanyId(Integer id,Pageable pageable);
 
     Optional<User> findByLoginOrEmail(String login, String email);
 
@@ -21,4 +22,8 @@ public interface UserRepository extends JpaRepository<User,Integer>, JpaSpecific
     boolean existsByEmail(String email);
 
     User findByEmailIgnoreCase(String email);
+
+    Page<User> findAllByRolesContains(User.Role role,Pageable pageable);
+
+    List<User> findAllByRolesContains(User.Role role);
 }

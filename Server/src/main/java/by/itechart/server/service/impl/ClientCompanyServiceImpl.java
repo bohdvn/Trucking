@@ -2,14 +2,17 @@ package by.itechart.server.service.impl;
 
 import by.itechart.server.dto.ClientCompanyDto;
 import by.itechart.server.entity.ClientCompany;
+import by.itechart.server.entity.User;
 import by.itechart.server.repository.ClientCompanyRepository;
 import by.itechart.server.service.ClientCompanyService;
 import by.itechart.server.specifications.CustomSpecification;
 import by.itechart.server.specifications.SearchCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -17,6 +20,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class ClientCompanyServiceImpl implements ClientCompanyService {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private ClientCompanyRepository clientCompanyRepository;
 
     public ClientCompanyServiceImpl(ClientCompanyRepository clientCompanyRepository) {
@@ -25,7 +31,13 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
 
     @Override
     public void save(final ClientCompanyDto clientCompanyDto) {
-        clientCompanyRepository.save(clientCompanyDto.transformToEntity());
+        final ClientCompany clientCompany = clientCompanyDto.transformToEntity();
+        if (clientCompany.getUsers() != null) {
+            User user = clientCompany.getUsers().get(0);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setClientCompany(clientCompany);
+        }
+        clientCompanyRepository.save(clientCompany);
     }
 
     @Override

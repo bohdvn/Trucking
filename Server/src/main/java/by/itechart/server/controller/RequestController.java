@@ -34,8 +34,7 @@ public class RequestController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping("")
     public ResponseEntity<?> create(final @Valid @RequestBody RequestDto requestDto) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", requestDto);
@@ -43,7 +42,7 @@ public class RequestController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/request/{} method: GET.", id);

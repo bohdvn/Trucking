@@ -18,3 +18,4 @@ public interface InvoiceService {
 
     Page<InvoiceDto> findAll(Pageable pageable);
 }
+

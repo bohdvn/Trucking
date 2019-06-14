@@ -36,7 +36,7 @@ public class ClientCompanyController {
         this.clientCompanyService = clientCompanyService;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @PutMapping("/")
     public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ClientCompanyDto clientCompanyDto) {
         LOGGER.info("REST request. Path:/client method: PUT. client: {}", clientCompanyDto);
@@ -53,7 +53,7 @@ public class ClientCompanyController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN' or hasAuthority('SYSADMIN'))")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/client/{} method: GET.", id);
@@ -75,7 +75,7 @@ public class ClientCompanyController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/list/{query}")
     public ResponseEntity<Page<ClientCompanyDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable,
                                                          @PathVariable("query") String query) {

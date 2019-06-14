@@ -6,10 +6,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class UserPrincipal implements UserDetails {
     private int id;
@@ -24,27 +24,38 @@ public class UserPrincipal implements UserDetails {
     @JsonIgnore
     private String password;
 
-    private Collection<? extends GrantedAuthority> authorities;
+    private Collection<? extends GrantedAuthority> roles;
 
-    public UserPrincipal(int id, String name, String login, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    private Integer clientCompanyId;
+
+
+    public UserPrincipal(int id, String name, String login, String email, String password,
+                         Collection<? extends GrantedAuthority> authorities, Integer clientCompanyId) {
         this.id = id;
         this.name = name;
         this.login = login;
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
+        this.roles = authorities;
+        this.clientCompanyId=clientCompanyId;
     }
 
     public static UserPrincipal create(User user) {
-        List<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(user.getRole().toString()));
+        List <GrantedAuthority> authorities=user.getRoles().stream()
+                .map(role->new SimpleGrantedAuthority(role.toString())).collect(Collectors.toList());
 
+        Integer clientCompanyId=null;
+        if(user.getClientCompany()!=null){
+            clientCompanyId=user.getClientCompany().getId();
+        }
         return new UserPrincipal(
                 user.getId(),
                 user.getName(),
                 user.getLogin(),
                 user.getEmail(),
                 user.getPassword(),
-                authorities
+                authorities,
+                clientCompanyId
         );
     }
 
@@ -72,7 +83,11 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return roles;
+    }
+
+    public Integer getClientCompanyId(){
+        return clientCompanyId;
     }
 
     @Override

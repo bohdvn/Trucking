@@ -14,7 +14,8 @@ class UserListComponent extends React.Component {
         'Менеджер',
         'Диспетчер',
         'Водитель',
-        'Владелец'
+        'Владелец',
+        'Администратор склада'
     ];
 
     constructor(props) {
@@ -26,6 +27,7 @@ class UserListComponent extends React.Component {
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
+            url: props.location.pathname,
             selectedUsers: []
         };
         this.queryTimeout = -1;
@@ -52,19 +54,50 @@ class UserListComponent extends React.Component {
         this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
+    getUserUrl = () => {
+        const {url}=this.state;
+        switch(url){
+            case '/drivers':
+                return 'driver';
+
+            case '/users':
+                return 'user';
+
+            default:
+                return 'admin';
+        }
+    };
+
+
     fetchURL(page, query) {
         console.log(localStorage.getItem(ACCESS_TOKEN));
-        axios.get(`/user/list/${query}?page=${page}&size=5`, {
-            proxy: {
-                host: 'http://localhost',
-                port: 8080
-            },
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            }
-        })
+        const {url} = this.state.url;
+        console.log(url);
+        let apiUrl;
+        console.log(url);
+        switch (this.state.url) {
+            case '/drivers':
+                apiUrl = 'driverList';
+                break;
+            case '/users':
+                apiUrl = 'list';
+                break;
+            default:
+                return;
+        }
+
+        // axios.get(`/user/list/${query}?page=${page}&size=5`, {
+        //     proxy: {
+        //         host: 'http://localhost',
+        //         port: 8080
+        //     },
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json',
+        //         'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
+        //     }
+        // })
+        axios.get(`/user/${apiUrl}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
@@ -138,13 +171,13 @@ class UserListComponent extends React.Component {
                     checked={user.value || ''}
                     onChange={this.handleChange}/></td>
                 <td style={{whiteSpace: 'nowrap'}}><Link
-                    to={"/user/" + user.id}>{user.surname} {user.name} {user.patronymic}</Link></td>
+                    to={`/${this.getUserUrl()}/${user.id}`}>{user.surname} {user.name} {user.patronymic}</Link></td>
                 <td>{this.userRoles[user.role]}</td>
                 <td>{user.dateOfBirth}</td>
                 <td>{user.login}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={"/user/" + user.id}>Редактировать</Button>
+                        <Button size="sm" color="primary" tag={Link} to={`/${this.getUserUrl()}/${user.id}`}>Редактировать</Button>
                         <Button size="sm" color="danger" onClick={() => this.remove(user.id)}>Удалить</Button>
                     </ButtonGroup>
                 </td>
@@ -202,10 +235,9 @@ class UserListComponent extends React.Component {
                         </FormGroup>
                         <div className="float-right">
                             <ButtonGroup>
-                                <Button color="success" tag={Link} to="/user/create">Добавить</Button>
+                                <Button color="success" tag={Link} to={`/${this.getUserUrl()}/create`}>Добавить</Button>
                                 <Button color="info" onClick={() => this.sendEmail()}>Отправить письмо</Button>
                                 <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
-
                             </ButtonGroup>
                         </div>
                         <Table className="mt-4">

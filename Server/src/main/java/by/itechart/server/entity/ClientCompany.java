@@ -2,6 +2,7 @@ package by.itechart.server.entity;
 
 import by.itechart.server.dto.ClientCompanyDto;
 import by.itechart.server.transformers.ToDtoTransformer;
+import lombok.Data;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,6 +23,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
+@Data
 @Table(name = "client_company")
 public class ClientCompany implements ToDtoTransformer {
     @Id
@@ -61,56 +63,8 @@ public class ClientCompany implements ToDtoTransformer {
                 .withType(this.type)
                 .withStatus(this.status)
                 .withAddress(this.address.transformToDto())
-                .withUsers(this.users.stream().map(User::transformToDto).collect(Collectors.toList()))
+//                .withUsers(this.users.stream().map(User::transformToDto).collect(Collectors.toList()))
                 .build();
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(final Type type) {
-        this.type = type;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Status status) {
-        this.status = status;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
     }
 
     @Override

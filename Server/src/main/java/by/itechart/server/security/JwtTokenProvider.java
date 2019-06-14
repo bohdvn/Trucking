@@ -29,14 +29,17 @@ public class JwtTokenProvider {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
-        Map<String,Object> role=new HashMap<>(1);
-        role.put("roles",userPrincipal.getAuthorities());
+        Map<String,Object> claims=new HashMap<>(2);
+        claims.put("roles",userPrincipal.getAuthorities());
+        claims.put("clientCompanyId",userPrincipal.getClientCompanyId());
+
+
 
         return Jwts.builder()
                 .setSubject(Integer.toString(userPrincipal.getId()))
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .claim("roles",userPrincipal.getAuthorities())
+                .claim("claims",claims)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }

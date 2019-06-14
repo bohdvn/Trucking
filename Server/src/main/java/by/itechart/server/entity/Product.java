@@ -66,7 +66,7 @@ public class Product implements ToDtoTransformer {
                 .withStatus(this.status)
                 .withType(this.type)
 //                .withLostAmount(this.lostAmount )
-  //              .withRequest(this.request != null? this.request.transform() : RequestDto.builder().build())
+                //              .withRequest(this.request != null? this.request.transform() : RequestDto.builder().build())
                 .build();
     }
 

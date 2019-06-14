@@ -73,7 +73,7 @@ public class ConfirmationToken implements ToDtoTransformer{
         return ConfirmationTokenDto.builder()
                 .withConfirmationToken(this.confirmationToken)
                 .withCreateDate(this.createDate)
-                .withId(this.id)
+//                .withId(this.id)
                 .withUser(this.user.transformToDto())
                 .build();
     }

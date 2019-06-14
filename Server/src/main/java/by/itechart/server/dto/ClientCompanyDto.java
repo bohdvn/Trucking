@@ -78,7 +78,9 @@ public class ClientCompanyDto implements ToEntityTransformer {
         clientCompany.setName(this.name);
         clientCompany.setStatus(this.status);
         clientCompany.setType(this.type);
-        clientCompany.setUsers(this.users.stream().map(UserDto::transformToEntity).collect(Collectors.toList()));
+        clientCompany.setUsers(this.users!=null?
+                this.users.stream().map(UserDto::transformToEntity).collect(Collectors.toList()):null);
+//        clientCompany.setUsers(this.users.stream().map(UserDto::transformToEntity).collect(Collectors.toList()));
         return clientCompany;
     }
 }

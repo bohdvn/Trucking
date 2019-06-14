@@ -93,7 +93,7 @@ class ClientComponent extends React.Component {
     handleSubmit =(event)=>{
         event.preventDefault();
         const {client} = this.state;
-        axios.post('/client/',{client})
+        // axios.post('/client/',{client})
         fetch('/client/', {
             method: client.id ? 'PUT' : 'POST',
             headers: {

@@ -126,8 +126,7 @@ public class UserController {
     @PostMapping("")
     public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody UserDto user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
-        UserDto existingUser = userService.findByEmailIgnoreCase(user.getEmail());
-        if (existingUser != null) {
+        if (userService.existsByEmail(user.getEmail()) || userService.existsByLogin(user.getLogin())) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Error. This email already exists!");

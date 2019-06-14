@@ -5,33 +5,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet author="aliaksandr.yakutsin" id="1">
-        <dropColumn catalogName="trucking"
-                    columnName="user_role"
+    <changeSet author="aliaksandr.yakutsin" id="11">
+        <preConditions>
+            <columnExists tableName="user" columnName="user_role"/>
+        </preConditions>
+        <dropColumn columnName="user_role"
                     schemaName="trucking"
                     tableName="user"/>
-    </changeSet>
-
-    <changeSet id="9" author="aliaksandr.yakutsin">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="user_role"/>
-            </not>
-        </preConditions>
-        <createTable tableName="user_role">
-
-            <column name="user_id" type="int">
-                <constraints nullable="false"
-                             foreignKeyName="user_role_user_id_fk"
-                             references="user(id)"/>
-            </column>
-
-            <column name="role_id" type="int">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-        <rollback>
-            <dropTable tableName="role"/>
-        </rollback>
     </changeSet>
 </databaseChangeLog>

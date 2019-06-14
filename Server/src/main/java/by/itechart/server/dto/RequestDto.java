@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 
 public class RequestDto implements ToEntityTransformer {
+
     private Integer id;
 
     private Request.Status status;

@@ -4,9 +4,12 @@ import by.itechart.server.dto.UserDto;
 import by.itechart.server.entity.User;
 import by.itechart.server.repository.UserRepository;
 import by.itechart.server.service.UserService;
+import by.itechart.server.specifications.CustomSpecification;
+import by.itechart.server.specifications.SearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -38,6 +41,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> findAll() {
         return userRepository.findAll().stream().map(User::transformToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<UserDto> findAllByQuery(final Pageable pageable, final String query) {
+        Specification<User> specification = new CustomSpecification<>(new SearchCriteria(query, UserDto.class));
+        final Page<User> users = userRepository.findAll(specification, pageable);
+        return new PageImpl<>(users.stream().map(User::transformToDto)
+                .sorted(Comparator.comparing(UserDto::getSurname))
+                .collect(Collectors.toList()), pageable, users.getTotalElements());
     }
 
     @Override

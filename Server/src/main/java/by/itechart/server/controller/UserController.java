@@ -137,7 +137,8 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedUsers}")
-    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal, @PathVariable("selectedUsers") String selectedUsers) {
+    public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal,
+                                    @PathVariable("selectedUsers") String selectedUsers) {
         LOGGER.info("REST request. Path:/user/{} method: DELETE.", selectedUsers);
         final String delimeter = ",";
         final String[] usersId = selectedUsers.split(delimeter);
@@ -150,7 +151,8 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/confirm-account/{confirmationToken}")
     public ResponseEntity<?> confirmUserAccount(@PathVariable String confirmationToken) {
-        final ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken).transformToEntity();
+        final ConfirmationToken token =
+                confirmationTokenService.findByConfirmationToken(confirmationToken).transformToEntity();
         if (token != null) {
             final UserDto user = userService.findByEmailIgnoreCase(token.getUser().getEmail());
             if (!user.getEnabled()) {
@@ -185,5 +187,22 @@ public class UserController {
         JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list/{query}")
+    public ResponseEntity<Page<UserDto>> getAll(Pageable pageable, @PathVariable("query") String query) {
+        LOGGER.info("REST request. Path:/car method: GET.");
+        final Page<UserDto> userDtos = userService.findAllByQuery(pageable, query);
+        LOGGER.info("Return carList.size:{}", userDtos.getNumber());
+        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+    }
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list/")
+    public ResponseEntity<Page<UserDto>> getAllWithoutQuery(Pageable pageable) {
+        LOGGER.info("REST request. Path:/car method: GET.");
+        final Page<UserDto> userDtos = userService.findAll(pageable);
+        LOGGER.info("Return carList.size:{}", userDtos.getNumber());
+        return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
 }

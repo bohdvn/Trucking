@@ -1,21 +1,26 @@
 package by.itechart.server.dto;
 
+import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.User;
+import by.itechart.server.interfaces.FieldsInterface;
 import by.itechart.server.transformers.ToEntityTransformer;
 
 import java.time.LocalDate;
 
 
-public class UserDto implements ToEntityTransformer {
+public class UserDto implements ToEntityTransformer, FieldsInterface {
 
     private int id;
 
+    @CriteriaAnnotation
     private String name;
 
     private Boolean isEnabled;
 
+    @CriteriaAnnotation
     private String patronymic;
 
+    @CriteriaAnnotation
     private String surname;
 
     private String passportNumber;

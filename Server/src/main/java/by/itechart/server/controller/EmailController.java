@@ -1,8 +1,8 @@
-package by.itechart.Server.controller;
+package by.itechart.server.controller;
 
-import by.itechart.Server.entity.Email;
-import by.itechart.Server.entity.User;
-import by.itechart.Server.service.EmailSenderService;
+import by.itechart.server.entity.User;
+import by.itechart.server.entity.Email;
+import by.itechart.server.service.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

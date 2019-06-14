@@ -4,9 +4,12 @@ import by.itechart.server.dto.ClientCompanyDto;
 import by.itechart.server.entity.ClientCompany;
 import by.itechart.server.repository.ClientCompanyRepository;
 import by.itechart.server.service.ClientCompanyService;
+import by.itechart.server.specifications.CustomSpecification;
+import by.itechart.server.specifications.SearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -47,5 +50,15 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     @Override
     public void deleteById(int id) {
         clientCompanyRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<ClientCompanyDto> findAllByQuery(final Pageable pageable, final String query) {
+        Specification<ClientCompany> specification =
+                new CustomSpecification<>(new SearchCriteria(query, ClientCompanyDto.class));
+        final Page<ClientCompany> companies = clientCompanyRepository.findAll(specification, pageable);
+        return new PageImpl<>(companies.stream().map(ClientCompany::transformToDto)
+                .sorted(Comparator.comparing(ClientCompanyDto::getName))
+                .collect(Collectors.toList()), pageable, companies.getTotalElements());
     }
 }

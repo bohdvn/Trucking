@@ -33,12 +33,6 @@ public class CarServiceImpl implements CarService {
     @Override
     public List<CarDto> findAll() {
         return carRepository.findAll().stream().map(Car::transformToDto).collect(Collectors.toList());
-//        final List<Car> cars = carRepository.findAll();
-//        final List<CarDto> carDtos = new ArrayList<>();
-//        for (Car car : cars) {
-//            carDtos.add(car.transformToDto());
-//        }
-//        return carDtos;
     }
 
     @Override
@@ -51,13 +45,6 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public Page<CarDto> findAllByQuery(final Pageable pageable, final String query) {
-//        final CarSpecificationBuilder builder = new CarSpecificationBuilder(CarDto.class);
-//        final String[] strings = query.split("\\s+");
-//        for (final String string : strings) {
-//            builder.with("name", string);
-//        }
-//        final Specification<Car> spec = builder.build();
-
         Specification<Car> specification = new CustomSpecification<>(new SearchCriteria(query, CarDto.class));
         final Page<Car> cars = carRepository.findAll(specification, pageable);
         return new PageImpl<>(cars.stream().map(Car::transformToDto)

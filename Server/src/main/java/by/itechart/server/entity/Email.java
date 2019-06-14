@@ -1,11 +1,13 @@
-package by.itechart.Server.entity;
+package by.itechart.server.entity;
 
 import java.util.List;
 
 public class Email {
 
     private List<User> recipients;
+
     private String subject;
+
     private String message;
 
     public Email() {

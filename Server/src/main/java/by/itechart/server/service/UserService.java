@@ -25,4 +25,6 @@ public interface UserService {
     boolean existsByEmail(final String email);
 
     UserDto findByEmailIgnoreCase(final String email);
+
+    Page<UserDto> findAllByQuery(final Pageable pageable, final String query);
 }

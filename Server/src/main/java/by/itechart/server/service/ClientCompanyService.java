@@ -14,4 +14,6 @@ public interface ClientCompanyService {
     void delete(ClientCompanyDto clientCompany);
 
     void deleteById(int id);
+
+    Page<ClientCompanyDto> findAllByQuery(final Pageable pageable, final String query);
 }

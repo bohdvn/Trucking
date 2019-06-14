@@ -34,7 +34,6 @@ class CarListComponent extends React.Component {
         this.removeChecked = this.removeChecked.bind(this);
         this.handleQueryChange = this.handleQueryChange.bind(this);
         this.changeQuery = this.changeQuery.bind(this);
-        //this.handleChange = this.handleChange.bind(this);
     }
 
     fetchURL(page, query) {
@@ -97,30 +96,7 @@ class CarListComponent extends React.Component {
         this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
-    // componentWillUpdate(nextProps, nextState){
-    //     console.log(nextState);
-    //     if(nextState.query !== this.state.query){
-    //         this.fetchURL(0);
-    //     }
-    // }
-    setQuery(value) {
-        this.setState(() => ({
-            query: value
-        }));
-    }
 
-    // handleChange = e => {
-    //     const id = e.target.id;
-    //     this.setState(prevState => {
-    //         return {
-    //             cars: prevState.cars.map(
-    //                 car => (car.id === +id ? {
-    //                     ...car, value: !car.value
-    //                 } : car)
-    //             )
-    //         }
-    //     })
-    // };
 
     populateRowsWithData = () => {
         const cars = this.state.cars.map(car => {

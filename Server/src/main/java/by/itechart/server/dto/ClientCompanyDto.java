@@ -1,13 +1,17 @@
 package by.itechart.server.dto;
 
+import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.ClientCompany;
+import by.itechart.server.interfaces.FieldsInterface;
 import by.itechart.server.transformers.ToEntityTransformer;
 
 import java.util.List;
 
-public class ClientCompanyDto implements ToEntityTransformer {
+public class ClientCompanyDto implements ToEntityTransformer, FieldsInterface {
+
     private int id;
 
+    @CriteriaAnnotation
     private String name;
 
     private ClientCompany.Status status;

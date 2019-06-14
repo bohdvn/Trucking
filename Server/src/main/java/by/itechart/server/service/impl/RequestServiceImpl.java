@@ -2,6 +2,7 @@ package by.itechart.server.service.impl;
 
 import by.itechart.server.dto.ProductDto;
 import by.itechart.server.dto.RequestDto;
+import by.itechart.server.entity.Product;
 import by.itechart.server.entity.Request;
 import by.itechart.server.repository.ClientCompanyRepository;
 import by.itechart.server.repository.RequestRepository;
@@ -30,26 +31,9 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public void save(final RequestDto requestDto) {
-        if (Objects.isNull(requestDto.getId())) {
-            //костыыыыль
-            requestDto.setClientCompanyTo(clientCompanyRepository.getOne(1).transformToDto());
-            requestDto.setClientCompanyFrom(clientCompanyRepository.getOne(1).transformToDto());
-            requestRepository.save(requestDto.transformToEntity());
-        } else {
-            final Request entity = requestRepository.findById(requestDto.getId()).orElseThrow(IllegalStateException::new);
-            requestDto.getProducts().forEach(prod -> prod.setRequest(entity.transformToDto()));
-            entity.setStatus(requestDto.getStatus());
-            entity.setClientCompanyFrom(requestDto.getClientCompanyFrom().transformToEntity());
-            entity.setClientCompanyTo(requestDto.getClientCompanyTo().transformToEntity());
-            entity.setCar(requestDto.getCar().transformToEntity());
-            entity.setDriver(requestDto.getDriver().transformToEntity());
-            entity.setProducts(requestDto.getProducts()
-                    .stream().map(ProductDto::transformToEntity).collect(Collectors.toList()));
-            requestRepository.save(entity);
-        }
-        /*
-        request.getProducts().forEach(prod -> prod.setRequest(request));
-        final Request saved = requestRepository.save(request);*/
+        final Request request=requestDto.transformToEntity();
+        request.getProducts().forEach(product -> product.setRequest(request));
+        requestRepository.save(request);
     }
 
     @Override

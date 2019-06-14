@@ -2,6 +2,7 @@ package by.itechart.server.entity;
 
 import by.itechart.server.dto.CheckpointDto;
 import by.itechart.server.transformers.ToDtoTransformer;
+import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Data
 @Entity
 @Table(name = "checkpoint")
 public class Checkpoint implements ToDtoTransformer {
@@ -60,91 +62,5 @@ public class Checkpoint implements ToDtoTransformer {
                 .withStatus(this.status)
                 .withWayBill(this.wayBill.transformToDto())
                 .build();
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Status status) {
-        this.status = status;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(final String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(final String longitude) {
-        this.longitude = longitude;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(final LocalDate date) {
-        this.date = date;
-    }
-
-    public WayBill getWayBill() {
-        return wayBill;
-    }
-
-    public void setWayBill(final WayBill wayBill) {
-        this.wayBill = wayBill;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Checkpoint that = (Checkpoint) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(latitude, that.latitude) &&
-                Objects.equals(longitude, that.longitude) &&
-                Objects.equals(date, that.date) &&
-                Objects.equals(wayBill, that.wayBill);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, latitude, longitude, date, wayBill);
-    }
-
-    @Override
-    public String toString() {
-        return "Checkpoint{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", latitude='" + latitude + '\'' +
-                ", longitude='" + longitude + '\'' +
-                ", date=" + date +
-                ", wayBill=" + wayBill +
-                '}';
     }
 }

@@ -2,12 +2,14 @@ package by.itechart.server.dto;
 
 import by.itechart.server.entity.Invoice;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
 import java.time.LocalDate;
 
+@Data
 public class InvoiceDto implements ToEntityTransformer {
 
-    private int id;
+    private Integer id;
 
     private Invoice.Status status;
 
@@ -31,78 +33,6 @@ public class InvoiceDto implements ToEntityTransformer {
 
     public static Builder builder() {
         return new InvoiceDto().new Builder();
-    }
-
-    public Invoice.Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Invoice.Status status) {
-        this.status = status;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(final String number) {
-        this.number = number;
-    }
-
-    public LocalDate getDateOfIssue() {
-        return dateOfIssue;
-    }
-
-    public void setDateOfIssue(final LocalDate dateOfIssue) {
-        this.dateOfIssue = dateOfIssue;
-    }
-
-    public LocalDate getDateOfCheck() {
-        return dateOfCheck;
-    }
-
-    public void setDateOfCheck(final LocalDate dateOfCheck) {
-        this.dateOfCheck = dateOfCheck;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public UserDto getDispatcherFrom() {
-        return dispatcherFrom;
-    }
-
-    public void setDispatcherFrom(final UserDto dispatcherFrom) {
-        this.dispatcherFrom = dispatcherFrom;
-    }
-
-    public UserDto getDispatcherTo() {
-        return dispatcherTo;
-    }
-
-    public void setDispatcherTo(final UserDto dispatcherTo) {
-        this.dispatcherTo = dispatcherTo;
-    }
-
-    public UserDto getManager() {
-        return manager;
-    }
-
-    public void setManager(final UserDto manager) {
-        this.manager = manager;
-    }
-
-    public RequestDto getRequest() {
-        return request;
-    }
-
-    public void setRequest(final RequestDto request) {
-        this.request = request;
     }
 
     @Override

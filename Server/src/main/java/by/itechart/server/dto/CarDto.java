@@ -4,10 +4,11 @@ import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.Car;
 import by.itechart.server.interfaces.FieldsInterface;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
-
+@Data
 public class CarDto implements ToEntityTransformer, FieldsInterface {
-    private int id;
+    private Integer id;
 
     private Car.CarType carType;
 
@@ -25,46 +26,6 @@ public class CarDto implements ToEntityTransformer, FieldsInterface {
 
     public static Builder builder() {
         return new CarDto().new Builder();
-    }
-
-    public Car.CarType getCarType() {
-        return carType;
-    }
-
-    public void setCarType(final Car.CarType carType) {
-        this.carType = carType;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public Integer getConsumption() {
-        return consumption;
-    }
-
-    public void setConsumption(final Integer consumption) {
-        this.consumption = consumption;
-    }
-
-    public Car.Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Car.Status status) {
-        this.status = status;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     @Override

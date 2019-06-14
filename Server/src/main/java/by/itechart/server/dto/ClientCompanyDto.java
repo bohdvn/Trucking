@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 @Data
 public class ClientCompanyDto implements ToEntityTransformer {
-    private int id;
+    private Integer id;
 
     private String name;
 

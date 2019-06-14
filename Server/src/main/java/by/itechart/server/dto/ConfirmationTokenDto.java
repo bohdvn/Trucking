@@ -2,10 +2,11 @@ package by.itechart.server.dto;
 
 import by.itechart.server.entity.ConfirmationToken;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
 import java.util.Date;
 
-
+@Data
 public class ConfirmationTokenDto implements ToEntityTransformer {
 
     private Integer id;
@@ -18,30 +19,6 @@ public class ConfirmationTokenDto implements ToEntityTransformer {
 
     public static Builder builder() {
         return new ConfirmationTokenDto().new Builder();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-    public String getConfirmationToken() {
-        return confirmationToken;
-    }
-
-    public void setConfirmationToken(final String confirmationToken) {
-        this.confirmationToken = confirmationToken;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(final Date createDate) {
-        this.createDate = createDate;
     }
 
     @Override

@@ -120,5 +120,5 @@ public class User implements ToDtoTransformer {
         DISPATCHER,
         DRIVER,
         OWNER
-    };
+    }
 }

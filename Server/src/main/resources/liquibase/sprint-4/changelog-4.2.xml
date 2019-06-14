@@ -4,9 +4,13 @@
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
-
-    <include file="src/main/resources/liquibase/sprint-4/changelog-4.0.xml"/>
-    <include file="src/main/resources/liquibase/sprint-4/changelog-4.1.xml"/>
-    <include file="src/main/resources/liquibase/sprint-4/changelog-4.2.xml"/>
-    <include file="src/main/resources/liquibase/sprint-4/changelog-4.3.xml"/>
+    
+    <changeSet id="1" author="yakutsin.aliaksandr">
+        <renameColumn
+                tableName="request"
+                columnDataType="int"
+                oldColumnName="client_company_to"
+                newColumnName="address_to"/>
+    </changeSet>
+    
 </databaseChangeLog>

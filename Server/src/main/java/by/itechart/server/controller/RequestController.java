@@ -1,10 +1,15 @@
 package by.itechart.server.controller;
 
+import by.itechart.server.dto.ClientCompanyDto;
 import by.itechart.server.dto.RequestDto;
+import by.itechart.server.security.CurrentUser;
+import by.itechart.server.security.UserPrincipal;
+import by.itechart.server.service.ClientCompanyService;
 import by.itechart.server.service.RequestService;
 import by.itechart.server.utils.ValidationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,6 +27,9 @@ public class RequestController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestController.class);
     private RequestService requestService;
 
+    @Autowired
+    private ClientCompanyService clientCompanyService;
+
     public RequestController(RequestService requestService) {
         this.requestService = requestService;
     }
@@ -36,8 +44,11 @@ public class RequestController {
 
     @PreAuthorize("hasAuthority('OWNER')")
     @PostMapping("")
-    public ResponseEntity<?> create(final @Valid @RequestBody RequestDto requestDto) {
+    public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal,
+                                    final @Valid @RequestBody RequestDto requestDto) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", requestDto);
+        final ClientCompanyDto clientCompanyDto=clientCompanyService.findById(userPrincipal.getClientCompanyId());
+        requestDto.setClientCompanyFrom(clientCompanyDto);
         requestService.save(requestDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

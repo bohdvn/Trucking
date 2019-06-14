@@ -44,12 +44,15 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/drivers" allowed='SYSADMIN' component={UserListComponent}/>
                 <ProtectedRoute exact path="/clients" allowed='SYSADMIN' component={ClientListComponent}/>
                 <ProtectedRoute exact path="/cars" allowed='SYSADMIN' component={CarListComponent}/>
+                <ProtectedRoute exact path="/car/:id" allowed='SYSADMIN' component={CarComponent}/>
                 <ProtectedRoute exact path="/admin/:id" allowed='SYSADMIN' component={UserComponent}/>
 
                 {/*ADMIN*/}
-                {/*<ProtectedRoute exact path="/user/:id" allowed='ADMIN' component={UserComponent}/>*/}
                 <ProtectedRoute exact path="/users" allowed='ADMIN' component={UserListComponent}/>
                 <ProtectedRoute exact path="/user/:id" allowed='ADMIN' component={UserComponent}/>
+
+                {/*OWNER*/}
+                <ProtectedRoute exact path='/request/:id' allowed='OWNER' component={RequestComponent}/>
 
                 {/*MANAGER*/}
 
@@ -58,8 +61,7 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/waybill/:id" allowed='DRIVER' component={WaybillComponent}/>
                 {/*MANAGER*/}
 
-                {/*OWNER*/}
-                <ProtectedRoute exact path='/request/create' allowed='DRIVER' component={RequestComponent}/>
+
 
                 {/*<Route path="/user/:id" component={UserComponent}/>*/}
                 <Route path="/car/:id" component={CarComponent}/>

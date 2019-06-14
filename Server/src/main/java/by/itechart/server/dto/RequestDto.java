@@ -2,11 +2,12 @@ package by.itechart.server.dto;
 
 import by.itechart.server.entity.Request;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Data
 public class RequestDto implements ToEntityTransformer {
     private Integer id;
 
@@ -18,7 +19,7 @@ public class RequestDto implements ToEntityTransformer {
 
     private ClientCompanyDto clientCompanyFrom;
 
-    private ClientCompanyDto clientCompanyTo;
+    private AddressDto address;
 
     private List<ProductDto> products;
 
@@ -26,68 +27,11 @@ public class RequestDto implements ToEntityTransformer {
         return new RequestDto().new Builder();
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-
-    }
-
-    public CarDto getCar() {
-        return car;
-    }
-
-    public void setCar(final CarDto car) {
-        this.car = car;
-    }
-
-    public UserDto getDriver() {
-        return driver;
-    }
-
-    public void setDriver(final UserDto driver) {
-        this.driver = driver;
-    }
-
-    public ClientCompanyDto getClientCompanyFrom() {
-        return clientCompanyFrom;
-    }
-
-    public void setClientCompanyFrom(final ClientCompanyDto clientCompanyFrom) {
-        this.clientCompanyFrom = clientCompanyFrom;
-    }
-
-    public ClientCompanyDto getClientCompanyTo() {
-        return clientCompanyTo;
-    }
-
-    public void setClientCompanyTo(final ClientCompanyDto clientCompanyTo) {
-        this.clientCompanyTo = clientCompanyTo;
-    }
-
-    public List<ProductDto> getProducts() {
-        return products;
-    }
-
-    public void setProducts(final List<ProductDto> products) {
-        this.products = products;
-    }
-
-    public Request.Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Request.Status status) {
-        this.status = status;
-    }
-
     @Override
     public Request transformToEntity() {
         final Request request = new Request();
         request.setClientCompanyFrom(this.clientCompanyFrom.transformToEntity());
-        request.setClientCompanyTo(this.clientCompanyTo.transformToEntity());
+        request.setAddress(this.address.transformToEntity());
         request.setDriver(this.driver.transformToEntity());
         request.setCar(this.car.transformToEntity());
         request.setStatus(this.status);
@@ -125,8 +69,8 @@ public class RequestDto implements ToEntityTransformer {
             return this;
         }
 
-        public Builder withClientCompanyTo(final ClientCompanyDto clientCompanyTo) {
-            RequestDto.this.clientCompanyTo = clientCompanyTo;
+        public Builder withAddress(final AddressDto address) {
+            RequestDto.this.address = address;
             return this;
         }
 

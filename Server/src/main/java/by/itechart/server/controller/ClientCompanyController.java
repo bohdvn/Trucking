@@ -63,7 +63,7 @@ public class ClientCompanyController {
 
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedClients}")
     public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal, @PathVariable("selectedClients") String selectedClients) {
         LOGGER.info("REST request. Path:/client/{} method: DELETE.", selectedClients);

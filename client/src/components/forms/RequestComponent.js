@@ -5,6 +5,7 @@ import TempProductComponent from "./TempProductComponent";
 import axios from 'axios';
 import {HEADERS} from '../../constants/requestConstants'
 import {ACCESS_TOKEN} from "../../constants/auth";
+import AddressFields from "./AddressFields";
 
 class RequestComponent extends React.Component {
 
@@ -28,7 +29,14 @@ class RequestComponent extends React.Component {
         status: 'NOT_VIEWED',
         car: '',
         driver: '',
-        products: []
+        products: [],
+        address:{
+            id: '',
+            city: '',
+            street: '',
+            building: '1',
+            flat: '1'
+        }
     };
 
     constructor(props) {
@@ -90,7 +98,7 @@ class RequestComponent extends React.Component {
             body: JSON.stringify(request)
         });
 
-        this.props.history.push('/requests');
+        // this.props.history.push('/requests');
     }
 
     saveProduct = () => {
@@ -197,14 +205,22 @@ class RequestComponent extends React.Component {
         }
     }
 
+    changeAddress(value) {
+        let request = {...this.state.request};
+        request['address'] = value.address;
+        this.setState({request: request});
+    };
 
-    async createProduct(id) {
-        this.props.history.push('/product/create/' + id);
-    }
+    validateForm=()=>{
+        this.setState({
+            addressValid: this.state.addressValid,
+        });
+    };
+
 
     render() {
         const {request} = this.state;
-
+        console.log(request);
         return (
             <Container className="col-3">
                 <h1>Заявка</h1>
@@ -233,6 +249,16 @@ class RequestComponent extends React.Component {
                             {this.fillDriverSelector()}
                         </Input>
                     </FormGroup>
+
+                    <FormGroup>
+                        {request.address ? <AddressFields
+                            name="address"
+                            id="addressFields"
+                            validationHandler={this.validateForm}
+                            changeState={this.changeAddress.bind(this)}
+                            address={request.address}/> : null}
+                    </FormGroup>
+
                     <FormGroup>
                         <Label for="productTable">Продукты</Label>
                         <Table name="productTable" id="productTable" className="mt-4">

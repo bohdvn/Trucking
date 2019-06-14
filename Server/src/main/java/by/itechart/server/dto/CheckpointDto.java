@@ -2,10 +2,11 @@ package by.itechart.server.dto;
 
 import by.itechart.server.entity.Checkpoint;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-
+@Data
 public class CheckpointDto implements ToEntityTransformer {
 
     private Integer id;
@@ -27,46 +28,6 @@ public class CheckpointDto implements ToEntityTransformer {
 
     public static Builder builder() {
         return new CheckpointDto().new Builder();
-    }
-
-    public Checkpoint.Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Checkpoint.Status status) {
-        this.status = status;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(final String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(final String longitude) {
-        this.longitude = longitude;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(final LocalDate date) {
-        this.date = date;
     }
 
     @Override

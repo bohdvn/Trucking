@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class UserDto implements ToEntityTransformer {
 
-    private int id;
+    private Integer id;
 
     private String name;
 

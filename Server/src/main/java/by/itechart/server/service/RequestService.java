@@ -8,7 +8,7 @@ public interface RequestService {
 
     void save(final RequestDto requestDto);
 
-    Page<RequestDto> findAll(final Pageable pageable);
+    Page<RequestDto> findAllByClientCompanyFromId(final int id, final Pageable pageable);
 
     RequestDto findById(final int id);
 

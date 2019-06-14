@@ -34,7 +34,7 @@ public class RequestController {
         this.requestService = requestService;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @PutMapping("/")
     public ResponseEntity<?> edit(final @RequestBody RequestDto requestDto) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", requestDto);
@@ -62,7 +62,7 @@ public class RequestController {
                 ResponseEntity.ok().body(requestDto) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @DeleteMapping("/{selectedRequests}")
     public ResponseEntity<?> remove(@PathVariable("selectedRequests") String selectedRequests) {
         LOGGER.info("REST request. Path:/request/{} method: DELETE.", selectedRequests);
@@ -74,11 +74,12 @@ public class RequestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('DISPATCHER')")
     @GetMapping("/list")
-    public ResponseEntity<Page<RequestDto>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<RequestDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/request method: GET.");
-        final Page<RequestDto> requestDtos = requestService.findAll(pageable);
+        final Page<RequestDto> requestDtos = requestService
+                .findAllByClientCompanyFromId(userPrincipal.getClientCompanyId(), pageable);
         return requestDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(requestDtos, HttpStatus.OK);
     }

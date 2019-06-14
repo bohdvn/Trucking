@@ -86,6 +86,9 @@ class Navigation extends React.Component {
                         </NavItem>,
                         <NavItem>
                             <NavLink href="/invoices">Список ТТН</NavLink>
+                        </NavItem>,
+                        <NavItem>
+                            <NavLink href="/report">Отчет</NavLink>
                         </NavItem>
                     );
                     break;

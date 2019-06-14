@@ -18,7 +18,7 @@ public class ProductDto implements ToEntityTransformer {
 
     private Product.Status status;
 
-    private Integer lostAmount;
+    private int lostAmount;
 
     private RequestDto request;
 

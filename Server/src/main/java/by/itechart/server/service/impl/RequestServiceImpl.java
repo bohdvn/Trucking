@@ -37,8 +37,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Page<RequestDto> findAll(final Pageable pageable) {
-        final Page<Request> requests = requestRepository.findAll(pageable);
+    public Page<RequestDto> findAllByClientCompanyFromId(final int id, final Pageable pageable) {
+        final Page<Request> requests = requestRepository.findAllByClientCompanyFromId(id,pageable);
         return new PageImpl<>(requests.stream().map(Request::transformToDto)
                 .sorted(Comparator.comparing(RequestDto::getStatus))
                 .collect(Collectors.toList()), pageable, requests.getTotalElements());

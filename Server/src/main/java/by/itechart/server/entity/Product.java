@@ -33,7 +33,7 @@ public class Product implements ToDtoTransformer {
     private Integer amount;
 
     @Column(name = "lost_amount")
-    private Integer lostAmount;
+    private int lostAmount;
 
     @NotNull(message = "Price cannot be null")
     @Column(name = "price")

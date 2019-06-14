@@ -6,6 +6,8 @@ import Pagination from "react-js-pagination";
 import Modal from 'react-bootstrap/Modal';
 import InvoiceComponent from "../forms/InvoiceComponent";
 import {ACCESS_TOKEN} from "../../constants/auth";
+import {connect} from "react-redux";
+import {DISPATCHER} from "../../constants/userConstants";
 
 class RequestListComponent extends React.Component {
 
@@ -24,7 +26,8 @@ class RequestListComponent extends React.Component {
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
-            show: false
+            show: false,
+            loggedIn:props.loggedIn
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
@@ -70,6 +73,7 @@ class RequestListComponent extends React.Component {
     }
 
     populateRowsWithData = () => {
+        const {roles}=this.state.loggedIn.claims;
         const requests = this.state.requests.map(request => {
             return <tr key={request.id}>
                 <td>{request.car.name}</td>
@@ -80,8 +84,8 @@ class RequestListComponent extends React.Component {
                         <Button size="sm" color="primary" tag={Link}
                                 to={"/request/" + request.id}>Редактировать</Button>
                         <Button size="sm" color="danger" onClick={() => this.remove(request.id)}>Удалить</Button>
-                        <Button size="sm" color="primary" onClick={() => this.handleShow(request.id)}
-                        >ТТН</Button>
+                        {roles.includes(DISPATCHER)?<Button size="sm" color="primary" onClick={() => this.handleShow(request.id)}
+                        >ТТН</Button>:null}
                     </ButtonGroup>
                 </td>
 
@@ -163,6 +167,8 @@ class RequestListComponent extends React.Component {
     }
 
     render() {
+        const {roles}=this.state.loggedIn.claims;
+        console.log(roles);
         return (
             <div>
                 <Container fluid>
@@ -195,7 +201,7 @@ class RequestListComponent extends React.Component {
                         />
                     </div>
 
-                    <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                    {roles.includes(DISPATCHER)?<Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                         <Modal.Header closeButton>
                             <Modal.Title>ТТН</Modal.Title>
                         </Modal.Header>
@@ -213,7 +219,7 @@ class RequestListComponent extends React.Component {
                                 Создать ТТН
                             </Button>
                         </Modal.Footer>
-                    </Modal>
+                    </Modal>:null}
 
                 </Container>
             </div>
@@ -221,4 +227,8 @@ class RequestListComponent extends React.Component {
     }
 }
 
-export default RequestListComponent;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    })
+)(RequestListComponent)

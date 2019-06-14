@@ -101,7 +101,7 @@ public class UserController {
                 new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/driverList")
     public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");

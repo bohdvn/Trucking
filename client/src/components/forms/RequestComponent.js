@@ -30,14 +30,17 @@ class RequestComponent extends React.Component {
         car: '',
         driver: '',
         products: [],
-        address:{
-            id: '',
-            city: '',
-            street: '',
-            building: '1',
-            flat: '1'
-        }
+        address: ''
     };
+
+    address = {
+        id: '',
+        city: '',
+        street: '',
+        building: '1',
+        flat: '1'
+    };
+
 
     constructor(props) {
         super(props);
@@ -98,7 +101,7 @@ class RequestComponent extends React.Component {
             body: JSON.stringify(request)
         });
 
-        // this.props.history.push('/requests');
+        this.props.history.push('/requests');
     }
 
     saveProduct = () => {
@@ -178,11 +181,17 @@ class RequestComponent extends React.Component {
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
             let newRequest = {};
-            axios.get(`/request/${this.props.match.params.id}`)
+            await axios.get(`/request/${this.props.match.params.id}`)
                 .then(response => {
                     newRequest = response.data;
+                    this.setState({request: newRequest});
+                    console.log(this.state);
                 });
-            this.setState({request: newRequest});
+        }
+        else{
+            const request = this.state.request;
+            request['address'] = this.address;
+            this.setState({request});
         }
 
         let cars = [];
@@ -211,7 +220,7 @@ class RequestComponent extends React.Component {
         this.setState({request: request});
     };
 
-    validateForm=()=>{
+    validateForm = () => {
         this.setState({
             addressValid: this.state.addressValid,
         });

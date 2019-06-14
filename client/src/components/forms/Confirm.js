@@ -15,26 +15,23 @@ class Confirm extends Component {
         getUserById(`/user/confirm-account/${id}`)
             .then(resp => {
                 if (resp.status === 200) {
-                    const message = "Success! Account verified.";
                     this.setState({
-                        message: message
+                        message: "Success! Account verified."
                     });
-                    alert(message);
+                    alert(this.state.message);
                     return this.props.history.push('/home');
                 }
                 if (resp.status === 403) {
-                    const message = "The link is invalid or your account has been already confirmed.";
                     this.setState({
-                        message: message
+                        message: "The link is invalid or your account has been already confirmed."
                     });
-                    alert(message);
+                    alert(this.state.message);
                     return this.props.history.push('/login');
                 } else {
-                    const message = "Error.Something went wrong, please contact your administrator";
                     this.setState({
-                        message: message
+                        message: "Error.Something went wrong, please contact your administrator"
                     });
-                    alert(message);
+                    alert(this.state.message);
                     this.props.history.push('/login');
                 }
             })

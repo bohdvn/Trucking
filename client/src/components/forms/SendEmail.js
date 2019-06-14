@@ -149,7 +149,7 @@ class SendEmail extends Component {
                     <p className={'error-message'}>{(this.state.formErrors.messageValid === '') ? ''
                         : this.state.formErrors.message}</p>
                 </FormGroup>
-                <Button type="submit" className="btn btn-primary" disabled={!this.state.formValid}>{SEND}</Button>
+                <Button type="submit" className="btn btn-info" disabled={!this.state.formValid}>{SEND}</Button>
             </Form>
         )
     }

@@ -5,6 +5,7 @@ import NavLink from "reactstrap/es/NavLink";
 import Nav from "reactstrap/es/Nav";
 import {connect} from "react-redux";
 import {changeLoggedIn} from "../actions/user";
+import * as ROLE from "../constants/userConstants";
 
 class Navigation extends React.Component {
     constructor(props) {
@@ -20,95 +21,83 @@ class Navigation extends React.Component {
         this.setState({loggedIn: loggedIn});
     }
 
-    logout(){
+    logout = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('loggedIn');
-    }
+    };
 
-    getNavs() {
+    getNavs = () => {
         const navs = [];
-        const role = this.state.loggedIn.roles[0].authority;
-        console.log(role);
-        const logout= <NavItem><NavLink onClick={this.logout} href="/home">Выйти</NavLink></NavItem>;
-        switch (role) {
-            case 'SYSADMIN':
-                navs.push(
-                    <NavItem>
-                        <NavLink href="/clients">Клиенты</NavLink>
-                    </NavItem>,
-                    <NavItem>
-                        <NavLink href="/cars">Автомобили</NavLink>
-                    </NavItem>,
-                    <NavItem>
-                        <NavLink href="/users">Водители</NavLink>
-                    </NavItem>,
-                    <NavItem>
-                        <NavLink href="/warehouses">Получатели</NavLink>
-                    </NavItem>,
-                    logout
-                );
-                break;
+        const roles = this.state.loggedIn.claims.roles;
+        console.log(roles);
+        const logout = <NavItem><NavLink onClick={this.logout} href="/home">Выйти</NavLink></NavItem>;
+        roles.forEach(role => {
+            switch (role) {
+                case ROLE.SYSADMIN:
+                    navs.push(
+                        <NavItem>
+                            <NavLink href="/clients">Клиенты</NavLink>
+                        </NavItem>,
+                        <NavItem>
+                            <NavLink href="/cars">Автомобили</NavLink>
+                        </NavItem>,
+                        <NavItem>
+                            <NavLink href="/drivers">Водители</NavLink>
+                        </NavItem>
+                    );
+                    break;
 
-            case 'ADMIN':
-                navs.push(
-                    <NavItem>
-                        <NavLink href="/users">Пользователи</NavLink>
-                    </NavItem>,
-                    logout
-                );
-                break;
+                case ROLE.ADMIN:
+                    navs.push(
+                        <NavItem>
+                            <NavLink href="/users">Пользователи</NavLink>
+                        </NavItem>
+                    );
+                    break;
 
-            case 'DISPATCHER':
-                navs.push(
-                    <NavItem>
-                        <NavLink href="/invoices">Список ТТН</NavLink>
-                    </NavItem>,
-                    logout
-                );
-                break;
+                case ROLE.DISPATCHER:
+                    navs.push(
+                        <NavItem>
+                            <NavLink href="/invoices">Список ТТН</NavLink>
+                        </NavItem>
+                    );
+                    break;
 
-            case 'MANAGER':
-                navs.push(
-                    <NavItem>
-                        <NavLink href="/invoices">Список ТТН</NavLink>
-                    </NavItem>,
-                    logout
-                );
-                break;
+                case ROLE.MANAGER:
+                    navs.push(
+                        <NavItem>
+                            <NavLink href="/invoices">Список ТТН</NavLink>
+                        </NavItem>
+                    );
+                    break;
 
-            case 'DRIVER':
-                navs.push(
-                    <NavItem>
-                        <NavLink href="/waybills">Путевые листы</NavLink>
-                    </NavItem>,
-                    logout
-                );
-                break;
+                case ROLE.DRIVER:
+                    navs.push(
+                        <NavItem>
+                            <NavLink href="/waybills">Путевые листы</NavLink>
+                        </NavItem>
+                    );
+                    break;
 
-            case 'OWNER':
-                navs.push(
-                    <NavItem>
-                        <NavLink href="/">Заявки</NavLink>
-                    </NavItem>,
-                    <NavItem>
-                        <NavLink href="/invoices">Список ТТН</NavLink>
-                    </NavItem>,
-                    <NavItem>
-                        <NavLink href="/users">Водители</NavLink>
-                    </NavItem>,
-                    <NavItem>
-                        <NavLink href="/invoices">Список ТТН</NavLink>
-                    </NavItem>,
-                    logout
-                );
-                break;
-            default:
-                navs.push(
-                    <NavItem>
-                        <NavLink href="/login">Войти</NavLink>
-                    </NavItem>
-                );
-        }
+                case ROLE.OWNER:
+                    navs.push(
+                        <NavItem>
+                            <NavLink href="/requests">Запросы</NavLink>
+                        </NavItem>,
+                        <NavItem>
+                            <NavLink href="/invoices">Список ТТН</NavLink>
+                        </NavItem>
+                    );
+                    break;
+                default:
+                    navs.push(
+                        <NavItem>
+                            <NavLink href="/login">Войти</NavLink>
+                        </NavItem>
+                    );
+            }
+        });
+        navs.push(logout);
         return navs;
     };
 
@@ -122,8 +111,6 @@ class Navigation extends React.Component {
         );
     }
 }
-
-// export default Navigation;
 
 export default connect(
     state => ({

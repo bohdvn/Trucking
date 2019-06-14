@@ -1,5 +1,6 @@
 import React from 'react';
-import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
+import {Container, Form, FormGroup, Input, Label} from 'reactstrap';
+import MapComponent from "./MapComponent";
 
 
 class TempCheckpointComponent extends React.Component {
@@ -11,8 +12,8 @@ class TempCheckpointComponent extends React.Component {
             formErrors: {name: '', latitude: '', longitude: '', date: ''},
             nameValid: false,
             latitudeValid: false,
-            longitudeValid: true,
-            dateValid: true,
+            longitudeValid: false,
+            dateValid: false,
             formValid: false
         };
         this.handleChange = this.handleChange.bind(this);
@@ -29,6 +30,7 @@ class TempCheckpointComponent extends React.Component {
                 this.validateField(name, value)
             });
         this.props.changeFieldHandler(checkpoint);
+        document.getElementById("SearchBox").value = document.getElementById("name").value;
         // const state = this.state;
         // this.props.changeState(state);
     }
@@ -50,7 +52,6 @@ class TempCheckpointComponent extends React.Component {
                 break;
             case 'date':
                 dateValid = !!value.match(/^[0-9]{4,}-[0-9]{2}-[0-9]{2}$/i);
-                ;
                 fieldValidationErrors.date = dateValid ? '' : ' введена неверно';
                 break;
             case 'longitude':
@@ -115,6 +116,10 @@ class TempCheckpointComponent extends React.Component {
                                onChange={this.handleChange} autoComplete="longitude" min="0"/>
                         <p className={'error-message'}>{(this.state.formErrors.longitude === '') ? ''
                             : 'Долгота' + this.state.formErrors.longitude}</p>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <MapComponent/>
                     </FormGroup>
 
                     <FormGroup>

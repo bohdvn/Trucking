@@ -1,10 +1,9 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, Input, Table, FormGroup} from 'reactstrap';
+import {Button, ButtonGroup, Container, FormGroup, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 import {ACCESS_TOKEN} from "../../constants/auth";
-
 
 class CarListComponent extends React.Component {
 
@@ -29,10 +28,12 @@ class CarListComponent extends React.Component {
             itemsCountPerPage: null,
             totalItemsCount: null
         };
+        this.queryTimeout = -1;
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.removeChecked = this.removeChecked.bind(this);
         this.handleQueryChange = this.handleQueryChange.bind(this);
+        this.changeQuery = this.changeQuery.bind(this);
         //this.handleChange = this.handleChange.bind(this);
     }
 
@@ -82,15 +83,18 @@ class CarListComponent extends React.Component {
         this.fetchURL(pageNumber - 1, this.state.query);
     }
 
+    changeQuery() {
+        this.fetchURL(0, this.state.query);
+    }
+
     handleQueryChange(event) {
+        clearTimeout(this.queryTimeout);
         const target = event.target;
         const value = target.value;
-        this.setState(() =>({
+        this.setState(() => ({
             query: value
         }));
-        this.fetchURL(0, value);
-
-
+        this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
     // componentWillUpdate(nextProps, nextState){
@@ -99,9 +103,9 @@ class CarListComponent extends React.Component {
     //         this.fetchURL(0);
     //     }
     // }
-    setQuery(value){
+    setQuery(value) {
         this.setState(() => ({
-            query:value
+            query: value
         }));
     }
 

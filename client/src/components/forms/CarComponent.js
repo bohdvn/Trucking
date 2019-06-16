@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import "../../styles.css";
+import axios from 'axios';
 import {ACCESS_TOKEN} from "../../constants/auth";
 
 class CarComponent extends React.Component {
@@ -63,26 +64,26 @@ class CarComponent extends React.Component {
     validateForm() {
         this.setState({
             formValid: this.state.nameValid &&
-            this.state.consumptionValid
+                this.state.consumptionValid
         });
     }
 
     async handleSubmit(event) {
         event.preventDefault();
         const {car} = this.state;
-        await fetch('/car/', {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            },
-            body: JSON.stringify(car)
-        }).then(resp => {
+        await axios.post(`/car/`, car)
+        // await fetch('/car/', {
+        //     method: 'PUT',
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(car)
+        // })
+    .then(resp => {
             if (resp.status === 400) {
                 return resp.json();
-            }
-            else {
+            } else {
                 this.props.history.push('/cars');
                 return null;
             }
@@ -99,7 +100,11 @@ class CarComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            const newCar = await (await fetch(`/car/${this.props.match.params.id}`)).json();
+            let newCar = {};
+            await axios.get(`/car/${this.props.match.params.id}`)
+                .then(response => {
+                    newCar = response.data;
+                });
             this.setState({car: newCar, nameValid: true, consumptionValid: true, formValid: true});
         }
     }

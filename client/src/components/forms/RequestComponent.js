@@ -2,7 +2,9 @@ import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
 import Modal from 'react-bootstrap/Modal';
 import TempProductComponent from "./TempProductComponent";
-
+import axios from 'axios';
+import {HEADERS} from '../../constants/requestConstants'
+import {ACCESS_TOKEN} from "../../constants/auth";
 
 class RequestComponent extends React.Component {
 
@@ -56,8 +58,7 @@ class RequestComponent extends React.Component {
             this.getCar(value);
         } else if (name === 'driverInput') {
             this.getDriver(value);
-        }
-        else {
+        } else {
             let request = {...this.state.request};
             request[name] = value;
             this.setState({request});
@@ -71,7 +72,6 @@ class RequestComponent extends React.Component {
     }
 
 
-
     handleShow() {
         this.setState({show: true});
     }
@@ -79,11 +79,13 @@ class RequestComponent extends React.Component {
     async handleSubmit(event) {
         event.preventDefault();
         const {request} = this.state;
+        console.log(request);
         await fetch('/request/', {
             method: request.id === '' ? 'POST' : 'PUT',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
             },
             body: JSON.stringify(request)
         });
@@ -99,22 +101,30 @@ class RequestComponent extends React.Component {
         let request = {...this.state.request};
         request['products'] = products;
         this.setState({request: request, product: this.emptyProduct});
-    }
+    };
 
     async getCar(id) {
-        const newCar = await (await fetch(`/car/${id}`)).json();
+        let newCar = {};
+        await axios.get(`/car/${id}`)
+            .then(response => {
+                newCar = response.data;
+            });
         let request = {...this.state.request};
         request['car'] = newCar;
         this.setState({request});
-
+        console.log(this.state);
     }
 
     async getDriver(id) {
-        const newDriver = await (await fetch(`/user/${id}`)).json();
+        let newDriver = {};
+        await axios.get(`/user/${id}`)
+            .then(response => {
+                newDriver = response.data;
+            });
         let request = {...this.state.request};
         request['driver'] = newDriver;
         this.setState({request});
-
+        console.log(this.state);
     }
 
     validationHandlerProduct = (formValid) => {
@@ -124,7 +134,7 @@ class RequestComponent extends React.Component {
     changeFieldHandler = (product) => {
         console.log(product);
         this.setState({product: product});
-    }
+    };
 
     populateRowsWithData = () => {
         return this.state.request.products.map(product => {
@@ -149,7 +159,7 @@ class RequestComponent extends React.Component {
     };
 
     fillDriverSelector() {
-        if (this.state.drivers.length == 0) {
+        if (this.state.drivers.length === 0) {
             return <option>Нет доступных водителей</option>
         }
         return this.state.drivers.map(driver => {
@@ -159,19 +169,28 @@ class RequestComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            const newRequest = await(await
-                    fetch(`/request/${this.props.match.params.id}`)
-            ).json();
+            let newRequest = {};
+            axios.get(`/request/${this.props.match.params.id}`)
+                .then(response => {
+                    newRequest = response.data;
+                });
             this.setState({request: newRequest});
         }
-        const cars = await(await
-                fetch(`/car/all`)
-        ).json();
-        const drivers = await(await
-                fetch(`/user/drivers`)
-        ).json();
 
-        console.log(cars);
+        let cars = [];
+        await axios.get(`/car/all`)
+            .then(response => {
+                console.log(response.data);
+                cars = response.data;
+                console.log(cars);
+            });
+
+        let drivers = [];
+        await axios.get(`/user/drivers`)
+            .then(response => {
+                drivers = response.data;
+            });
+
         this.setState({cars: cars, drivers: drivers});
         if (cars.length === 0 || drivers.length === 0) {
             this.setState({formValid: false});

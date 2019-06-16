@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, Input, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, FormGroup, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
@@ -23,6 +23,7 @@ class ClientListComponent extends React.Component {
         this.state = {
             clients: [],
             activePage: 0,
+            query: '',
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
@@ -34,6 +35,9 @@ class ClientListComponent extends React.Component {
         this.fetchURL = this.fetchURL.bind(this);
         this.removeChecked = this.removeChecked.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.queryTimeout = -1;
+        this.handleQueryChange = this.handleQueryChange.bind(this);
+        this.changeQuery = this.changeQuery.bind(this);
     }
 
     handleChange = e => {
@@ -49,8 +53,8 @@ class ClientListComponent extends React.Component {
         })
     };
 
-    fetchURL(page) {
-        axios.get(`/client/list?page=${page}&size=5&companyType=${this.state.client.companyType}`, {
+    fetchURL(page, query) {
+        axios.get(`/client/list/${query}?page=${page}&size=5&companyType=${this.state.client.companyType}`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
@@ -86,13 +90,27 @@ class ClientListComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchURL(this.state.activePage)
+        this.fetchURL(this.state.activePage, this.state.query)
     }
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber - 1)
+        this.fetchURL(pageNumber - 1, this.state.query)
+    }
+
+    changeQuery() {
+        this.fetchURL(0, this.state.query);
+    }
+
+    handleQueryChange(event) {
+        clearTimeout(this.queryTimeout);
+        const target = event.target;
+        const value = target.value;
+        this.setState(() => ({
+            query: value
+        }));
+        this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
     populateRowsWithData = () => {
@@ -161,6 +179,10 @@ class ClientListComponent extends React.Component {
             <form name="clients">
                 <div>
                     <Container fluid>
+                        <FormGroup>
+                            <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                                   onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                        </FormGroup>
                         <div className="float-right">
                             <ButtonGroup>
                                 <Button color="success" tag={Link} to="/client/create">Добавить</Button>

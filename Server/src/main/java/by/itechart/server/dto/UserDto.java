@@ -14,7 +14,7 @@ public class UserDto implements ToEntityTransformer {
 
     private String name;
 
-    private Boolean isEnabled;
+    private boolean isEnabled;
 
     private String patronymic;
 
@@ -52,7 +52,7 @@ public class UserDto implements ToEntityTransformer {
         user.setClientCompany(this.clientCompany!=null?this.clientCompany.transformToEntity():null);
         user.setDateOfBirth(this.dateOfBirth);
         user.setEmail(this.email);
-        user.setIsEnabled(this.isEnabled);
+        user.setEnabled(this.isEnabled);
         user.setId(this.id);
         user.setLogin(this.login);
         user.setName(this.name);
@@ -80,7 +80,7 @@ public class UserDto implements ToEntityTransformer {
             return this;
         }
 
-        public Builder withId(final int id) {
+        public Builder withId(final Integer id) {
             UserDto.this.id = id;
             return this;
         }

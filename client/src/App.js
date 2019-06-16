@@ -37,26 +37,30 @@ class App extends React.Component {
                 <Navigation/>
 
                 <Route path="/home" component={Home}/>
-                <ProtectedRoute exact path="/driver/:id" allowed={ROLE.SYSADMIN} component={UserComponent}/>
-                <ProtectedRoute exact path="/drivers" allowed={ROLE.SYSADMIN} component={UserListComponent}/>
-                <ProtectedRoute exact path="/clients" allowed={ROLE.SYSADMIN} component={ClientListComponent}/>
-                <ProtectedRoute exact path="/cars" allowed={ROLE.SYSADMIN} component={CarListComponent}/>
-                <ProtectedRoute exact path="/car/:id" allowed={ROLE.SYSADMIN} component={CarComponent}/>
-                <ProtectedRoute exact path="/admin/:id" allowed={ROLE.SYSADMIN} component={UserComponent}/>
+                <ProtectedRoute exact path="/driver/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
+                <ProtectedRoute exact path="/drivers" allowed={[ROLE.SYSADMIN]} component={UserListComponent}/>
+                <ProtectedRoute exact path="/clients" allowed={[ROLE.SYSADMIN]} component={ClientListComponent}/>
+                <ProtectedRoute exact path="/cars" allowed={[ROLE.SYSADMIN]} component={CarListComponent}/>
+                <ProtectedRoute exact path="/car/:id" allowed={[ROLE.SYSADMIN]} component={CarComponent}/>
+                <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
 
                 {/*ADMIN*/}
-                <ProtectedRoute exact path="/users" allowed={ROLE.ADMIN} component={UserListComponent}/>
-                <ProtectedRoute exact path="/user/:id" allowed={ROLE.ADMIN} component={UserComponent}/>
+                <ProtectedRoute exact path="/users" allowed={[ROLE.ADMIN]} component={UserListComponent}/>
+                <ProtectedRoute exact path="/user/:id" allowed={[ROLE.ADMIN]} component={UserComponent}/>
 
                 {/*OWNER*/}
-                <ProtectedRoute exact path='/request/:id' allowed={ROLE.OWNER} component={RequestComponent}/>
-                <ProtectedRoute exact path='/report' allowed={ROLE.OWNER} component={ReportComponent}/>
-                {/*MANAGER*/}
+                <ProtectedRoute exact path='/request/:id' allowed={[ROLE.OWNER,ROLE.DISPATCHER]} component={RequestComponent}/>
+                <ProtectedRoute exact path='/report' allowed={[ROLE.OWNER]} component={ReportComponent}/>
+                <ProtectedRoute exact path="/requests" allowed={ROLE.OWNER} component={RequestListComponent}/>
+                {/*DISPATCHER*/}
+                <ProtectedRoute exact path="/notviewedrequests" allowed={ROLE.DISPATCHER} component={RequestListComponent}/>
 
                 {/*DRIVER*/}
                 <ProtectedRoute exact path="/waybills" allowed='DRIVER' component={WaybillListComponent}/>
                 <ProtectedRoute exact path="/waybill/:id" allowed='DRIVER' component={WaybillComponent}/>
+
                 {/*MANAGER*/}
+
 
 
 
@@ -69,7 +73,6 @@ class App extends React.Component {
                 <Route path="/waybills" component={WaybillListComponent}/>
 
                 {/*<Route path="/request/:id" component={RequestComponent}/>*/}
-                <Route path="/requests" component={RequestListComponent}/>
                 <Route path="/invoices" component={InvoiceListComponent}/>
 
                 <Route path="/waybill/:id" component={WaybillComponent}/>

@@ -2,6 +2,7 @@ package by.itechart.server.controller;
 
 import by.itechart.server.dto.ClientCompanyDto;
 import by.itechart.server.dto.RequestDto;
+import by.itechart.server.entity.Request;
 import by.itechart.server.security.CurrentUser;
 import by.itechart.server.security.UserPrincipal;
 import by.itechart.server.service.ClientCompanyService;
@@ -34,7 +35,7 @@ public class RequestController {
         this.requestService = requestService;
     }
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('DISPATCHER')")
     @PutMapping("/")
     public ResponseEntity<?> edit(final @RequestBody RequestDto requestDto) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", requestDto);
@@ -43,7 +44,7 @@ public class RequestController {
     }
 
     @PreAuthorize("hasAuthority('OWNER')")
-    @PostMapping("")
+    @PostMapping("/")
     public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal,
                                     final @Valid @RequestBody RequestDto requestDto) {
         LOGGER.info("REST request. Path:/car method: POST. car: {}", requestDto);
@@ -53,7 +54,7 @@ public class RequestController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('DISPATCHER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/request/{} method: GET.", id);
@@ -74,7 +75,7 @@ public class RequestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PreAuthorize("hasAuthority('OWNER') or hasAuthority('DISPATCHER')")
+    @PreAuthorize("hasAuthority('OWNER')")
     @GetMapping("/list")
     public ResponseEntity<Page<RequestDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/request method: GET.");
@@ -83,6 +84,20 @@ public class RequestController {
         return requestDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(requestDtos, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAuthority('DISPATCHER')")
+    @GetMapping("/notviewed")
+    public ResponseEntity<Page<RequestDto>> getNotViewed(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
+        LOGGER.info("REST request. Path:/request method: GET.");
+        final Page<RequestDto> requestDtos = requestService
+                .findAllByClientCompanyFromIdAndStatus(
+                        userPrincipal.getClientCompanyId(),
+                        Request.Status.NOT_VIEWED,
+                        pageable);
+        return requestDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(requestDtos, HttpStatus.OK);
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

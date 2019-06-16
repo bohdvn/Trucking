@@ -1,5 +1,6 @@
 package by.itechart.server.repository;
 
+import by.itechart.server.entity.ClientCompany;
 import by.itechart.server.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -41,12 +41,11 @@ public class InvoiceDto implements ToEntityTransformer {
         invoice.setDateOfCheck(this.dateOfCheck);
         invoice.setDateOfIssue(this.dateOfIssue);
         invoice.setDispatcherFrom(this.dispatcherFrom.transformToEntity());
-        invoice.setDispatcherTo(this.dispatcherTo.transformToEntity());
-        invoice.setManager(this.manager.transformToEntity());
         invoice.setId(this.id);
         invoice.setNumber(this.number);
         invoice.setRequest(this.request.transformToEntity());
         invoice.setStatus(this.status);
+        invoice.setManager(this.manager!=null?this.manager.transformToEntity():null);
         return invoice;
     }
 

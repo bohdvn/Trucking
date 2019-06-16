@@ -34,10 +34,24 @@ class RequestListComponent extends React.Component {
         this.remove = this.remove.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        console.log(props);
     }
 
     fetchURL(page) {
-        axios.get(`/request/list?page=${page}&size=5`)
+        let url='';
+        switch(this.props.location.pathname){
+            case '/requests':
+                url='list';
+                break;
+
+            case '/notviewedrequests':
+                url='notviewed';
+                break;
+
+            default:
+                return;
+        }
+        axios.get(`/request/${url}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
@@ -122,36 +136,52 @@ class RequestListComponent extends React.Component {
         invoice.status = 'COMPLETED';
         invoice.number = this.state.request.id;
         invoice.dateOfIssue = dateStr;
+        console.log(invoice);
         this.setState({request: ''});
         this.saveInvoice(invoice);
         this.saveRequest(request);
-        window.location.reload();
+        // window.location.reload();
     };
 
     async saveInvoice(invoice) {
-        await fetch('/invoice/', {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            },
-            body: JSON.stringify(invoice)
+        await axios({
+            method:invoice.id?'PUT':'POST',
+            url:'/invoice/',
+            data:invoice
+        }).then(response=>{
+            console.log(response);
         });
-
-
+        console.log('invoice');
+        // await fetch('/invoice/', {
+        //     method: invoice.id?'PUT':'POST',
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json',
+        //         'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
+        //     },
+        //     body: JSON.stringify(invoice)
+        // }).then(response=>{
+        //         console.log(response);
+        //     });
     }
 
     async saveRequest(request) {
-        await fetch('/request/', {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            },
-            body: JSON.stringify(request)
+        await axios({
+            method:request.id?'PUT':'POST',
+            url:'/request/',
+            data:request
+        }).then(response=>{
+            console.log(response);
         });
+        // await fetch('/request/', {
+        //     method: 'PUT',
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json',
+        //         'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
+        //     },
+        //     body: JSON.stringify(request)
+        // });
     }
 
     async handleShow(id) {

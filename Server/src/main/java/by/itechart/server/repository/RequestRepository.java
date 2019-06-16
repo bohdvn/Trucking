@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RequestRepository extends JpaRepository<Request,Integer> {
     Page<Request> findAllByClientCompanyFromId(int id,Pageable pageable);
+
+    Page<Request> findAllByClientCompanyFromIdAndStatus(int id, Request.Status status, Pageable pageable);
 }

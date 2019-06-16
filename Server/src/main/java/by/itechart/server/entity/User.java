@@ -84,7 +84,7 @@ public class User implements ToDtoTransformer {
     private ClientCompany clientCompany;
 
     @Column(name = "is_enabled")
-    private Boolean isEnabled;
+    private boolean isEnabled;
 
     public User() {
         super();
@@ -95,7 +95,7 @@ public class User implements ToDtoTransformer {
     public UserDto transformToDto() {
         UserDto.Builder userDtoBuilder=UserDto.builder()
                 .withId(this.id)
-//                .withEnabled(this.isEnabled)
+                .withEnabled(this.isEnabled)
                 .withDateOfBirth(this.dateOfBirth)
                 .withLogin(this.login)
                 .withPassword(this.password)

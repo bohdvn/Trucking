@@ -58,6 +58,9 @@ class Navigation extends React.Component {
                 case ROLE.DISPATCHER:
                     navs.push(
                         <NavItem>
+                            <NavLink href="/notviewedrequests">Непросмотренные заявки</NavLink>
+                        </NavItem>,
+                        <NavItem>
                             <NavLink href="/invoices">Список ТТН</NavLink>
                         </NavItem>
                     );
@@ -82,7 +85,7 @@ class Navigation extends React.Component {
                 case ROLE.OWNER:
                     navs.push(
                         <NavItem>
-                            <NavLink href="/requests">Запросы</NavLink>
+                            <NavLink href="/requests">Зяавки</NavLink>
                         </NavItem>,
                         <NavItem>
                             <NavLink href="/invoices">Список ТТН</NavLink>

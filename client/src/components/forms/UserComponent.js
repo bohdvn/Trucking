@@ -232,7 +232,7 @@ class UserComponent extends React.Component {
             axios.post('/client/', client);
             this.props.history.push('/clients');
         } else {
-            axios.post('/user/', user)
+            axios({url:'/user/', data:user, method:user.id?'PUT':'POST'})
                 .then(resp => {
                     if (resp.status === 400) {
                         return resp.json();

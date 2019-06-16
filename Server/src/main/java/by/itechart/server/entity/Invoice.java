@@ -53,13 +53,6 @@ public class Invoice implements ToDtoTransformer {
     private User dispatcherFrom;
 
     /**
-     * One invoice can be issued by one dispatcherTo.
-     * The same dispatcherTo can be in different invoices in various dates.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dispatcher_to_id")
-    private User dispatcherTo;
-    /**
      * One invoice can be checked by one manager.
      * The same manager can check many different invoices.
      */
@@ -83,7 +76,6 @@ public class Invoice implements ToDtoTransformer {
                 .withNumber(this.number)
                 .withStatus(this.status)
                 .withDispatcherFrom((this.dispatcherFrom == null) ? null : this.dispatcherFrom.transformToDto())
-                .withDispatcherTo((this.dispatcherTo == null) ? null : this.dispatcherTo.transformToDto())
                 .withManager((this.manager == null) ? null : this.manager.transformToDto())
                 .withRequest(this.request.transformToDto())
                 .build();

@@ -28,10 +28,12 @@
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.0",
     "react-timeout": "^1.2.0",
+    "react-trigger-change": "^1.0.2",
     "reactstrap": "^8.0.0",
     "recompose": "^0.30.0",
     "redux": "^4.0.1",
-    "yup": "^0.27.0"
+    "yup": "^0.27.0",
+    "lodash": "latest"
   },
   "scripts": {
     "start": "react-scripts start",

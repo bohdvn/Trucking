@@ -1,6 +1,15 @@
 package by.itechart.server.controller;
 
+import by.itechart.server.dto.InvoiceDto;
+import by.itechart.server.dto.UserDto;
 import by.itechart.server.dto.WayBillDto;
+import by.itechart.server.entity.Invoice;
+import by.itechart.server.entity.WayBill;
+import by.itechart.server.security.CurrentUser;
+import by.itechart.server.security.UserPrincipal;
+import by.itechart.server.service.InvoiceService;
+import by.itechart.server.service.RequestService;
+import by.itechart.server.service.UserService;
 import by.itechart.server.service.WayBillService;
 import by.itechart.server.utils.ValidationUtils;
 import org.slf4j.Logger;
@@ -10,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,30 +31,42 @@ import java.util.Objects;
 public class WayBillController {
     private WayBillService wayBillService;
 
-    public WayBillController(WayBillService wayBillService) {
+    private UserService userService;
+
+    private InvoiceService invoiceService;
+
+    public WayBillController(WayBillService wayBillService, UserService userService, InvoiceService invoiceService) {
         this.wayBillService = wayBillService;
+        this.userService = userService;
+        this.invoiceService = invoiceService;
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WayBillController.class);
 
+    @PreAuthorize("hasAuthority('DRIVER')")
     @PutMapping("/")
-    public ResponseEntity<?> edit(@Valid @RequestBody WayBillDto wayBill) {
+    public ResponseEntity<?> edit(@CurrentUser@Valid @RequestBody WayBillDto wayBill) {
         LOGGER.info("REST request. Path:/waybill method: POST. waybill: {}", wayBill);
         wayBillService.save(wayBill);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('MANAGER')")
+    @Transactional
     @PostMapping("")
-    public ResponseEntity<?> create(@Valid @RequestBody WayBillDto wayBill) {
+    public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody WayBillDto wayBill) {
         LOGGER.info("REST request. Path:/waybill method: POST. waybill: {}", wayBill);
+        final UserDto manager = userService.findById(userPrincipal.getId());
+        wayBill.getInvoice().setManager(manager);
         wayBillService.save(wayBill);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('DRIVER')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOne(@PathVariable("id") int id) {
+    public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal,@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/waybill/{} method: GET.", id);
-        final WayBillDto wayBillDto = wayBillService.findById(id);
+        final WayBillDto wayBillDto = wayBillService.findByIdAndInvoiceRequestDriverId(id, userPrincipal.getId());
         return Objects.nonNull(wayBillDto) ?
                 ResponseEntity.ok().body(wayBillDto) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -60,11 +82,12 @@ public class WayBillController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('DRIVER') or hasAuthority('SYSADMIN')")
     @GetMapping("/list")
-    public ResponseEntity<Page<WayBillDto>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<WayBillDto>> getAll(@CurrentUser UserPrincipal user, Pageable pageable) {
         LOGGER.info("REST request. Path:/waybill method: GET.");
-        final Page<WayBillDto> wayBillsDto = wayBillService.findAll(pageable);
+        final Page<WayBillDto> wayBillsDto =
+                wayBillService.findAllByInvoiceRequestDriverIdAndStatus(user.getId(), WayBill.Status.STARTED,pageable);
         LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
         return wayBillsDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(wayBillsDto, HttpStatus.OK);

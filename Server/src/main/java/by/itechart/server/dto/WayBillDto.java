@@ -2,11 +2,13 @@ package by.itechart.server.dto;
 
 import by.itechart.server.entity.WayBill;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
 public class WayBillDto implements ToEntityTransformer {
 
     private Integer id;
@@ -28,54 +30,6 @@ public class WayBillDto implements ToEntityTransformer {
         return new WayBillDto().new Builder();
     }
 
-    public WayBill.Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final WayBill.Status status) {
-        this.status = status;
-    }
-
-    public LocalDate getDateFrom() {
-        return dateFrom;
-    }
-
-    public void setDateFrom(final LocalDate dateFrom) {
-        this.dateFrom = dateFrom;
-    }
-
-    public LocalDate getDateTo() {
-        return dateTo;
-    }
-
-    public void setDateTo(final LocalDate dateTo) {
-        this.dateTo = dateTo;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-    public List<CheckpointDto> getCheckpoints() {
-        return checkpoints;
-    }
-
-    public void setCheckpoints(final List<CheckpointDto> checkpoints) {
-        this.checkpoints = checkpoints;
-    }
-
-    public InvoiceDto getInvoice() {
-        return invoice;
-    }
-
-    public void setInvoice(InvoiceDto invoice) {
-        this.invoice = invoice;
-    }
-
     @Override
     public WayBill transformToEntity() {
         final WayBill wayBill = new WayBill();
@@ -86,7 +40,7 @@ public class WayBillDto implements ToEntityTransformer {
         wayBill.setId(this.id);
         wayBill.setStatus(this.status);
         wayBill.setInvoice(this.invoice.transformToEntity());
-        return null;
+        return wayBill;
     }
 
     public class Builder {

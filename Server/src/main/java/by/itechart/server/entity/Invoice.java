@@ -2,6 +2,7 @@ package by.itechart.server.entity;
 
 import by.itechart.server.dto.InvoiceDto;
 import by.itechart.server.transformers.ToDtoTransformer;
+import lombok.Data;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Data
 @Entity
 @Table(name = "invoice")
 public class Invoice implements ToDtoTransformer {
@@ -30,15 +32,12 @@ public class Invoice implements ToDtoTransformer {
     private Status status;
 
     @NotNull(message = "Number cannot be null")
-    //@Size(min = 2, max = 45, message = "Number must be between 2 and 45 characters")
     @Column(name = "number")
     private String number;
 
-    //@Past(message = "Wrong date of issue")
     @Column(name = "date_of_issue")
     private LocalDate dateOfIssue;
 
-    //@Past(message = "Wrong date of check")
     @Column(name = "date_of_check")
     private LocalDate dateOfCheck;
 
@@ -51,13 +50,6 @@ public class Invoice implements ToDtoTransformer {
     private User dispatcherFrom;
 
     /**
-     * One invoice can be issued by one dispatcherTo.
-     * The same dispatcherTo can be in different invoices in various dates.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dispatcher_to_id")
-    private User dispatcherTo;
-    /**
      * One invoice can be checked by one manager.
      * The same manager can check many different invoices.
      */
@@ -68,7 +60,7 @@ public class Invoice implements ToDtoTransformer {
     /**
      * One invoice can have only one request.
      */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "request_id")
     private Request request;
 
@@ -81,118 +73,9 @@ public class Invoice implements ToDtoTransformer {
                 .withNumber(this.number)
                 .withStatus(this.status)
                 .withDispatcherFrom((this.dispatcherFrom == null) ? null : this.dispatcherFrom.transformToDto())
-                .withDispatcherTo((this.dispatcherTo == null) ? null : this.dispatcherTo.transformToDto())
                 .withManager((this.manager == null) ? null : this.manager.transformToDto())
                 .withRequest(this.request.transformToDto())
                 .build();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Status status) {
-        this.status = status;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(final String number) {
-        this.number = number;
-    }
-
-    public LocalDate getDateOfIssue() {
-        return dateOfIssue;
-    }
-
-    public void setDateOfIssue(final LocalDate dateOfIssue) {
-        this.dateOfIssue = dateOfIssue;
-    }
-
-    public LocalDate getDateOfCheck() {
-        return dateOfCheck;
-    }
-
-    public void setDateOfCheck(final LocalDate dateOfCheck) {
-        this.dateOfCheck = dateOfCheck;
-    }
-
-    public User getDispatcherFrom() {
-        return dispatcherFrom;
-    }
-
-    public void setDispatcherFrom(final User dispatcherFrom) {
-        this.dispatcherFrom = dispatcherFrom;
-    }
-
-    public User getDispatcherTo() {
-        return dispatcherTo;
-    }
-
-    public void setDispatcherTo(final User dispatcherTo) {
-        this.dispatcherTo = dispatcherTo;
-    }
-
-    public User getManager() {
-        return manager;
-    }
-
-    public void setManager(final User manager) {
-        this.manager = manager;
-    }
-
-    public Request getRequest() {
-        return request;
-    }
-
-    public void setRequest(Request request) {
-        this.request = request;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Invoice invoice = (Invoice) o;
-        return Objects.equals(id, invoice.id) &&
-                status == invoice.status &&
-                Objects.equals(number, invoice.number) &&
-                Objects.equals(dateOfIssue, invoice.dateOfIssue) &&
-                Objects.equals(dateOfCheck, invoice.dateOfCheck) &&
-                Objects.equals(dispatcherFrom, invoice.dispatcherFrom) &&
-                Objects.equals(dispatcherTo, invoice.dispatcherTo) &&
-                Objects.equals(manager, invoice.manager);
-        //  Objects.equals(request, invoice.request);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, status, number, dateOfIssue, dateOfCheck, dispatcherFrom, dispatcherTo, manager);
-    }
-
-    @Override
-    public String toString() {
-        return "Invoice{" +
-                "id=" + id +
-                ", status=" + status +
-                ", number='" + number + '\'' +
-                ", dateOfIssue=" + dateOfIssue +
-                ", dateOfCheck=" + dateOfCheck +
-                ", dispatcherFrom=" + dispatcherFrom +
-                ", dispatcherTo=" + dispatcherTo +
-                ", manager=" + manager +
-                // ", request=" + request +
-                '}';
     }
 
     public enum Status {

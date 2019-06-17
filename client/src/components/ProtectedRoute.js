@@ -4,7 +4,7 @@ import { Redirect, Route } from 'react-router';
 
 const ProtectedRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={props => (
-        (rest.loggedIn.claims.roles.includes(rest.allowed)) ? (
+        (rest.loggedIn.claims.roles.filter(role=>rest.allowed.includes(role)).length!==0) ? (
             <Component {...props} />
         ) : (
             <Redirect to={{

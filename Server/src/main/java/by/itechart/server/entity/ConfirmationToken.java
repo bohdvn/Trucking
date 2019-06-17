@@ -2,10 +2,12 @@ package by.itechart.server.entity;
 
 import by.itechart.server.dto.ConfirmationTokenDto;
 import by.itechart.server.transformers.ToDtoTransformer;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
 
+@Data
 @Entity
 @Table(name = "confirmation_token")
 public class ConfirmationToken implements ToDtoTransformer{
@@ -35,45 +37,12 @@ public class ConfirmationToken implements ToDtoTransformer{
         confirmationToken = String.valueOf(Math.random());
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-    public String getConfirmationToken() {
-        return confirmationToken;
-    }
-
-    public void setConfirmationToken(final String confirmationToken) {
-        this.confirmationToken = confirmationToken;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(final Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(final User user) {
-        this.user = user;
-    }
-
-
     @Override
     public ConfirmationTokenDto transformToDto() {
         return ConfirmationTokenDto.builder()
                 .withConfirmationToken(this.confirmationToken)
                 .withCreateDate(this.createDate)
-//                .withId(this.id)
+                .withId(this.id)
                 .withUser(this.user.transformToDto())
                 .build();
     }

@@ -101,7 +101,7 @@ public class UserController {
                 new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/driverList")
     public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
@@ -123,7 +123,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('ADMIN')")
     @Transactional
-    @PostMapping("")
+    @PostMapping("/")
     public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody UserDto user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         if (userService.existsByEmail(user.getEmail()) || userService.existsByLogin(user.getLogin())) {
@@ -189,7 +189,7 @@ public class UserController {
                 confirmationTokenService.findByConfirmationToken(confirmationToken).transformToEntity();
         if (token != null) {
             final UserDto user = userService.findByEmailIgnoreCase(token.getUser().getEmail());
-            if (!user.getEnabled()) {
+            if (!user.isEnabled()) {
                 user.setEnabled(true);
                 userService.save(user);
                 LOGGER.info("Users field isEnabled was change.");

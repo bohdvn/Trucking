@@ -98,7 +98,7 @@ public class User implements ToDtoTransformer {
     private ClientCompany clientCompany;
 
     @Column(name = "is_enabled")
-    private Boolean isEnabled;
+    private boolean isEnabled;
 
     public User() {
         super();
@@ -109,7 +109,7 @@ public class User implements ToDtoTransformer {
     public UserDto transformToDto() {
         UserDto.Builder userDtoBuilder = UserDto.builder()
                 .withId(this.id)
-//                .withEnabled(this.isEnabled)
+                .withEnabled(this.isEnabled)
                 .withDateOfBirth(this.dateOfBirth)
                 .withLogin(this.login)
                 .withPassword(this.password)
@@ -127,132 +127,6 @@ public class User implements ToDtoTransformer {
         return userDtoBuilder.build();
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public User setId(final Integer id) {
-        this.id = id;
-        return this;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public User setName(final String name) {
-        this.name = name;
-        return this;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public User setPatronymic(final String patronymic) {
-        this.patronymic = patronymic;
-        return this;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public User setSurname(final String surname) {
-        this.surname = surname;
-        return this;
-    }
-
-    public String getPassportNumber() {
-        return passportNumber;
-    }
-
-    public User setPassportNumber(final String passportNumber) {
-        this.passportNumber = passportNumber;
-        return this;
-    }
-
-    public String getPassportIssued() {
-        return passportIssued;
-    }
-
-    public User setPassportIssued(final String passportIssued) {
-        this.passportIssued = passportIssued;
-        return this;
-    }
-
-    public LocalDate getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public User setDateOfBirth(final LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-        return this;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public User setEmail(final String email) {
-        this.email = email;
-        return this;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public User setLogin(final String login) {
-        this.login = login;
-        return this;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public User setPassword(final String password) {
-        this.password = password;
-        return this;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public User setRoles(final List<Role> roles) {
-        this.roles = roles;
-        return this;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public User setAddress(final Address address) {
-        this.address = address;
-        return this;
-    }
-
-    public ClientCompany getClientCompany() {
-        return clientCompany;
-    }
-
-    public User setClientCompany(final ClientCompany clientCompany) {
-        this.clientCompany = clientCompany;
-        return this;
-    }
-
-    public Boolean getEnabled() {
-        return isEnabled;
-    }
-
-    public User setEnabled(final Boolean enabled) {
-        isEnabled = enabled;
-        return this;
-    }
-
     public enum Role {
         SYSADMIN,
         ADMIN,
@@ -261,6 +135,4 @@ public class User implements ToDtoTransformer {
         DRIVER,
         OWNER
     }
-
-    ;
 }

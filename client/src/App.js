@@ -24,6 +24,7 @@ import Confirm from './components/forms/Confirm';
 import Navigation from './components/Navigation'
 import ReportComponent from './components/forms/ReportComponent';
 import SendEmail from "./components/forms/SendEmail";
+import * as ROLE from './constants/userConstants';
 
 class App extends React.Component {
     constructor(props) {
@@ -31,51 +32,49 @@ class App extends React.Component {
     }
 
     render() {
-        // console.log(this.props.claims.loggedIn);
-        // const {role} = this.props.loggedIn.roles[0].authority;
-        // console.log(this.props.loggedIn.roles[0].authority);
-        // console.log(role);
         return (
             <Router history={createBrowserHistory}>
                 <Navigation/>
 
                 <Route path="/home" component={Home}/>
-                <ProtectedRoute exact path="/driver/:id" allowed='SYSADMIN' component={UserComponent}/>
-                <ProtectedRoute exact path="/drivers" allowed='SYSADMIN' component={UserListComponent}/>
-                <ProtectedRoute exact path="/clients" allowed='SYSADMIN' component={ClientListComponent}/>
-                <ProtectedRoute exact path="/cars" allowed='SYSADMIN' component={CarListComponent}/>
-                <ProtectedRoute exact path="/admin/:id" allowed='SYSADMIN' component={UserComponent}/>
+                <ProtectedRoute exact path="/driver/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
+                <ProtectedRoute exact path="/clients" allowed={[ROLE.SYSADMIN]} component={ClientListComponent}/>
+                <ProtectedRoute exact path="/client/:id" allowed={[ROLE.SYSADMIN]} component={ClientComponent}/>
+                <ProtectedRoute exact path="/cars" allowed={[ROLE.SYSADMIN]} component={CarListComponent}/>
+                <ProtectedRoute exact path="/car/:id" allowed={[ROLE.SYSADMIN]} component={CarComponent}/>
+                <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
+                <ProtectedRoute exact path='/report' allowed={[ROLE.SYSADMIN]} component={ReportComponent}/>
+
 
                 {/*ADMIN*/}
-                {/*<ProtectedRoute exact path="/user/:id" allowed='ADMIN' component={UserComponent}/>*/}
-                <ProtectedRoute exact path="/users" allowed='ADMIN' component={UserListComponent}/>
-                <ProtectedRoute exact path="/user/:id" allowed='ADMIN' component={UserComponent}/>
-
-                {/*MANAGER*/}
-
-                {/*DRIVER*/}
-                <ProtectedRoute exact path="/waybills" allowed='DRIVER' component={WaybillListComponent}/>
-                <ProtectedRoute exact path="/waybill/:id" allowed='DRIVER' component={WaybillComponent}/>
-                {/*MANAGER*/}
+                <ProtectedRoute exact path="/users" allowed={[ROLE.ADMIN]} component={UserListComponent}/>
+                <ProtectedRoute exact path="/user/:id" allowed={[ROLE.ADMIN]} component={UserComponent}/>
 
                 {/*OWNER*/}
-                <ProtectedRoute exact path='/request/create' allowed='DRIVER' component={RequestComponent}/>
+                <ProtectedRoute exact path='/request/:id' allowed={[ROLE.OWNER,ROLE.DISPATCHER]} component={RequestComponent}/>
+                <ProtectedRoute exact path="/requests" allowed={ROLE.OWNER} component={RequestListComponent}/>
+                {/*DISPATCHER*/}
+                <ProtectedRoute exact path="/notviewedrequests" allowed={ROLE.DISPATCHER} component={RequestListComponent}/>
+                <ProtectedRoute exact path="/invoices" allowed={[ROLE.DISPATCHER,ROLE.MANAGER]} component={InvoiceListComponent}/>
+
+                {/*MANAGER*/}
+                <ProtectedRoute exact path="/waybill/:id" allowed={[ROLE.MANAGER, ROLE.DRIVER]} component={WaybillComponent}/>
+
+
+                {/*DRIVER*/}
+                <ProtectedRoute exact path="/waybills" allowed={ROLE.DRIVER} component={WaybillListComponent}/>
+
+                {/*MANAGER*/}
+
+
+
 
                 {/*<Route path="/user/:id" component={UserComponent}/>*/}
-                <Route path="/car/:id" component={CarComponent}/>
-                <Route path="/product/:id" component={ProductComponent}/>
-                <Route path="/products" component={ProductListComponent}/>
-                <Route path="/client/:id" component={ClientComponent}/>
                 <Route path="/login" component={LoginForm}/>
-                <Route path="/waybills" component={WaybillListComponent}/>
 
                 {/*<Route path="/request/:id" component={RequestComponent}/>*/}
-                <Route path="/requests" component={RequestListComponent}/>
-                <Route path="/invoices" component={InvoiceListComponent}/>
 
-                <Route path="/waybill/:id" component={WaybillComponent}/>
                 <Route path='/confirm/:id' component={Confirm}/>
-                <Route path='/report' component={ReportComponent}/>
                 <Route path='/email' component={SendEmail}/>
             </Router>
         );

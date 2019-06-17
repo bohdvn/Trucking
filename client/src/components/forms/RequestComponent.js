@@ -3,10 +3,10 @@ import {Button, ButtonGroup, Container, Form, FormGroup, Input, Label, Table} fr
 import Modal from 'react-bootstrap/Modal';
 import TempProductComponent from "./TempProductComponent";
 import axios from 'axios';
-import {HEADERS} from '../../constants/requestConstants'
 import {ACCESS_TOKEN} from "../../constants/auth";
 import {Link} from "react-router-dom";
-
+import AddressFields from "./AddressFields";
+import {connect} from "react-redux";
 class RequestComponent extends React.Component {
 
     productStatusMap = {
@@ -29,12 +29,23 @@ class RequestComponent extends React.Component {
         status: 'NOT_VIEWED',
         car: '',
         driver: '',
-        products: []
+        products: [],
+        address: ''
     };
+
+    address = {
+        id: '',
+        city: '',
+        street: '',
+        building: '1',
+        flat: '1'
+    };
+
 
     constructor(props) {
         super(props);
         this.state = {
+            roles:props.loggedIn.claims.roles,
             request: this.emptyRequest,
             cars: [],
             drivers: [],
@@ -206,12 +217,18 @@ class RequestComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            let newRequest = {};
-            axios.get(`/request/${this.props.match.params.id}`)
+            await axios.get(`/request/${this.props.match.params.id}`)
                 .then(response => {
-                    newRequest = response.data;
+                    const newRequest = response.data;
+                    newRequest.status='ISSUED';
+                    this.setState({request: response.data});
+                    console.log(this.state);
                 });
-            this.setState({request: newRequest});
+        }
+        else{
+            const request = this.state.request;
+            request['address'] = this.address;
+            this.setState({request});
         }
 
         let cars = [];
@@ -231,17 +248,30 @@ class RequestComponent extends React.Component {
         this.setState({cars: cars, drivers: drivers});
         if (cars.length === 0 || drivers.length === 0) {
             this.setState({formValid: false});
+            return;
         }
+        let request = {...this.state.request};
+        request['car'] = cars[0];
+        request['driver'] = drivers[0];
+        this.setState({request: request});
     }
 
+    changeAddress(value) {
+        let request = {...this.state.request};
+        request['address'] = value.address;
+        this.setState({request: request});
+    };
 
-    async createProduct(id) {
-        this.props.history.push('/product/create/' + id);
-    }
+    validateForm = () => {
+        this.setState({
+            addressValid: this.state.addressValid,
+        });
+    };
+
 
     render() {
         const {request} = this.state;
-
+        console.log(request);
         return (
             <Container className="col-3">
                 <h1>Заявка</h1>
@@ -249,7 +279,7 @@ class RequestComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="status">Статус</Label>
-                        <Input type="select" name="status" id="status" value={request.status || ''}
+                        <Input disabled type="select" name="status" id="status" value={request.id?'ISSUED':'NOT_VIEWED' || ''}
                                onChange={this.handleChange} autoComplete="status">
                             <option value="NOT_VIEWED">Не просмотрена</option>
                             <option value="REJECTED">Отклонена</option>
@@ -270,6 +300,16 @@ class RequestComponent extends React.Component {
                             {this.fillDriverSelector()}
                         </Input>
                     </FormGroup>
+
+                    <FormGroup>
+                        {request.address ? <AddressFields
+                            name="address"
+                            id="addressFields"
+                            validationHandler={this.validateForm}
+                            changeState={this.changeAddress.bind(this)}
+                            address={request.address}/> : null}
+                    </FormGroup>
+
                     <FormGroup>
                         <Label for="productTable">Продукты</Label>
                         <Table name="productTable" id="productTable" className="mt-4">
@@ -328,4 +368,8 @@ class RequestComponent extends React.Component {
     }
 }
 
-export default RequestComponent;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    }),
+)(RequestComponent);

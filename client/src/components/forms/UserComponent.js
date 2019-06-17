@@ -1,7 +1,6 @@
 import React from 'react';
 import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
-
 import "react-datepicker/dist/react-datepicker.css";
 import {getUserById, saveUser} from "../../utils/APIUtils";
 import {connect} from "react-redux";
@@ -55,6 +54,7 @@ class UserComponent extends React.Component {
             userFormValid: false,
         };
         // const client=this.props.location.state.client;
+        console.log(this.props);
         const locationState = this.props.location.state;
         const client = locationState ? locationState.client : null;
         console.log(client);
@@ -228,7 +228,7 @@ class UserComponent extends React.Component {
             axios.post('/client/', client);
             this.props.history.push('/clients');
         } else {
-            saveUser(user)
+            axios({url:'/user/', data:user, method:user.id?'PUT':'POST'})
                 .then(resp => {
                     if (resp.status === 400) {
                         return resp.json();
@@ -245,7 +245,7 @@ class UserComponent extends React.Component {
                     alert(s);
                 }
             });
-            // this.props.history.push('/home');
+            this.props.history.push('/home');
         }
     }
 

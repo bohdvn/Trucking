@@ -3,10 +3,12 @@ package by.itechart.server.dto;
 
 import by.itechart.server.entity.Address;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
+@Data
 public class AddressDto implements ToEntityTransformer {
 
-    private int id;
+    private Integer id;
 
     private String city;
 
@@ -43,62 +45,6 @@ public class AddressDto implements ToEntityTransformer {
         address.setLongitude(this.longitude);
         address.setStreet(this.street);
         return address;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(final int id) {
-        this.id = id;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(final String city) {
-        this.city = city;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(final String street) {
-        this.street = street;
-    }
-
-    public Integer getBuilding() {
-        return building;
-    }
-
-    public void setBuilding(final Integer building) {
-        this.building = building;
-    }
-
-    public Integer getFlat() {
-        return flat;
-    }
-
-    public void setFlat(final Integer flat) {
-        this.flat = flat;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(final String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(final String longitude) {
-        this.longitude = longitude;
     }
 
     public class Builder {

@@ -53,6 +53,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getAllByBirthday(final int month, final int day) {
+        return userRepository.findByMatchMonthAndMatchDay(month, day);
+    }
+
+    @Override
     public Page<UserDto> findAll(final Pageable pageable) {
         final Page<User> users = userRepository.findAll(pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)

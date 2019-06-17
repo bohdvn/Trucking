@@ -4,27 +4,14 @@ import by.itechart.server.dto.UserDto;
 import by.itechart.server.transformers.ToDtoTransformer;
 import lombok.Data;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
+
 
 @Data
 @Entity
@@ -109,7 +96,7 @@ public class User implements ToDtoTransformer {
     public UserDto transformToDto() {
         UserDto.Builder userDtoBuilder = UserDto.builder()
                 .withId(this.id)
-//                .withEnabled(this.isEnabled)
+                .withEnabled(this.isEnabled)
                 .withDateOfBirth(this.dateOfBirth)
                 .withLogin(this.login)
                 .withPassword(this.password)
@@ -262,5 +249,4 @@ public class User implements ToDtoTransformer {
         OWNER
     }
 
-    ;
 }

@@ -3,8 +3,8 @@ package by.itechart.server.dto;
 import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.User;
 import by.itechart.server.interfaces.FieldsInterface;
-import lombok.Data;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class UserDto implements ToEntityTransformer, FieldsInterface {
 
-    private int id;
+    private Integer id;
 
     @CriteriaAnnotation
     private String name;
@@ -44,6 +44,7 @@ public class UserDto implements ToEntityTransformer, FieldsInterface {
     private ClientCompanyDto clientCompany;
 
     private UserDto() {
+        this.isEnabled = false;
     }
 
     public static Builder builder() {
@@ -58,11 +59,11 @@ public class UserDto implements ToEntityTransformer, FieldsInterface {
         isEnabled = enabled;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

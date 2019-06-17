@@ -21,11 +21,11 @@ class RoleSelect extends React.Component {
         const roleOptions = [];
         const loggedInRoles = this.state.loggedIn.claims.roles;
         const roles = this.props.roles;
+        const adminOption=Object.assign({},ROLE_OPTION.ADMIN_OPTION);
         loggedInRoles.forEach(role => {
             switch (role) {
                 case ROLE.SYSADMIN:
                     if (this.state.client) {
-                        const adminOption=Object.assign({},ROLE_OPTION.ADMIN_OPTION);
                         roleOptions.push(
                             adminOption
                         );
@@ -36,7 +36,6 @@ class RoleSelect extends React.Component {
                     break;
 
                 case ROLE.ADMIN:
-                    const adminOption=Object.assign({},ROLE_OPTION.ADMIN_OPTION);
                     const managerOption=Object.assign({},ROLE_OPTION.MANAGER_OPTION);
                     const dispatcherOption=Object.assign({},ROLE_OPTION.DISPATCHER_OPTION);
                     const ownerOption=Object.assign({},ROLE_OPTION.OWNER_OPTION);

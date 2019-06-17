@@ -38,8 +38,8 @@ class App extends React.Component {
 
                 <Route path="/home" component={Home}/>
                 <ProtectedRoute exact path="/driver/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
-                <ProtectedRoute exact path="/drivers" allowed={[ROLE.SYSADMIN]} component={UserListComponent}/>
                 <ProtectedRoute exact path="/clients" allowed={[ROLE.SYSADMIN]} component={ClientListComponent}/>
+                <ProtectedRoute exact path="/client/:id" allowed={[ROLE.SYSADMIN]} component={ClientComponent}/>
                 <ProtectedRoute exact path="/cars" allowed={[ROLE.SYSADMIN]} component={CarListComponent}/>
                 <ProtectedRoute exact path="/car/:id" allowed={[ROLE.SYSADMIN]} component={CarComponent}/>
                 <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
@@ -54,10 +54,15 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/requests" allowed={ROLE.OWNER} component={RequestListComponent}/>
                 {/*DISPATCHER*/}
                 <ProtectedRoute exact path="/notviewedrequests" allowed={ROLE.DISPATCHER} component={RequestListComponent}/>
+                <ProtectedRoute exact path="/invoices" allowed={[ROLE.DISPATCHER,ROLE.MANAGER]} component={InvoiceListComponent}/>
+
+                {/*MANAGER*/}
+                <ProtectedRoute exact path="/waybill/:id" allowed={[ROLE.MANAGER, ROLE.DRIVER]} component={WaybillComponent}/>
+
 
                 {/*DRIVER*/}
-                <ProtectedRoute exact path="/waybills" allowed='DRIVER' component={WaybillListComponent}/>
-                <ProtectedRoute exact path="/waybill/:id" allowed='DRIVER' component={WaybillComponent}/>
+                {/*<ProtectedRoute exact path="/waybills" allowed='DRIVER' component={WaybillListComponent}/>*/}
+                {/*<ProtectedRoute exact path="/waybill/:id" allowed='DRIVER' component={WaybillComponent}/>*/}
 
                 {/*MANAGER*/}
 
@@ -65,17 +70,10 @@ class App extends React.Component {
 
 
                 {/*<Route path="/user/:id" component={UserComponent}/>*/}
-                <Route path="/car/:id" component={CarComponent}/>
-                <Route path="/product/:id" component={ProductComponent}/>
-                <Route path="/products" component={ProductListComponent}/>
-                <Route path="/client/:id" component={ClientComponent}/>
                 <Route path="/login" component={LoginForm}/>
-                <Route path="/waybills" component={WaybillListComponent}/>
 
                 {/*<Route path="/request/:id" component={RequestComponent}/>*/}
-                <Route path="/invoices" component={InvoiceListComponent}/>
 
-                <Route path="/waybill/:id" component={WaybillComponent}/>
                 <Route path='/confirm/:id' component={Confirm}/>
                 <Route path='/email' component={SendEmail}/>
             </Router>

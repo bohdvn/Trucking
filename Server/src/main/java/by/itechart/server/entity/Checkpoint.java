@@ -31,14 +31,13 @@ public class Checkpoint implements ToDtoTransformer {
     @Column(name = "longitude")
     private String longitude;
 
-    @NotNull(message = "Date cannot be null")
     @Column (name = "date")
     private LocalDate date;
 
     /**
      * Several checkpoints may be in the same wayBill.
      */
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "waybill_id")
     private WayBill wayBill;
 

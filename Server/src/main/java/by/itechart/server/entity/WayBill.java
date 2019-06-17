@@ -29,27 +29,21 @@ public class WayBill implements ToDtoTransformer {
      * One waybill can only belong to one invoice.
      * In one invoice can be only one waybill.
      */
-    @OneToOne(fetch=FetchType.LAZY)
-    @MapsId
+    @OneToOne(fetch=FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "invoice_id")
     private Invoice invoice;
 
     @NotNull(message = "Date from cannot be null")
-    @Past(message = "Wrong date from")
     @Column(name = "date_from")
     private LocalDate dateFrom;
 
-    @NotNull(message = "Date to cannot be null")
-    @Past(message = "Wrong date to")
     @Column(name = "date_to")
     private LocalDate dateTo;
 
     /**
      * In one wayBill may be several checkpoints.
      */
-    @OneToMany(fetch = FetchType.LAZY,
-            mappedBy = "wayBill",
-            cascade =  CascadeType.ALL)
+    @OneToMany(mappedBy = "wayBill", cascade =  CascadeType.ALL)
     private List<Checkpoint> checkpoints = new ArrayList<>();
 
     public enum Status {

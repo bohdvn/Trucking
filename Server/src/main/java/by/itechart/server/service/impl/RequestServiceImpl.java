@@ -1,8 +1,6 @@
 package by.itechart.server.service.impl;
 
-import by.itechart.server.dto.ProductDto;
 import by.itechart.server.dto.RequestDto;
-import by.itechart.server.entity.Product;
 import by.itechart.server.entity.Request;
 import by.itechart.server.repository.ClientCompanyRepository;
 import by.itechart.server.repository.RequestRepository;
@@ -14,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Comparator;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -53,9 +51,10 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public RequestDto findById(final int id) {
-        return requestRepository.findById(id).isPresent() ?
-                requestRepository.findById(id).get().transformToDto() : null;
+    public RequestDto findByIdAndClientCompanyFromId(final int id, final int clientId) {
+        Optional<Request> optional=requestRepository.findByIdAndClientCompanyFromId(id,clientId);
+        return optional.isPresent() ?
+                optional.get().transformToDto() : null;
     }
 
     @Override

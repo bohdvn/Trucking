@@ -9,4 +9,5 @@
     <include file="src/main/resources/liquibase/sprint-4/changelog-4.1.xml"/>
     <include file="src/main/resources/liquibase/sprint-4/changelog-4.2.xml"/>
     <include file="src/main/resources/liquibase/sprint-4/changelog-4.3.xml"/>
+    <include file="src/main/resources/liquibase/sprint-4/changelog-4.4.xml"/>
 </databaseChangeLog>

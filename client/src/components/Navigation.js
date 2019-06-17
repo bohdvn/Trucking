@@ -43,6 +43,9 @@ class Navigation extends React.Component {
                         </NavItem>,
                         <NavItem>
                             <NavLink href="/drivers">Водители</NavLink>
+                        </NavItem>,
+                        <NavItem>
+                            <NavLink href="/report">Отчет</NavLink>
                         </NavItem>
                     );
                     break;
@@ -59,10 +62,11 @@ class Navigation extends React.Component {
                     navs.push(
                         <NavItem>
                             <NavLink href="/notviewedrequests">Непросмотренные заявки</NavLink>
-                        </NavItem>,
-                        <NavItem>
-                            <NavLink href="/invoices">Список ТТН</NavLink>
                         </NavItem>
+                        // ,
+                        // <NavItem>
+                        //     <NavLink href="/invoices">Список ТТН</NavLink>
+                        // </NavItem>
                     );
                     break;
 
@@ -85,13 +89,7 @@ class Navigation extends React.Component {
                 case ROLE.OWNER:
                     navs.push(
                         <NavItem>
-                            <NavLink href="/requests">Зяавки</NavLink>
-                        </NavItem>,
-                        <NavItem>
-                            <NavLink href="/invoices">Список ТТН</NavLink>
-                        </NavItem>,
-                        <NavItem>
-                            <NavLink href="/report">Отчет</NavLink>
+                            <NavLink href="/requests">Заявки</NavLink>
                         </NavItem>
                     );
                     break;

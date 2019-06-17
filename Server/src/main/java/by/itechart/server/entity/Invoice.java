@@ -32,15 +32,12 @@ public class Invoice implements ToDtoTransformer {
     private Status status;
 
     @NotNull(message = "Number cannot be null")
-    //@Size(min = 2, max = 45, message = "Number must be between 2 and 45 characters")
     @Column(name = "number")
     private String number;
 
-    //@Past(message = "Wrong date of issue")
     @Column(name = "date_of_issue")
     private LocalDate dateOfIssue;
 
-    //@Past(message = "Wrong date of check")
     @Column(name = "date_of_check")
     private LocalDate dateOfCheck;
 
@@ -63,7 +60,7 @@ public class Invoice implements ToDtoTransformer {
     /**
      * One invoice can have only one request.
      */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "request_id")
     private Request request;
 

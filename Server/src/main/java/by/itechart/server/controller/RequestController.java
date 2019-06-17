@@ -56,9 +56,9 @@ public class RequestController {
 
     @PreAuthorize("hasAuthority('OWNER') or hasAuthority('DISPATCHER')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOne(@PathVariable("id") int id) {
+    public ResponseEntity<?> getOne(@CurrentUser UserPrincipal user, @PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/request/{} method: GET.", id);
-        final RequestDto requestDto = requestService.findById(id);
+        final RequestDto requestDto = requestService.findByIdAndClientCompanyFromId(id,user.getClientCompanyId());
         return Objects.nonNull(requestDto) ?
                 ResponseEntity.ok().body(requestDto) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

@@ -1,13 +1,9 @@
 import React from 'react';
 import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
-
 import "react-datepicker/dist/react-datepicker.css";
-import * as ROLE from '../../constants/userConstants';
 import {getUserById, saveUser} from "../../utils/APIUtils";
-import * as OPTION from "../../constants/userRoleOptions";
 import {connect} from "react-redux";
-import * as CLIENT from '../../constants/clientConstants';
 import axios from 'axios';
 import RoleSelect from "../RoleSelect";
 

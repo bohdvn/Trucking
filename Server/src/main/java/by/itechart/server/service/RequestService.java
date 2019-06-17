@@ -13,7 +13,7 @@ public interface RequestService {
 
     Page<RequestDto> findAllByClientCompanyFromIdAndStatus(final int id, Request.Status status, final Pageable pageable);
 
-    RequestDto findById(final int id);
+    RequestDto findByIdAndClientCompanyFromId(final int id, final int clientId);
 
     void delete(final RequestDto request);
 

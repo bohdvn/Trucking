@@ -7,7 +7,8 @@ import Modal from 'react-bootstrap/Modal';
 import InvoiceComponent from "../forms/InvoiceComponent";
 import {ACCESS_TOKEN} from "../../constants/auth";
 import {connect} from "react-redux";
-import {DISPATCHER} from "../../constants/userConstants";
+import * as ROLE from "../../constants/userConstants";
+import {currentTime} from "../../utils/currentTime";
 
 class RequestListComponent extends React.Component {
 
@@ -20,14 +21,16 @@ class RequestListComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            request: '',
+            invoice: {
+                request: {}
+            },
             requests: [],
             activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
             show: false,
-            loggedIn:props.loggedIn
+            roles: props.loggedIn.claims.roles
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
@@ -38,14 +41,14 @@ class RequestListComponent extends React.Component {
     }
 
     fetchURL(page) {
-        let url='';
-        switch(this.props.location.pathname){
+        let url = '';
+        switch (this.props.location.pathname) {
             case '/requests':
-                url='list';
+                url = 'list';
                 break;
 
             case '/notviewedrequests':
-                url='notviewed';
+                url = 'notviewed';
                 break;
 
             default:
@@ -87,7 +90,7 @@ class RequestListComponent extends React.Component {
     }
 
     populateRowsWithData = () => {
-        const {roles}=this.state.loggedIn.claims;
+        const {roles} = this.state;
         const requests = this.state.requests.map(request => {
             return <tr key={request.id}>
                 <td>{request.car.name}</td>
@@ -95,11 +98,23 @@ class RequestListComponent extends React.Component {
                 <td>{this.requestStatusMap[request.status]}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link}
-                                to={"/request/" + request.id}>Редактировать</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(request.id)}>Удалить</Button>
-                        {roles.includes(DISPATCHER)?<Button size="sm" color="primary" onClick={() => this.handleShow(request.id)}
-                        >ТТН</Button>:null}
+                        {roles.includes(ROLE.OWNER) ?
+                            <Button size="sm" color="primary" tag={Link}
+                                    to={"/request/" + request.id}>Редактировать
+                            </Button>
+                            : null}
+
+                        {roles.includes(ROLE.OWNER) ?
+                            <Button size="sm" color="danger"
+                                    onClick={() => this.remove(request.id)}>Удалить
+                            </Button>
+                            : null}
+
+                        {roles.includes(ROLE.DISPATCHER) ?
+                            <Button size="sm" color="primary"
+                                    onClick={() => this.handleShow(request.id)}>ТТН
+                            </Button>
+                            : null}
                     </ButtonGroup>
                 </td>
 
@@ -125,86 +140,63 @@ class RequestListComponent extends React.Component {
 
     createInvoice = () => {
         this.setState({show: false});
-        let date = new Date();
-        var dateStr = date.getFullYear() + '-' + ((date.getMonth().toString().length === 1)
-            ? ('0' + (+date.getMonth() + 1)) : (+date.getMonth() + 1)) + '-' + ((date.getDate().toString().length === 1)
-            ? ('0' + date.getDate()) : date.getDate());
-        let invoice = {};
-        let request = this.state.request;
+        const dateStr = currentTime();
+        const {invoice} = this.state;
+        console.log(invoice);
+        let request = this.state.invoice.request;
         request.status = 'ISSUED';
-        invoice.request = request;
+        console.log(request);
         invoice.status = 'COMPLETED';
-        invoice.number = this.state.request.id;
         invoice.dateOfIssue = dateStr;
         console.log(invoice);
-        this.setState({request: ''});
-        this.saveInvoice(invoice);
-        this.saveRequest(request);
-        // window.location.reload();
+        this.setState({invoice: ''});
+        this.saveInvoice(invoice)
+            .then(response=>{
+                console.log(response);
+            });
+        window.location.reload();
     };
 
     async saveInvoice(invoice) {
         await axios({
-            method:invoice.id?'PUT':'POST',
-            url:'/invoice/',
-            data:invoice
-        }).then(response=>{
-            console.log(response);
+            method: invoice.id ? 'PUT' : 'POST',
+            url: '/invoice/',
+            data: invoice
         });
-        console.log('invoice');
-        // await fetch('/invoice/', {
-        //     method: invoice.id?'PUT':'POST',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json',
-        //         'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-        //     },
-        //     body: JSON.stringify(invoice)
-        // }).then(response=>{
-        //         console.log(response);
-        //     });
-    }
-
-    async saveRequest(request) {
-        await axios({
-            method:request.id?'PUT':'POST',
-            url:'/request/',
-            data:request
-        }).then(response=>{
-            console.log(response);
-        });
-        // await fetch('/request/', {
-        //     method: 'PUT',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json',
-        //         'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-        //     },
-        //     body: JSON.stringify(request)
-        // });
     }
 
     async handleShow(id) {
-        const request = await(await
+        const request = await (await
                 fetch(`/request/${id}`,
                     {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
         ).json();
-        this.setState({show: true, request: request});
+        this.setState({show: true, invoice: {request: request}});
+        console.log(this.state);
     }
 
     handleClose() {
         this.setState({show: false});
     }
 
+    handleInvoiceNumberChange = value => {
+        console.log(value);
+        let invoice = {...this.state.invoice};
+        invoice['number'] = value;
+        this.setState({invoice: invoice});
+        console.log(this.state);
+    };
+
     render() {
-        const {roles}=this.state.loggedIn.claims;
+        const {roles} = this.state;
         console.log(roles);
         return (
             <div>
                 <Container fluid>
-                    <div className="float-right">
-                        <Button color="success" tag={Link} to="/request/create">Добавить</Button>
-                    </div>
+                    {roles.includes(ROLE.OWNER) ?
+                        <div className="float-right">
+                            <Button color="success" tag={Link} to="/request/create">Добавить</Button>
+                        </div>
+                        : null}
                     <Table className="mt-4">
                         <thead>
                         <tr>
@@ -231,25 +223,27 @@ class RequestListComponent extends React.Component {
                         />
                     </div>
 
-                    {roles.includes(DISPATCHER)?<Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>ТТН</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <FormGroup>
-                                <InvoiceComponent
-                                    name="InvoiceComponent"
-                                    id="InvoiceComponent"
-                                    request={this.state.request}
-                                />
-                            </FormGroup>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button color="primary" onClick={this.createInvoice}>
-                                Создать ТТН
-                            </Button>
-                        </Modal.Footer>
-                    </Modal>:null}
+                    {roles.includes(ROLE.DISPATCHER) ?
+                        <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>ТТН</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <FormGroup>
+                                    <InvoiceComponent
+                                        name="InvoiceComponent"
+                                        id="InvoiceComponent"
+                                        invoice={this.state.invoice}
+                                        handleChange={this.handleInvoiceNumberChange.bind(this)}
+                                    />
+                                </FormGroup>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button color="primary" onClick={this.createInvoice}>
+                                    Создать ТТН
+                                </Button>
+                            </Modal.Footer>
+                        </Modal> : null}
 
                 </Container>
             </div>

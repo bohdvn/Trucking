@@ -5,6 +5,7 @@ import by.itechart.server.dto.UserDto;
 import by.itechart.server.security.CurrentUser;
 import by.itechart.server.security.UserPrincipal;
 import by.itechart.server.service.InvoiceService;
+import by.itechart.server.service.RequestService;
 import by.itechart.server.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +43,14 @@ public class InvoiceController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('DISPATCHER')")
+    @PreAuthorize("hasAuthority('DISPATCHER') or hasAuthority('MANAGER')")
     @PutMapping("/")
-    public ResponseEntity<?> edit(@RequestBody InvoiceDto invoiceDto) {
+    public ResponseEntity<?> edit(@CurrentUser UserPrincipal user, @RequestBody InvoiceDto invoiceDto) {
         LOGGER.info("REST request. Path:/invoice method: POST. invoice: {}", invoiceDto);
+        if(invoiceDto.getManager()==null){
+            UserDto manager=userService.findById(user.getId());
+            invoiceDto.setManager(manager);
+        }
         invoiceService.save(invoiceDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

@@ -43,8 +43,8 @@ public class Product implements ToDtoTransformer {
      * Several products may be in the same request.
      */
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "request_id")
+    @ManyToOne
+    @JoinColumn(name = "request_id", updatable = false)
     private Request request;
 
     @Enumerated

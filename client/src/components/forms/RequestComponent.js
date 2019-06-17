@@ -6,6 +6,7 @@ import axios from 'axios';
 import {HEADERS} from '../../constants/requestConstants'
 import {ACCESS_TOKEN} from "../../constants/auth";
 import AddressFields from "./AddressFields";
+import {connect} from "react-redux";
 
 class RequestComponent extends React.Component {
 
@@ -45,6 +46,7 @@ class RequestComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            roles:props.loggedIn.claims.roles,
             request: this.emptyRequest,
             cars: [],
             drivers: [],
@@ -211,7 +213,12 @@ class RequestComponent extends React.Component {
         this.setState({cars: cars, drivers: drivers});
         if (cars.length === 0 || drivers.length === 0) {
             this.setState({formValid: false});
+            return;
         }
+        let request = {...this.state.request};
+        request['car'] = cars[0];
+        request['driver'] = drivers[0];
+        this.setState({request: request});
     }
 
     changeAddress(value) {
@@ -323,4 +330,8 @@ class RequestComponent extends React.Component {
     }
 }
 
-export default RequestComponent;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    }),
+)(RequestComponent);

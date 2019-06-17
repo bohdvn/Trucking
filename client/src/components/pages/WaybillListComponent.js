@@ -28,17 +28,7 @@ class WaybillListComponent extends React.Component {
     }
 
     fetchURL(page) {
-        axios.get(`/waybill/list?page=${page}&size=5`, {
-            proxy: {
-                host: 'http://localhost',
-                port: 8080
-            },
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            }
-        })
+        axios.get(`/waybill/list?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;

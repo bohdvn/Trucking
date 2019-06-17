@@ -1,8 +1,7 @@
-package by.itechart.Server.service.impl;
+package by.itechart.server.service.impl;
 
 import by.itechart.server.entity.Address;
 import by.itechart.server.repository.AddressRepository;
-import by.itechart.server.service.impl.AddressServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,8 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 @RunWith(MockitoJUnitRunner.class)

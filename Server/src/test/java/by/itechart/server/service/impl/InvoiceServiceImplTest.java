@@ -1,8 +1,7 @@
-package by.itechart.Server.service.impl;
+package by.itechart.server.service.impl;
 
 import by.itechart.server.entity.Invoice;
 import by.itechart.server.repository.InvoiceRepository;
-import by.itechart.server.service.impl.InvoiceServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +15,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 @RunWith(MockitoJUnitRunner.class)

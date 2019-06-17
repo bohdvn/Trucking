@@ -1,8 +1,7 @@
-package by.itechart.Server.service.impl;
+package by.itechart.server.service.impl;
 
 import by.itechart.server.entity.User;
 import by.itechart.server.repository.UserRepository;
-import by.itechart.server.service.impl.UserServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 
 @RunWith(MockitoJUnitRunner.class)

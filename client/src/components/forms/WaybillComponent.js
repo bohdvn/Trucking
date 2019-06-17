@@ -78,7 +78,6 @@ class WaybillComponent extends React.Component {
         } else checkpoints.push(checkpoint);
         let waybill = {...this.state.waybill};
         waybill['checkpoints'] = checkpoints;
-<<<<<<< HEAD
         this.setState({waybill: waybill, checkpoint: this.emptyCheckpoint, checkpointToEdit: this.emptyCheckpoint});
     };
 
@@ -103,9 +102,6 @@ class WaybillComponent extends React.Component {
     handleShow() {
         this.setState({show: true, checkpoint: this.emptyCheckpoint, checkpointToEdit: this.emptyCheckpoint});
     }
-=======
-        this.setState({waybill: waybill, checkpoint: this.emptyCheckpoint});
-    };
 
     passCheckpoint = () => {
         const {checkpoint} = this.state;
@@ -122,7 +118,6 @@ class WaybillComponent extends React.Component {
             this.setState({show: true});
         });
     };
->>>>>>> feature-owner-logic
 
     async handleSubmit(event) {
         event.preventDefault();
@@ -149,10 +144,6 @@ class WaybillComponent extends React.Component {
 
     changeFieldHandler = (checkpoint) => {
         this.setState({checkpoint: checkpoint});
-<<<<<<< HEAD
-=======
-        console.log(checkpoint);
->>>>>>> feature-owner-logic
     };
 
     populateRowsWithData = () => {
@@ -165,8 +156,8 @@ class WaybillComponent extends React.Component {
                 <td>{checkpoint.longitude}</td>
                 <td>{checkpoint.date}</td>
                 <td>{this.checkpointStatusMap[checkpoint.status]}</td>
-<<<<<<< HEAD
-                <td>
+
+                {checkpoint.id?<td>
                     <ButtonGroup>
                         <Button size="sm" color="primary" onClick={() => this.editCheckpoint(checkpoint)}
                         >Редактировать</Button>
@@ -174,8 +165,8 @@ class WaybillComponent extends React.Component {
                                 onClick={() => this.removeCheckpoint(checkpoint)}
                         >Удалить</Button>
                     </ButtonGroup>
-                </td>
-=======
+                </td> : null}
+
                 {checkpoint.id && checkpoint.status === 'NOT_PASSED' ? <td>
                     <Button disabled={array[index - 1] && array[index - 1].status === 'NOT_PASSED'}
                             size="sm" color="primary"
@@ -183,7 +174,6 @@ class WaybillComponent extends React.Component {
                         Посмотреть
                     </Button>
                 </td> : null}
->>>>>>> feature-owner-logic
             </tr>
         });
 

@@ -54,7 +54,7 @@ public class UserDto implements ToEntityTransformer, FieldsInterface {
     public User transformToEntity() {
         final User user = new User();
         user.setAddress(this.address.transformToEntity());
-        user.setClientCompany(this.clientCompany.transformToEntity());
+        user.setClientCompany(this.clientCompany!=null?this.clientCompany.transformToEntity():null);
         user.setDateOfBirth(this.dateOfBirth);
         user.setEmail(this.email);
         user.setEnabled(this.isEnabled);

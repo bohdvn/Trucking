@@ -1,10 +1,11 @@
 import React from 'react';
-import {Button, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
 import Modal from 'react-bootstrap/Modal';
 import TempProductComponent from "./TempProductComponent";
 import axios from 'axios';
 import {HEADERS} from '../../constants/requestConstants'
 import {ACCESS_TOKEN} from "../../constants/auth";
+import {Link} from "react-router-dom";
 
 class RequestComponent extends React.Component {
 
@@ -40,7 +41,8 @@ class RequestComponent extends React.Component {
             formValid: true,
             productValid: false,
             show: false,
-            product: this.emptyProduct
+            product: this.emptyProduct,
+            productToEdit: this.emptyProduct
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -73,7 +75,7 @@ class RequestComponent extends React.Component {
 
 
     handleShow() {
-        this.setState({show: true});
+        this.setState({show: true, product: this.emptyProduct, productToEdit: this.emptyProduct});
     }
 
     async handleSubmit(event) {
@@ -96,12 +98,37 @@ class RequestComponent extends React.Component {
     saveProduct = () => {
         this.setState({show: false});
         let product = this.state.product;
+        let productToEdit = this.state.productToEdit;
         let products = this.state.request.products;
-        products.push(product);
+        if (productToEdit !== this.emptyProduct) {
+            for (let i = 0; i < products.length; i++) {
+                if (products[i] === productToEdit) {
+                    products[i] = product;
+                }
+            }
+        } else products.push(product);
+        let request = {...this.state.request};
+        request['products'] = products;
+        this.setState({request: request, product: this.emptyProduct, productToEdit: this.emptyProduct});
+    };
+
+    removeProduct(prod) {
+        let product = prod;
+        let products = this.state.request.products;
+        for (let i = 0; i < products.length; i++) {
+            if (products[i] === product) {
+                products.splice(i, 1);
+                i--;
+            }
+        }
         let request = {...this.state.request};
         request['products'] = products;
         this.setState({request: request, product: this.emptyProduct});
-    };
+    }
+
+    editProduct(prod) {
+        this.setState({show: true, product: prod, productToEdit: prod,});
+    }
 
     async getCar(id) {
         let newCar = {};
@@ -139,11 +166,21 @@ class RequestComponent extends React.Component {
     populateRowsWithData = () => {
         return this.state.request.products.map(product => {
             return <tr key={product.id}>
-                <td style={{whiteSpace: 'nowrap'}}>{product.name}</td>
+                <td style={{whiteSpace: 'nowrap'}}><Link onClick={() => this.editProduct(product)}>{product.name}</Link>
+                </td>
                 <td>{product.amount}</td>
                 <td>{product.type}</td>
                 <td>{product.price}</td>
                 <td>{this.productStatusMap[product.status]}</td>
+                <td>
+                    <ButtonGroup>
+                        <Button size="sm" color="primary" onClick={() => this.editProduct(product)}
+                        >Редактировать</Button>
+                        <Button size="sm" color="danger"
+                                onClick={() => this.removeProduct(product)}
+                        >Удалить</Button>
+                    </ButtonGroup>
+                </td>
             </tr>
         });
 
@@ -243,6 +280,7 @@ class RequestComponent extends React.Component {
                                 <th width="20%">Тип</th>
                                 <th>Стоимость</th>
                                 <th>Статус</th>
+                                <th width="10%"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -269,15 +307,17 @@ class RequestComponent extends React.Component {
                             <TempProductComponent
                                 name="ProductComponent"
                                 id="ProductComponent"
-                                product={this.emptyProduct}
+                                product={this.state.product}
                                 validationHandlerProduct={this.validationHandlerProduct}
                                 changeFieldHandler={this.changeFieldHandler}
                             />
                         </FormGroup>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button color="primary" disabled={!this.state.productValid} onClick={this.saveProduct}>
-                            Добавить
+                        <Button color="primary"
+                                disabled={!this.state.productValid}
+                                onClick={this.saveProduct}>
+                            Сохранить
                         </Button>
                     </Modal.Footer>
                 </Modal>

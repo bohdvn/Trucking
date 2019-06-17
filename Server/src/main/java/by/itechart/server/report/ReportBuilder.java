@@ -86,7 +86,7 @@ public class ReportBuilder {
         LocalDate startDate = LocalDate.parse(start, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         LocalDate endDate = LocalDate.parse(end, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         List<WayBill> wayBills = wayBillRepository.findAll();
-        wayBills.removeIf(wayBill -> !(wayBill.getDateFrom().isAfter(startDate) && wayBill.getDateTo().isBefore(endDate)));
+        wayBills.removeIf(wayBill -> wayBill.getDateFrom().isBefore(startDate) || wayBill.getDateFrom().isAfter(endDate));
         return wayBills;
     }
 

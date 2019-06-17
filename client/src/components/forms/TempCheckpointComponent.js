@@ -30,7 +30,6 @@ class TempCheckpointComponent extends React.Component {
                 this.validateField(name, value)
             });
         this.props.changeFieldHandler(checkpoint);
-        document.getElementById("SearchBox").value = document.getElementById("name").value;
         // const state = this.state;
         // this.props.changeState(state);
     }
@@ -119,7 +118,9 @@ class TempCheckpointComponent extends React.Component {
                     </FormGroup>
 
                     <FormGroup>
-                        <MapComponent/>
+                        <MapComponent
+                            lat={checkpoint.latitude}
+                            lng={checkpoint.longitude}/>
                     </FormGroup>
 
                     <FormGroup>

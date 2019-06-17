@@ -1,14 +1,15 @@
 import React from 'react';
-import {Button, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
 import Modal from 'react-bootstrap/Modal';
 import TempCheckpointComponent from "./TempCheckpointComponent";
+import {Link} from "react-router-dom";
 
 
 class WaybillComponent extends React.Component {
 
     checkpointStatusMap = {
         'PASSED': 'Пройдена',
-        'NOT_PASED': 'Не пройдена',
+        'NOT_PASSED': 'Не пройдена',
     };
 
     emptyCheckpoint = {
@@ -35,7 +36,8 @@ class WaybillComponent extends React.Component {
             invoice: [],
 
             show: false,
-            checkpoint: this.emptyCheckpoint
+            checkpoint: this.emptyCheckpoint,
+            checkpointToEdit: this.emptyCheckpoint,
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -67,15 +69,40 @@ class WaybillComponent extends React.Component {
     saveCheckpoint = () => {
         this.setState({show: false});
         let checkpoint = this.state.checkpoint;
+        let checkpointToEdit = this.state.checkpointToEdit;
         let checkpoints = this.state.waybill.checkpoints;
-        checkpoints.push(checkpoint);
+        if (checkpointToEdit !== this.emptyCheckpoint) {
+            for (let i = 0; i < checkpoints.length; i++) {
+                if (checkpoints[i] === checkpointToEdit) {
+                    checkpoints[i] = checkpoint;
+                }
+            }
+        } else checkpoints.push(checkpoint);
         let waybill = {...this.state.waybill};
         waybill['checkpoints'] = checkpoints;
-        this.setState({waybill: waybill, checkpoint: this.emptyCheckpoint});
+        this.setState({waybill: waybill, checkpoint: this.emptyCheckpoint, checkpointToEdit: this.emptyCheckpoint});
+    };
+
+    removeCheckpoint(point) {
+        let checkpoint = point;
+        let checkpoints = this.state.waybill.checkpoints;
+        for (let i = 0; i < checkpoints.length; i++) {
+            if (checkpoints[i] === checkpoint) {
+                checkpoints.splice(i, 1);
+                i--;
+            }
+        }
+        let waybill = {...this.state.waybill};
+        waybill['checkpoints'] = checkpoints;
+        this.setState({waybill: waybill, checkpoint: this.emptyCheckpoint, checkpointToEdit: this.emptyCheckpoint})
+    }
+
+    editCheckpoint(point) {
+        this.setState({show: true, checkpoint: point, checkpointToEdit: point,});
     }
 
     handleShow() {
-        this.setState({show: true});
+        this.setState({show: true, checkpoint: this.emptyCheckpoint, checkpointToEdit: this.emptyCheckpoint});
     }
 
     async handleSubmit(event) {
@@ -107,16 +134,26 @@ class WaybillComponent extends React.Component {
     changeFieldHandler = (checkpoint) => {
         console.log(checkpoint);
         this.setState({checkpoint: checkpoint});
-    }
+    };
 
     populateRowsWithData = () => {
         return this.state.waybill.checkpoints.map(checkpoint => {
             return <tr key={checkpoint.id}>
-                <td style={{whiteSpace: 'nowrap'}}>{checkpoint.name}</td>
+                <td style={{whiteSpace: 'nowrap'}}><Link
+                    onClick={() => this.editCheckpoint(checkpoint)}>{checkpoint.name}</Link></td>
                 <td>{checkpoint.latitude}</td>
                 <td>{checkpoint.longitude}</td>
                 <td>{checkpoint.date}</td>
                 <td>{this.checkpointStatusMap[checkpoint.status]}</td>
+                <td>
+                    <ButtonGroup>
+                        <Button size="sm" color="primary" onClick={() => this.editCheckpoint(checkpoint)}
+                        >Редактировать</Button>
+                        <Button size="sm" color="danger"
+                                onClick={() => this.removeCheckpoint(checkpoint)}
+                        >Удалить</Button>
+                    </ButtonGroup>
+                </td>
             </tr>
         });
 
@@ -186,6 +223,7 @@ class WaybillComponent extends React.Component {
                                 <th width="20%">Долгота</th>
                                 <th>Дата прохождения</th>
                                 <th>Статус</th>
+                                <th width="10%"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -211,7 +249,7 @@ class WaybillComponent extends React.Component {
                             <TempCheckpointComponent
                                 name="CheckpointComponent"
                                 id="CheckpointComponent"
-                                checkpoint={this.emptyCheckpoint}
+                                checkpoint={this.state.checkpoint}
                                 validationHandlerCheckpoint={this.validationHandlerCheckpoint}
                                 changeFieldHandler={this.changeFieldHandler}
                             />

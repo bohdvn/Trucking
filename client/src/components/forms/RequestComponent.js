@@ -182,11 +182,11 @@ class RequestComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            let newRequest = {};
             await axios.get(`/request/${this.props.match.params.id}`)
                 .then(response => {
-                    newRequest = response.data;
-                    this.setState({request: newRequest});
+                    const newRequest = response.data;
+                    newRequest.status='ISSUED';
+                    this.setState({request: response.data});
                     console.log(this.state);
                 });
         }
@@ -244,7 +244,7 @@ class RequestComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="status">Статус</Label>
-                        <Input type="select" name="status" id="status" value={request.status || ''}
+                        <Input disabled type="select" name="status" id="status" value={request.id?'ISSUED':'NOT_VIEWED' || ''}
                                onChange={this.handleChange} autoComplete="status">
                             <option value="NOT_VIEWED">Не просмотрена</option>
                             <option value="REJECTED">Отклонена</option>

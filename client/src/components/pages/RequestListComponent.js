@@ -98,17 +98,17 @@ class RequestListComponent extends React.Component {
                 <td>{this.requestStatusMap[request.status]}</td>
                 <td>
                     <ButtonGroup>
-                        {roles.includes(ROLE.OWNER) ?
+                        {roles.includes(ROLE.OWNER) && request.status!='ISSUED' ?
                             <Button size="sm" color="primary" tag={Link}
                                     to={"/request/" + request.id}>Редактировать
                             </Button>
                             : null}
 
-                        {roles.includes(ROLE.OWNER) ?
-                            <Button size="sm" color="danger"
-                                    onClick={() => this.remove(request.id)}>Удалить
-                            </Button>
-                            : null}
+                        {/*{roles.includes(ROLE.OWNER) ?*/}
+                            {/*<Button size="sm" color="danger"*/}
+                                    {/*onClick={() => this.remove(request.id)}>Удалить*/}
+                            {/*</Button>*/}
+                            {/*: null}*/}
 
                         {roles.includes(ROLE.DISPATCHER) ?
                             <Button size="sm" color="primary"

@@ -124,9 +124,13 @@ class InvoiceListComponent extends React.Component {
 
     rejectRequest=()=>{
         this.setState({show:false});
-        const {request} = this.state.invoice;
-        request.status='REJECTED';
-        console.log(request);
+        const {invoice} = this.state;
+        invoice.request.status='REJECTED';
+        console.log(invoice);
+        axios.put('/invoice/',invoice)
+            .then(response=>{
+                console.log(response);
+            });
     };
 
     handleClose = () => {

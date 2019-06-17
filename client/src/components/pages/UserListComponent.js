@@ -161,11 +161,11 @@ class UserListComponent extends React.Component {
                 state: {users: selectedUsers}
             });
         } else {
-            const message = "Не выбрано ни одного получателя! Пожалуйста выберите одного или несколько получателей.";
             this.setState({
-                resultMessage: message
+                resultMessage: "Не выбрано ни одного получателя! Пожалуйста выберите одного или несколько получателей."
+            }, () => {
+                alert(this.state.resultMessage);
             });
-            alert(message);
         }
     };
 

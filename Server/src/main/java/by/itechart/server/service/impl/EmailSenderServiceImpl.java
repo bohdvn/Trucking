@@ -1,6 +1,7 @@
 package by.itechart.server.service.impl;
 
 import by.itechart.server.entity.Email;
+import by.itechart.server.entity.User;
 import by.itechart.server.service.EmailSenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,61 +11,61 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 import javax.mail.internet.MimeMessage;
+import java.util.List;
 
 @Service
 public class EmailSenderServiceImpl implements EmailSenderService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailSenderService.class);
 
-    private TemplateEngine templateEngine;
-
     private JavaMailSender javaMailSender;
     @Value("${spring.mail.username}")
     private String username;
 
-    public EmailSenderServiceImpl() {
-
-    }
-
-    public EmailSenderServiceImpl(TemplateEngine templateEngine, JavaMailSender javaMailSender) {
-        this.templateEngine = templateEngine;
+    public EmailSenderServiceImpl(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 
     @Async
     @Override
-    public void sendEmail(String emailTo, String subject, String message) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(emailTo);
-        mailMessage.setFrom(username);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(message);
-        javaMailSender.send(mailMessage);
+    public void sendEmail(final String emailTo, final String subject, final String message) {
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setTo(emailTo);
+            mailMessage.setFrom(username);
+            mailMessage.setSubject(subject);
+            mailMessage.setText(message);
+            javaMailSender.send(mailMessage);
+        } catch (Exception e) {
+            LOGGER.error("Problem with sending email to: {}, error message: {}", emailTo, e.getMessage());
+        }
     }
 
+    @Async
+    @Override
     public void send(Email mail) {
-        //get and fill the template
-        final Context context = new Context();
-        context.setVariable("message", mail.getMessage());
-        String body = templateEngine.process("email/template", context);
-        //send the html template
-        sendPreparedMail(mail.getEmail(), mail.getObject(), body, true);
+        final List<User> recipients = mail.getRecipients();
+        for (User user : recipients) {
+            if (mail.getObject().equals("")) {
+                sendEmail(user.getEmail(), mail.getSubject(), mail.getMessage());
+            } else {
+                sendPreparedMail(user.getEmail(), mail.getSubject(), mail.getObject(), true);
+            }
+        }
     }
 
-    private void sendPreparedMail(String to, String subject, String text, Boolean isHtml) {
+    private void sendPreparedMail(String emailTo, String subject, String message, Boolean isHtml) {
         try {
             MimeMessage mail = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mail, true);
-            helper.setTo(to);
+            helper.setTo(emailTo);
             helper.setSubject(subject);
-            helper.setText(text, isHtml);
+            helper.setText(message, isHtml);
             javaMailSender.send(mail);
         } catch (Exception e) {
-            LOGGER.error("Problem with sending email to: {}, error message: {}", to, e.getMessage());
+            LOGGER.error("Problem with sending email to: {}, error message: {}", emailTo, e.getMessage());
         }
     }
 }

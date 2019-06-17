@@ -1,6 +1,5 @@
-package by.itechart.Server.service;
+package by.itechart.server.service;
 
-import by.itechart.server.service.ClientCompanyService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

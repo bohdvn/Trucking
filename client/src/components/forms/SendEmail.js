@@ -14,7 +14,8 @@ class SendEmail extends Component {
     emptyEmail = {
         recipients: this.props.location.state.users,
         subject: '',
-        message: ''
+        message: '',
+        object: ''
     };
 
     constructor(props) {
@@ -103,18 +104,18 @@ class SendEmail extends Component {
             body: JSON.stringify(email)
         }).then(resp => {
             if (resp.status === 200) {
-                const message = "Success! Email was sent.";
                 this.setState({
-                    resultMessage: message
+                    resultMessage: "Success! Email was sent.",
+                }, () => {
+                    alert(this.state.resultMessage);
                 });
-                alert(message);
                 return this.props.history.push('/users');
             } else {
-                const message = "Error.Something went wrong, please try send email again.";
                 this.setState({
-                    message: message
+                    resultMessage: "Error.Something went wrong, please try send email again."
+                }, () => {
+                    alert(this.state.resultMessage);
                 });
-                alert(message);
                 this.props.history.push('/users');
             }
         })

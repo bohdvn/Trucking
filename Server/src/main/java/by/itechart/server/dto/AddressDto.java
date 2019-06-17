@@ -6,7 +6,7 @@ import by.itechart.server.transformers.ToEntityTransformer;
 
 public class AddressDto implements ToEntityTransformer {
 
-    private int id;
+    private Integer id;
 
     private String city;
 
@@ -45,11 +45,11 @@ public class AddressDto implements ToEntityTransformer {
         return address;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(final int id) {
+    public void setId(final Integer id) {
         this.id = id;
     }
 

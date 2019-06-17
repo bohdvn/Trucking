@@ -1,4 +1,4 @@
-package by.itechart.Server;
+package by.itechart.server;
 
 import org.junit.Ignore;
 import org.junit.Test;

@@ -1,7 +1,6 @@
 package by.itechart.server.entity;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.List;
 
 public class Email {
@@ -13,27 +12,19 @@ public class Email {
     private String message;
     @NotNull
     private String object;
-    @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-    private String email;
+//    @NotNull
+//    @Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.
+//    [a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+//    private String email;
 
     public Email() {
     }
 
-    public Email(@NotNull List<User> recipients, @NotNull String subject, @NotNull String message, @NotNull String object, @NotNull @Pattern(regexp = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$") String email) {
+    public Email(@NotNull List<User> recipients, @NotNull String subject, @NotNull String message, @NotNull String object) {
         this.recipients = recipients;
         this.subject = subject;
         this.message = message;
         this.object = object;
-        this.email = email;
-    }
-
-    public List<User> getRecipients() {
-        return recipients;
-    }
-
-    public void setRecipients(final List<User> recipients) {
-        this.recipients = recipients;
     }
 
     public String getSubject() {
@@ -60,11 +51,11 @@ public class Email {
         this.object = object;
     }
 
-    public String getEmail() {
-        return email;
+    public List<User> getRecipients() {
+        return recipients;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setRecipients(List<User> recipients) {
+        this.recipients = recipients;
     }
 }

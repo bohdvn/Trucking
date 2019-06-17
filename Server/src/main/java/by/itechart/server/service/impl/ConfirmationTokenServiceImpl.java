@@ -1,6 +1,6 @@
 package by.itechart.server.service.impl;
 
-import by.itechart.server.dto.ConfirmationTokenDto;
+import by.itechart.server.entity.ConfirmationToken;
 import by.itechart.server.repository.ConfirmationTokenRepository;
 import by.itechart.server.service.ConfirmationTokenService;
 import org.springframework.stereotype.Service;
@@ -15,19 +15,18 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
     }
 
     @Override
-    public void save(ConfirmationTokenDto confirmationTokenDto) {
-        confirmationTokenRepository.save(confirmationTokenDto.transformToEntity());
+    public void save(final ConfirmationToken confirmationToken) {
+        confirmationTokenRepository.save(confirmationToken);
     }
 
     @Override
-    public void delete(ConfirmationTokenDto confirmationTokenDto) {
-        confirmationTokenRepository.delete(confirmationTokenDto.transformToEntity());
+    public void delete(final ConfirmationToken confirmationToken) {
+        confirmationTokenRepository.delete(confirmationToken);
     }
 
     @Override
-    public ConfirmationTokenDto findByConfirmationToken(String confirmationToken) {
-        return confirmationTokenRepository.findByConfirmationToken(confirmationToken).transformToDto();
+    public ConfirmationToken findByConfirmationToken(final String confirmationToken) {
+        return confirmationTokenRepository.findByConfirmationToken(confirmationToken);
     }
-
 
 }

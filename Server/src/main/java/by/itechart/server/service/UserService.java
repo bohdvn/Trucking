@@ -34,4 +34,6 @@ public interface UserService {
     UserDto findByEmailIgnoreCase(final String email);
 
     Page<UserDto> findAllByQuery(final Pageable pageable, final String query);
+
+    List<User> getAllByBirthday(final int month, final int day);
 }

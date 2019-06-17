@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,16 +38,18 @@ public class WayBillServiceImpl implements WayBillService {
     }
 
     @Override
-    public Page<WayBillDto> findAll(final Pageable pageable) {
-        final Page<WayBill> wayBills = wayBillRepository.findAll(pageable);
+    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, WayBill.Status status, final Pageable pageable) {
+        final Page<WayBill> wayBills =
+                wayBillRepository.findAllByInvoiceRequestDriverIdAndStatus(id,status,pageable);
         return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
                 .sorted(Comparator.comparing(WayBillDto::getDateFrom))
                 .collect(Collectors.toList()), pageable, wayBills.getTotalElements());
     }
 
     @Override
-    public WayBillDto findById(int id) {
-        return wayBillRepository.findById(id).isPresent() ? wayBillRepository.findById(id).get().transformToDto() : null;
+    public WayBillDto findByIdAndInvoiceRequestDriverId(final int id, final int driverId) {
+        Optional<WayBill> optionalWayBill=wayBillRepository.findByIdAndInvoiceRequestDriverId(id,driverId);
+        return optionalWayBill.isPresent() ? optionalWayBill.get().transformToDto() : null;
     }
 
     @Override

@@ -11,8 +11,6 @@ public class CheckpointDto implements ToEntityTransformer {
 
     private Integer id;
 
-    private WayBillDto wayBill;
-
     private String name;
 
     private String latitude;
@@ -39,7 +37,6 @@ public class CheckpointDto implements ToEntityTransformer {
         checkpoint.setLongitude(this.longitude);
         checkpoint.setName(this.name);
         checkpoint.setStatus(this.status);
-        //checkpoint.setWayBill(this.wayBill.transformToEntity());
         return checkpoint;
     }
 
@@ -49,11 +46,6 @@ public class CheckpointDto implements ToEntityTransformer {
 
         public Builder withId(final Integer id) {
             CheckpointDto.this.id = id;
-            return this;
-        }
-
-        public Builder withWayBill(final WayBillDto wayBill) {
-            CheckpointDto.this.wayBill = wayBill;
             return this;
         }
 

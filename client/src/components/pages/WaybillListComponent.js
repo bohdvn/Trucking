@@ -40,6 +40,7 @@ class WaybillListComponent extends React.Component {
                     this.setState({itemsCountPerPage: itemsCountPerPage});
 
                     const results = response.data.content;
+                    console.log(response.data);
                     console.log(this.state);
 
                     if (results != null) {
@@ -67,19 +68,23 @@ class WaybillListComponent extends React.Component {
         const waybills = this.state.waybills.map(waybill => {
             return <tr key={waybill.id}>
                 <td>{waybill.invoice.number}</td>
-                <td>{waybill.invoice.request.clientCompanyFrom.address.city}
-                    {waybill.invoice.request.clientCompanyFrom.address.street}
-                    {waybill.invoice.request.clientCompanyFrom.address.building}</td>
-                <td>{waybill.invoice.request.clientCompanyTo.address.city}
-                    {waybill.invoice.request.clientCompanyTo.address.street}
-                    {waybill.invoice.request.clientCompanyTo.address.building}</td>
+                <td>{`${waybill.invoice.request.clientCompanyFrom.address.city}
+                    ${waybill.invoice.request.clientCompanyFrom.address.street}
+                    ${waybill.invoice.request.clientCompanyFrom.address.building}
+                    ${waybill.invoice.request.clientCompanyFrom.address.flat}`}
+                </td>
+                <td>{`${waybill.invoice.request.address.city}
+                    ${waybill.invoice.request.address.street}
+                    ${waybill.invoice.request.address.building}
+                    ${waybill.invoice.request.address.flat}`}
+                </td>
                 <td>{waybill.dateFrom}</td>
                 <td>{this.waybillStatusMap[waybill.status]}</td>
                 <td>
                     <ButtonGroup>
                         <Button size="sm" color="primary" tag={Link}
-                                to={"/waybill/" + waybill.id}>Редактировать</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(waybill.id)}>Удалить</Button>
+                                to={"/waybill/" + waybill.id}>Открыть</Button>
+                        {/*<Button size="sm" color="danger" onClick={() => this.remove(waybill.id)}>Удалить</Button>*/}
                     </ButtonGroup>
                 </td>
             </tr>
@@ -106,9 +111,6 @@ class WaybillListComponent extends React.Component {
         return (
             <div>
                 <Container fluid>
-                    <div className="float-right">
-                        <Button color="success" tag={Link} to="/waybill/create">Добавить</Button>
-                    </div>
                     <Table className="mt-4">
                         <thead>
                         <tr>
@@ -133,7 +135,6 @@ class WaybillListComponent extends React.Component {
                             itemClass='page-item'
                             linkClass='btn btn-light'
                             onChange={this.handlePageChange}
-
                         />
                     </div>
                 </Container>

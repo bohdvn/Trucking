@@ -72,6 +72,15 @@ class WaybillComponent extends React.Component {
         this.setState({waybill: waybill, checkpoint: this.emptyCheckpoint});
     };
 
+    passCheckpoint = () => {
+        const {checkpoint} = this.state;
+        axios.put('/checkpoint/', checkpoint)
+            .then(response => {
+                console.log(response.data);
+                window.location.reload();
+            })
+    };
+
     handleShow = checkpoint => {
         console.log(checkpoint);
         this.setState({checkpoint: checkpoint}, () => {
@@ -108,15 +117,20 @@ class WaybillComponent extends React.Component {
     };
 
     populateRowsWithData = () => {
-        return this.state.waybill.checkpoints.map(checkpoint => {
+        const {checkpoints} = this.state.waybill;
+        return checkpoints.map((checkpoint, index, array) => {
             return <tr key={checkpoint.id}>
                 <td style={{whiteSpace: 'nowrap'}}>{checkpoint.name}</td>
                 <td>{checkpoint.latitude}</td>
                 <td>{checkpoint.longitude}</td>
                 <td>{checkpoint.date}</td>
                 <td>{this.checkpointStatusMap[checkpoint.status]}</td>
-                {checkpoint.id ? <td>
-                    <Button size="sm" color="primary" onClick={() => this.handleShow(checkpoint)}>Посмотреть</Button>
+                {checkpoint.id && checkpoint.status === 'NOT_PASSED' ? <td>
+                    <Button disabled={array[index - 1] && array[index - 1].status === 'NOT_PASSED'}
+                            size="sm" color="primary"
+                            onClick={() => this.handleShow(checkpoint)}>
+                        Посмотреть
+                    </Button>
                 </td> : null}
             </tr>
         });
@@ -125,13 +139,24 @@ class WaybillComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            const newWaybill = await (await fetch(`/waybill/${this.props.match.params.id}`)).json();
-            this.setState({waybill: newWaybill});
+            await axios.get(`/waybill/${this.props.match.params.id}`)
+                .then(response => {
+                    this.setState({waybill: response.data})
+                });
         }
     }
 
+    finishWaybillCheck = () => {
+        const {waybill, roles} = this.state;
+        const {checkpoints} = waybill;
+        return (!roles.includes(ROLE.DRIVER) && !waybill.id)
+        || (checkpoints[checkpoints.length - 1] === 'NOT_PASSED');
+    };
+
     render() {
         const {waybill, roles} = this.state;
+        const check=this.finishWaybillCheck();
+        console.log(check);
         return (
             <Container className="col-3">
                 <h1>Путевой лист</h1>
@@ -139,7 +164,8 @@ class WaybillComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="status">Статус</Label>
-                        <Input disabled={!roles.includes(ROLE.DRIVER) && !waybill.id} type="select" name="status" id="status"
+                        <Input disabled={check} type="select" name="status"
+                               id="status"
                                value={waybill.status || ''}
                                onChange={this.handleChange} autoComplete="status">
                             <option value="STARTED">Перевозка начата</option>
@@ -155,7 +181,9 @@ class WaybillComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="dateTo">Дата окончания</Label>
-                        <Input readOnly={!roles.includes(ROLE.DRIVER) && !waybill.id} type="date" name="dateTo" id="dateTo"
+                        <Input readOnly={check}
+                               type="date" name="dateTo"
+                               id="dateTo"
                                value={waybill.dateTo || ''}
                                onChange={this.handleChange} autoComplete="dateTo"/>
                     </FormGroup>
@@ -177,9 +205,11 @@ class WaybillComponent extends React.Component {
                         </Table>
                     </FormGroup>
                     <FormGroup>
-                        <Button color="primary" onClick={() => this.handleShow(this.emptyCheckpoint)}>
-                            Добавить контрольную точку
-                        </Button>
+                        {!waybill.id && roles.includes(ROLE.MANAGER) ?
+                            <Button color="primary" onClick={() => this.handleShow(this.emptyCheckpoint)}>
+                                Добавить контрольную точку
+                            </Button>
+                            : null}
                     </FormGroup>
                     <FormGroup>
                         <Button color="primary" type="submit">Сохранить</Button>{' '}
@@ -206,6 +236,12 @@ class WaybillComponent extends React.Component {
                         {!this.state.checkpoint.id ?
                             <Button color="primary" onClick={this.saveCheckpoint}>
                                 Добавить
+                            </Button>
+                            : null}
+
+                        {this.state.checkpoint.status === 'PASSED' && this.state.checkpoint.date ?
+                            <Button color="primary" onClick={this.passCheckpoint}>
+                                Пройти
                             </Button>
                             : null}
                     </Modal.Footer>

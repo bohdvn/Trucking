@@ -38,7 +38,7 @@ public class Checkpoint implements ToDtoTransformer {
      * Several checkpoints may be in the same wayBill.
      */
     @ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "waybill_id")
+    @JoinColumn(name = "waybill_id", updatable = false)
     private WayBill wayBill;
 
     @NotNull(message = "Status cannot be null")
@@ -59,7 +59,6 @@ public class Checkpoint implements ToDtoTransformer {
                 .withLongitude(this.longitude)
                 .withName(this.name)
                 .withStatus(this.status)
-                .withWayBill(this.wayBill.transformToDto())
                 .build();
     }
 }

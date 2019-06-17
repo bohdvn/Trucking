@@ -43,6 +43,8 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/cars" allowed={[ROLE.SYSADMIN]} component={CarListComponent}/>
                 <ProtectedRoute exact path="/car/:id" allowed={[ROLE.SYSADMIN]} component={CarComponent}/>
                 <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
+                <ProtectedRoute exact path='/report' allowed={[ROLE.SYSADMIN]} component={ReportComponent}/>
+
 
                 {/*ADMIN*/}
                 <ProtectedRoute exact path="/users" allowed={[ROLE.ADMIN]} component={UserListComponent}/>
@@ -50,7 +52,6 @@ class App extends React.Component {
 
                 {/*OWNER*/}
                 <ProtectedRoute exact path='/request/:id' allowed={[ROLE.OWNER,ROLE.DISPATCHER]} component={RequestComponent}/>
-                <ProtectedRoute exact path='/report' allowed={[ROLE.OWNER]} component={ReportComponent}/>
                 <ProtectedRoute exact path="/requests" allowed={ROLE.OWNER} component={RequestListComponent}/>
                 {/*DISPATCHER*/}
                 <ProtectedRoute exact path="/notviewedrequests" allowed={ROLE.DISPATCHER} component={RequestListComponent}/>
@@ -61,8 +62,7 @@ class App extends React.Component {
 
 
                 {/*DRIVER*/}
-                {/*<ProtectedRoute exact path="/waybills" allowed='DRIVER' component={WaybillListComponent}/>*/}
-                {/*<ProtectedRoute exact path="/waybill/:id" allowed='DRIVER' component={WaybillComponent}/>*/}
+                <ProtectedRoute exact path="/waybills" allowed={ROLE.DRIVER} component={WaybillListComponent}/>
 
                 {/*MANAGER*/}
 

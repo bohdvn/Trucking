@@ -9,11 +9,15 @@ import java.util.List;
 
 public interface UserService {
 
-    Page<UserDto> findAllByClientCompanyId(int id,Pageable pageable);
+    Page<UserDto> findAllByClientCompanyId(final int id, final Pageable pageable);
 
-    Page<UserDto> findAllByRolesContains(User.Role role, Pageable pageable);
+    Page<UserDto> findAllByClientCompanyId(final int id, final Pageable pageable, final String query);
 
-    List<UserDto> findAllByRolesContains(User.Role role);
+    Page<UserDto> findAllByRolesContains(final User.Role role, final Pageable pageable);
+
+    Page<UserDto> findAllByRolesContains(final User.Role role, final Pageable pageable, final String query);
+
+    List<UserDto> findAllByRolesContains(final User.Role role);
 
     Page<UserDto> findAll(final Pageable pageable);
 
@@ -33,5 +37,5 @@ public interface UserService {
 
     UserDto findByEmailIgnoreCase(final String email);
 
-    Page<UserDto> findAllByQuery(final Pageable pageable, final String query);
+//    Page<UserDto> findAllByQuery(final Pageable pageable, final String query);
 }

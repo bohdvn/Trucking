@@ -46,7 +46,6 @@ class RequestComponent extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
-
     }
 
 
@@ -94,7 +93,7 @@ class RequestComponent extends React.Component {
     }
 
     saveProduct = () => {
-        this.setState({show: false});
+        this.setState({showExecuteWaybill: false});
         let product = this.state.product;
         let products = this.state.request.products;
         products.push(product);
@@ -260,7 +259,7 @@ class RequestComponent extends React.Component {
 
                 </Form>
 
-                <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                <Modal size="lg" show={this.state.showExecuteWaybill} onHide={this.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>Добавление продукта</Modal.Title>
                     </Modal.Header>

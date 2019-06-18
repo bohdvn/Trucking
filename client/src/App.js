@@ -67,13 +67,14 @@ class App extends React.Component {
                 <Route path="/products" component={ProductListComponent}/>
                 <Route path="/client/:id" component={ClientComponent}/>
                 <Route path="/login" component={LoginForm}/>
-                <Route path="/waybills" component={WaybillListComponent}/>
+                {/*<Route path="/waybill/:id" component={WaybillListComponent}/>*/}
+                {/*<Route path="/waybills" component={WaybillListComponent}/>*/}
 
                 {/*<Route path="/request/:id" component={RequestComponent}/>*/}
                 <Route path="/requests" component={RequestListComponent}/>
                 <Route path="/invoices" component={InvoiceListComponent}/>
 
-                <Route path="/waybill/:id" component={WaybillComponent}/>
+                {/*<Route path="/waybill/:id" component={WaybillComponent}/>*/}
                 <Route path='/confirm/:id' component={Confirm}/>
                 <Route path='/report' component={ReportComponent}/>
                 <Route path='/email' component={SendEmail}/>

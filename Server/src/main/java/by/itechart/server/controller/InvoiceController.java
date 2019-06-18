@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @PutMapping("/")
     public ResponseEntity<?> create(@RequestBody InvoiceDto invoiceDto) {
         LOGGER.info("REST request. Path:/invoice method: POST. invoice: {}", invoiceDto);
@@ -37,6 +39,7 @@ public class InvoiceController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/invoice/{} method: GET.", id);
@@ -46,6 +49,7 @@ public class InvoiceController {
 
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> remove(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/invoice/{} method: DELETE.", id);
@@ -53,6 +57,7 @@ public class InvoiceController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<InvoiceDto>> getAll() {
         LOGGER.info("REST request. Path:/invoice method: GET.");
@@ -62,13 +67,22 @@ public class InvoiceController {
                 new ResponseEntity<>(invoicesDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list/{query}")
+    public ResponseEntity<Page<InvoiceDto>> getAll(Pageable pageable, @PathVariable("query") String query) {
+        LOGGER.info("REST request. Path:/invoice method: GET.");
+        final Page<InvoiceDto> invoiceDtos = invoiceService.findAllByQuery(pageable, query);
+        LOGGER.info("Return carList.size:{}", invoiceDtos.getNumber());
+        return new ResponseEntity<>(invoiceDtos, HttpStatus.OK);
+    }
 
-    @GetMapping("/list")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list/")
     public ResponseEntity<Page<InvoiceDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/invoice method: GET.");
         final Page<InvoiceDto> invoiceDtos = invoiceService.findAll(pageable);
         LOGGER.info("Return carList.size:{}", invoiceDtos.getNumber());
-        return invoiceDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(invoiceDtos, HttpStatus.OK);
+        return new ResponseEntity<>(invoiceDtos, HttpStatus.OK);
     }
+
 }

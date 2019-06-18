@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, FormGroup, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, FormGroup, Table, Input} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
@@ -21,6 +21,7 @@ class RequestListComponent extends React.Component {
             request: '',
             requests: [],
             activePage: 0,
+            query: '',
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
@@ -31,10 +32,14 @@ class RequestListComponent extends React.Component {
         this.remove = this.remove.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
+
+        this.queryTimeout = -1;
+        this.handleQueryChange = this.handleQueryChange.bind(this);
+        this.changeQuery = this.changeQuery.bind(this);
     }
 
-    fetchURL(page) {
-        axios.get(`/request/list?page=${page}&size=5`)
+    fetchURL(page, query) {
+        axios.get(`/request/list/${query}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
@@ -60,13 +65,27 @@ class RequestListComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchURL(this.state.activePage)
+        this.fetchURL(this.state.activePage, this.state.query)
     }
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber - 1)
+        this.fetchURL(pageNumber - 1, this.state.query)
+    }
+
+    changeQuery() {
+        this.fetchURL(0, this.state.query);
+    }
+
+    handleQueryChange(event) {
+        clearTimeout(this.queryTimeout);
+        const target = event.target;
+        const value = target.value;
+        this.setState(() => ({
+            query: value
+        }));
+        this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
     populateRowsWithData = () => {
@@ -80,8 +99,7 @@ class RequestListComponent extends React.Component {
                         <Button size="sm" color="primary" tag={Link}
                                 to={"/request/" + request.id}>Редактировать</Button>
                         <Button size="sm" color="danger" onClick={() => this.remove(request.id)}>Удалить</Button>
-                        <Button size="sm" color="primary" onClick={() => this.handleShow(request.id)}
-                        >ТТН</Button>
+                        <Button size="sm" color="primary" onClick={() => this.handleShow(request.id)}>ТТН</Button>
                     </ButtonGroup>
                 </td>
 
@@ -106,9 +124,9 @@ class RequestListComponent extends React.Component {
     }
 
     createInvoice = () => {
-        this.setState({show: false});
+        this.setState({showExecuteWaybill: false});
         let date = new Date();
-        var dateStr = date.getFullYear() + '-' + ((date.getMonth().toString().length === 1)
+        let dateStr = date.getFullYear() + '-' + ((date.getMonth().toString().length === 1)
             ? ('0' + (+date.getMonth() + 1)) : (+date.getMonth() + 1)) + '-' + ((date.getDate().toString().length === 1)
             ? ('0' + date.getDate()) : date.getDate());
         let invoice = {};
@@ -166,6 +184,10 @@ class RequestListComponent extends React.Component {
         return (
             <div>
                 <Container fluid>
+                    <FormGroup>
+                        <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                               onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                    </FormGroup>
                     <div className="float-right">
                         <Button color="success" tag={Link} to="/request/create">Добавить</Button>
                     </div>
@@ -195,7 +217,7 @@ class RequestListComponent extends React.Component {
                         />
                     </div>
 
-                    <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                    <Modal size="lg" show={this.state.showExecuteWaybill} onHide={this.handleClose}>
                         <Modal.Header closeButton>
                             <Modal.Title>ТТН</Modal.Title>
                         </Modal.Header>

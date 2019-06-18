@@ -63,8 +63,7 @@ public class Request implements ToDtoTransformer {
     @JoinColumn(name = "client_company_to")
     private ClientCompany clientCompanyTo;
 
-    @OneToMany(mappedBy = "request",
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL)
     private List<Product> products = new ArrayList<>();
 
     @NotNull(message = "Status cannot be null")
@@ -73,9 +72,8 @@ public class Request implements ToDtoTransformer {
 
     @Override
     public RequestDto transformToDto() {
-        final List<Product> products = this.products;
         final List<ProductDto> productDtos = new ArrayList<>();
-        for (Product product: products) {
+        for (Product product: this.products) {
             productDtos.add(product.transformToDto());
         }
         return RequestDto.builder()

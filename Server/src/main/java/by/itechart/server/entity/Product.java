@@ -4,10 +4,21 @@ import by.itechart.server.dto.ProductDto;
 import by.itechart.server.transformers.ToDtoTransformer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "product")
@@ -41,20 +52,16 @@ public class Product implements ToDtoTransformer {
      * Several products may be in the same request.
      */
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "request_id")
+    @ManyToOne
+    @JoinColumn(name = "request_id", updatable = false)
     private Request request;
+//    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "request_id")
+//    private Request request;
 
     @Enumerated
     @Column(name = "status")
     private Status status;
-
-    public enum Status {
-        REGISTERED,
-        CHECKED,
-        DELIVERED,
-        LOST
-    }
 
     @Override
     public ProductDto transformToDto() {
@@ -65,8 +72,8 @@ public class Product implements ToDtoTransformer {
                 .withPrice(this.price)
                 .withStatus(this.status)
                 .withType(this.type)
-//                .withLostAmount(this.lostAmount )
-                //              .withRequest(this.request != null? this.request.transform() : RequestDto.builder().build())
+                .withLostAmount(this.lostAmount)
+                //.withRequest(Optional.ofNullable(this.request).map(Request::transformToDto).orElse(null))
                 .build();
     }
 
@@ -134,7 +141,6 @@ public class Product implements ToDtoTransformer {
         this.request = request;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -167,5 +173,12 @@ public class Product implements ToDtoTransformer {
                 ", request=" + request +
                 ", status=" + status +
                 '}';
+    }
+
+    public enum Status {
+        REGISTERED,
+        CHECKED,
+        DELIVERED,
+        LOST
     }
 }

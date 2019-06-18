@@ -6,6 +6,8 @@ import by.itechart.server.entity.Request;
 import by.itechart.server.repository.ClientCompanyRepository;
 import by.itechart.server.repository.RequestRepository;
 import by.itechart.server.service.RequestService;
+import by.itechart.server.specifications.RequestSpecification;
+import by.itechart.server.specifications.SearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -55,6 +57,16 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Page<RequestDto> findAll(final Pageable pageable) {
         final Page<Request> requests = requestRepository.findAll(pageable);
+        return new PageImpl<>(requests.stream().map(Request::transformToDto)
+                .sorted(Comparator.comparing(RequestDto::getStatus))
+                .collect(Collectors.toList()), pageable, requests.getTotalElements());
+    }
+
+    @Override
+    public Page<RequestDto> findAllByQuery(final Pageable pageable, final String query) {
+        final RequestSpecification requestSpecification = new RequestSpecification(
+                new SearchCriteria(query, null, -1, RequestDto.class));
+        final Page<Request> requests = requestRepository.findAll(requestSpecification, pageable);
         return new PageImpl<>(requests.stream().map(Request::transformToDto)
                 .sorted(Comparator.comparing(RequestDto::getStatus))
                 .collect(Collectors.toList()), pageable, requests.getTotalElements());

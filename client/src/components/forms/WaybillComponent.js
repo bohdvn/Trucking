@@ -33,7 +33,6 @@ class WaybillComponent extends React.Component {
         this.state = {
             waybill: this.emptyWaybill,
             invoice: [],
-
             show: false,
             checkpoint: this.emptyCheckpoint
         };
@@ -65,7 +64,7 @@ class WaybillComponent extends React.Component {
     }
 
     saveCheckpoint = () => {
-        this.setState({show: false});
+        this.setState({showExecuteWaybill: false});
         let checkpoint = this.state.checkpoint;
         let checkpoints = this.state.waybill.checkpoints;
         checkpoints.push(checkpoint);
@@ -157,6 +156,7 @@ class WaybillComponent extends React.Component {
                                onChange={this.handleChange} autoComplete="status">
                             <option value="STARTED">Перевозка начата</option>
                             <option value="FINISHED">Перевозка завершена</option>
+                            <option value="EXECUTED">Путевой лист оформлен</option>
                         </Input>
                     </FormGroup>
                     {/*<FormGroup>*/}
@@ -202,7 +202,7 @@ class WaybillComponent extends React.Component {
 
                 </Form>
 
-                <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                <Modal size="lg" show={this.state.showExecuteWaybill} onHide={this.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>Добавление контрольной точки</Modal.Title>
                     </Modal.Header>

@@ -8,7 +8,8 @@ class ProductComponent extends React.Component {
         type: '',
         amount: '1',
         price: '1',
-        status: 'REGISTERED'
+        status: 'REGISTERED',
+        lostAmount: '0'
     };
 
     constructor(props) {

@@ -4,6 +4,8 @@ import by.itechart.server.dto.InvoiceDto;
 import by.itechart.server.entity.Invoice;
 import by.itechart.server.repository.InvoiceRepository;
 import by.itechart.server.service.InvoiceService;
+import by.itechart.server.specifications.InvoiceSpecification;
+import by.itechart.server.specifications.SearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -52,5 +54,15 @@ public class InvoiceServiceImpl implements InvoiceService {
                 .sorted(Comparator.comparing(InvoiceDto::getStatus))
                 .collect(Collectors.toList()), pageable, invoices.getTotalElements());
 
+    }
+
+    @Override
+    public Page<InvoiceDto> findAllByQuery(final Pageable pageable, final String query) {
+        final InvoiceSpecification invoiceSpecification = new InvoiceSpecification(
+                new SearchCriteria(query, null, -1, InvoiceDto.class));
+        final Page<Invoice> invoices = invoiceRepository.findAll(invoiceSpecification, pageable);
+        return new PageImpl<>(invoices.stream().map(Invoice::transformToDto)
+                .sorted(Comparator.comparing(InvoiceDto::getStatus))
+                .collect(Collectors.toList()), pageable, invoices.getTotalElements());
     }
 }

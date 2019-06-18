@@ -10,6 +10,8 @@ public interface WayBillService {
 
     Page<WayBillDto> findAll(final Pageable pageable);
 
+    Page<WayBillDto> findAllByQuery(final Pageable pageable, final String query);
+
     WayBillDto findById(final int id);
 
     void deleteById(final int id);

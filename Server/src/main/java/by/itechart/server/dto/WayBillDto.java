@@ -86,7 +86,7 @@ public class WayBillDto implements ToEntityTransformer {
         wayBill.setId(this.id);
         wayBill.setStatus(this.status);
         wayBill.setInvoice(this.invoice.transformToEntity());
-        return null;
+        return wayBill;
     }
 
     public class Builder {

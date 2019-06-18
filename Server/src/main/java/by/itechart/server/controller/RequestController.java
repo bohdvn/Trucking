@@ -1,6 +1,7 @@
 package by.itechart.server.controller;
 
 import by.itechart.server.dto.RequestDto;
+import by.itechart.server.entity.Request;
 import by.itechart.server.service.RequestService;
 import by.itechart.server.utils.ValidationUtils;
 import org.slf4j.Logger;
@@ -64,12 +65,19 @@ public class RequestController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
-    @GetMapping("/list")
-    public ResponseEntity<Page<RequestDto>> getAll(Pageable pageable) {
+    @GetMapping("/list/{query}")
+    public ResponseEntity<Page<RequestDto>> getAll(Pageable pageable, @PathVariable("query") String query) {
+        LOGGER.info("REST request. Path:/request method: GET.");
+        final Page<RequestDto> requestDtos = requestService.findAllByQuery(pageable, query);
+        return new ResponseEntity<>(requestDtos, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list/")
+    public ResponseEntity<Page<RequestDto>> getAllWithoutQuery(Pageable pageable) {
         LOGGER.info("REST request. Path:/request method: GET.");
         final Page<RequestDto> requestDtos = requestService.findAll(pageable);
-        return requestDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(requestDtos, HttpStatus.OK);
+        return new ResponseEntity<>(requestDtos, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

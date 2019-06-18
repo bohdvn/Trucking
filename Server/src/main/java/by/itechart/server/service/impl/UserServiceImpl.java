@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(final UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -31,8 +31,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> findAllByClientCompanyId(final int clientCompanyId, final Pageable pageable) {
-        Page<User> users = userRepository.findAllByClientCompanyId(clientCompanyId, pageable);
+    public Page<UserDto> findAllByClientCompanyId(final int id, final Pageable pageable) {
+        Page<User> users = userRepository.findAllByClientCompanyId(id, pageable);
+        return new PageImpl<>(users.stream().map(User::transformToDto)
+                .sorted(Comparator.comparing(UserDto::getSurname))
+                .collect(Collectors.toList()), pageable, users.getTotalElements());
+    }
+
+    @Override
+    public Page<UserDto> findAllByClientCompanyId(final int id, final Pageable pageable, final String query) {
+        final Specification<User> specification = new CustomSpecification<>(
+                new SearchCriteria(query, null, id, UserDto.class));
+        Page<User> users = userRepository.findAll(specification, pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)
                 .sorted(Comparator.comparing(UserDto::getSurname))
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
@@ -43,14 +53,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll().stream().map(User::transformToDto).collect(Collectors.toList());
     }
 
-    @Override
-    public Page<UserDto> findAllByQuery(final Pageable pageable, final String query) {
-        Specification<User> specification = new CustomSpecification<>(new SearchCriteria(query, UserDto.class));
-        final Page<User> users = userRepository.findAll(specification, pageable);
-        return new PageImpl<>(users.stream().map(User::transformToDto)
-                .sorted(Comparator.comparing(UserDto::getSurname))
-                .collect(Collectors.toList()), pageable, users.getTotalElements());
-    }
+//    @Override
+//    public Page<UserDto> findAllByQuery(final Pageable pageable, final String query) {
+//        Specification<User> specification = new CustomSpecification<>(new SearchCriteria(query, UserDto.class));
+//        final Page<User> users = userRepository.findAll(specification, pageable);
+//        return new PageImpl<>(users.stream().map(User::transformToDto)
+//                .sorted(Comparator.comparing(UserDto::getSurname))
+//                .collect(Collectors.toList()), pageable, users.getTotalElements());
+//    }
 
     @Override
     public Page<UserDto> findAll(final Pageable pageable) {
@@ -59,6 +69,7 @@ public class UserServiceImpl implements UserService {
                 .sorted(Comparator.comparing(UserDto::getSurname))
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
     }
+
     @Override
     public UserDto findById(final int id) {
         return userRepository.findById(id).isPresent() ? userRepository.findById(id).get().transformToDto() : null;
@@ -90,8 +101,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserDto> findAllByRolesContains(User.Role role, Pageable pageable) {
+    public Page<UserDto> findAllByRolesContains(final User.Role role, final Pageable pageable) {
         Page<User> users = userRepository.findAllByRolesContains(role, pageable);
+        return new PageImpl<>(users.stream().map(User::transformToDto)
+                .collect(Collectors.toList()), pageable, users.getTotalElements());
+    }
+
+    @Override
+    public Page<UserDto> findAllByRolesContains(final User.Role role, final Pageable pageable, final String query) {
+        final Specification<User> specification = new CustomSpecification<>(
+                new SearchCriteria(query, role, -1,  UserDto.class));
+        final Page<User> users = userRepository.findAll(specification, pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
     }

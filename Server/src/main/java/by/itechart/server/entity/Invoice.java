@@ -68,9 +68,11 @@ public class Invoice implements ToDtoTransformer {
     /**
      * One invoice can have only one request.
      */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "request_id")
     private Request request;
+
+
 
     @Override
     public InvoiceDto transformToDto() {

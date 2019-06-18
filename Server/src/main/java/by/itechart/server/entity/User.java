@@ -17,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -96,6 +97,12 @@ public class User implements ToDtoTransformer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_company_id")
     private ClientCompany clientCompany;
+
+    /**
+     * One driver can be choosed in several requests.
+     */
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL)
+    private List<Request> requests;
 
     @Column(name = "is_enabled")
     private Boolean isEnabled;
@@ -252,7 +259,13 @@ public class User implements ToDtoTransformer {
         isEnabled = enabled;
         return this;
     }
+    public List<Request> getRequests() {
+        return requests;
+    }
 
+    public void setRequests(final List<Request> requests) {
+        this.requests = requests;
+    }
     public enum Role {
         SYSADMIN,
         ADMIN,

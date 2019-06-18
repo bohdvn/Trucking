@@ -27,6 +27,7 @@ public class WayBillController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WayBillController.class);
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN') or hasAuthority('DRIVER')")
     @PutMapping("/")
     public ResponseEntity<?> edit(@Valid @RequestBody WayBillDto wayBill) {
         LOGGER.info("REST request. Path:/waybill method: POST. waybill: {}", wayBill);
@@ -34,6 +35,7 @@ public class WayBillController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @PostMapping("")
     public ResponseEntity<?> create(@Valid @RequestBody WayBillDto wayBill) {
         LOGGER.info("REST request. Path:/waybill method: POST. waybill: {}", wayBill);
@@ -41,6 +43,7 @@ public class WayBillController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/waybill/{} method: GET.", id);
@@ -49,6 +52,7 @@ public class WayBillController {
                 ResponseEntity.ok().body(wayBillDto) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedWaybills}")
     public ResponseEntity<?> remove(@PathVariable("selectedWaybills") String selectedWaybills) {
         LOGGER.info("REST request. Path:/waybill/{} method: DELETE.", selectedWaybills);
@@ -61,7 +65,7 @@ public class WayBillController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
-    @GetMapping("/list")
+    @GetMapping("/list/")
     public ResponseEntity<Page<WayBillDto>> getAll(Pageable pageable) {
         LOGGER.info("REST request. Path:/waybill method: GET.");
         final Page<WayBillDto> wayBillsDto = wayBillService.findAll(pageable);
@@ -70,6 +74,15 @@ public class WayBillController {
                 new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @GetMapping("/list/{query}")
+    public ResponseEntity<Page<WayBillDto>> getAll(Pageable pageable,  @PathVariable("query") String query ) {
+        LOGGER.info("REST request. Path:/waybill method: GET.");
+        final Page<WayBillDto> wayBillsDto = wayBillService.findAllByQuery(pageable, query);
+        LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
+        return wayBillsDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

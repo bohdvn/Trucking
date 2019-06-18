@@ -10,6 +10,8 @@ public interface RequestService {
 
     Page<RequestDto> findAll(final Pageable pageable);
 
+    Page<RequestDto> findAllByQuery(final Pageable pageable, final String query);
+
     RequestDto findById(final int id);
 
     void delete(final RequestDto request);

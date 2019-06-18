@@ -1,5 +1,5 @@
 import React from 'react';
-import {Container, Table} from 'reactstrap';
+import {Container, Table, Input, FormGroup} from 'reactstrap';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 import {ACCESS_TOKEN} from "../../constants/auth";
@@ -27,6 +27,7 @@ class InvoiceListComponent extends React.Component {
         super(props);
         this.state = {
             invoices: [],
+            query: '',
             activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
@@ -35,10 +36,14 @@ class InvoiceListComponent extends React.Component {
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.remove = this.remove.bind(this);
+
+        this.queryTimeout = -1;
+        this.handleQueryChange = this.handleQueryChange.bind(this);
+        this.changeQuery = this.changeQuery.bind(this);
     }
 
-    fetchURL(page) {
-        axios.get(`/invoice/list?page=${page}&size=5`, {
+    fetchURL(page, query) {
+        axios.get(`/invoice/list/${query}?page=${page}&size=5`, {
             proxy: {
                 host: 'http://localhost',
                 port: 8080
@@ -74,13 +79,27 @@ class InvoiceListComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchURL(this.state.activePage)
+        this.fetchURL(this.state.activePage, this.state.query);
     }
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber - 1)
+        this.fetchURL(pageNumber - 1, this.state.query);
+    }
+
+    changeQuery() {
+        this.fetchURL(0, this.state.query);
+    }
+
+    handleQueryChange(event) {
+        clearTimeout(this.queryTimeout);
+        const target = event.target;
+        const value = target.value;
+        this.setState(() => ({
+            query: value
+        }));
+        this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
     populateRowsWithData = () => {
@@ -115,6 +134,10 @@ class InvoiceListComponent extends React.Component {
         return (
             <div>
                 <Container fluid>
+                    <FormGroup>
+                        <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                               onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                    </FormGroup>
                     <Table className="mt-4">
                         <thead>
                         <tr>

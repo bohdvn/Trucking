@@ -3,7 +3,19 @@ package by.itechart.server.entity;
 import by.itechart.server.dto.WayBillDto;
 import by.itechart.server.transformers.ToDtoTransformer;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
@@ -27,7 +39,7 @@ public class WayBill implements ToDtoTransformer {
      * One waybill can only belong to one invoice.
      * In one invoice can be only one waybill.
      */
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @MapsId
     @JoinColumn(name = "invoice_id")
     private Invoice invoice;
@@ -38,7 +50,6 @@ public class WayBill implements ToDtoTransformer {
     private LocalDate dateFrom;
 
     @NotNull(message = "Date to cannot be null")
-    @Past(message = "Wrong date to")
     @Column(name = "date_to")
     private LocalDate dateTo;
 
@@ -47,13 +58,8 @@ public class WayBill implements ToDtoTransformer {
      */
     @OneToMany(fetch = FetchType.LAZY,
             mappedBy = "wayBill",
-            cascade =  CascadeType.ALL)
+            cascade = CascadeType.ALL)
     private List<Checkpoint> checkpoints = new ArrayList<>();
-
-    public enum Status {
-        STARTED,
-        FINISHED
-    }
 
     @Override
     public WayBillDto transformToDto() {
@@ -115,7 +121,6 @@ public class WayBill implements ToDtoTransformer {
         this.checkpoints = checkpoints;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -144,5 +149,11 @@ public class WayBill implements ToDtoTransformer {
                 ", dateTo=" + dateTo +
                 ", checkpoints=" + checkpoints +
                 '}';
+    }
+
+    public enum Status {
+        STARTED,
+        FINISHED,
+        EXECUTED
     }
 }

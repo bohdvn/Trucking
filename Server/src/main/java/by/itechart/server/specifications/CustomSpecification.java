@@ -9,6 +9,7 @@ import javax.persistence.criteria.Root;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CustomSpecification<T> implements Specification<T> {
 
@@ -39,6 +40,16 @@ public class CustomSpecification<T> implements Specification<T> {
         Predicate finalPredicate = predicates.get(0);
         for (int i = 1; i < predicates.size(); i++) {
             finalPredicate = criteriaBuilder.and(finalPredicate, predicates.get(i));
+        }
+
+        if (criteria.getCompanyId() != -1) {
+            finalPredicate = criteriaBuilder.and(finalPredicate, criteriaBuilder.equal(
+                    root.<String>get("clientCompany"), criteria.getCompanyId()));
+        }
+
+        if (Objects.nonNull(criteria.getRole())) {
+            finalPredicate = criteriaBuilder.and(finalPredicate,
+                    criteriaBuilder.isMember(criteria.getRole(), root.get("roles")));
         }
         return finalPredicate;
     }

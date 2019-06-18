@@ -67,7 +67,7 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     @Override
     public Page<ClientCompanyDto> findAllByQuery(final Pageable pageable, final String query) {
         Specification<ClientCompany> specification =
-                new CustomSpecification<>(new SearchCriteria(query, ClientCompanyDto.class));
+                new CustomSpecification<>(new SearchCriteria(query, null, -1, ClientCompanyDto.class));
         final Page<ClientCompany> companies = clientCompanyRepository.findAll(specification, pageable);
         return new PageImpl<>(companies.stream().map(ClientCompany::transformToDto)
                 .sorted(Comparator.comparing(ClientCompanyDto::getName))

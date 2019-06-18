@@ -2,6 +2,7 @@ package by.itechart.server.dto;
 
 import by.itechart.server.entity.Product;
 import by.itechart.server.transformers.ToEntityTransformer;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 public class ProductDto implements ToEntityTransformer {
     private int id;
@@ -18,6 +19,7 @@ public class ProductDto implements ToEntityTransformer {
 
     private Integer lostAmount;
 
+    @JsonBackReference
     private RequestDto request;
 
     private ProductDto() {

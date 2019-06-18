@@ -30,7 +30,6 @@ class TempCheckpointComponent extends React.Component {
                 this.validateField(name, value)
             });
         this.props.changeFieldHandler(checkpoint);
-        document.getElementById("SearchBox").value = document.getElementById("name").value;
         // const state = this.state;
         // this.props.changeState(state);
     }
@@ -81,13 +80,15 @@ class TempCheckpointComponent extends React.Component {
 
     render() {
         const {checkpoint} = this.state;
+        console.log(checkpoint);
+        const checkpointId=checkpoint.id;
         return (
             <Container className="col-3">
                 <h1>Контрольная точка</h1>
                 <Form>
                     <FormGroup>
                         <Label for="name">Название</Label>
-                        <Input type="text" name="name" id="name" value={checkpoint.name || ''}
+                        <Input readOnly={checkpointId} type="text" name="name" id="name" value={checkpoint.name || ''}
                                onChange={this.handleChange} autoComplete="name"/>
                         <p className={'error-message'}>{(this.state.formErrors.name === '') ? ''
                             : 'Название' + this.state.formErrors.name}</p>
@@ -96,15 +97,16 @@ class TempCheckpointComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="date">Дата прохождения</Label>
-                        <Input type="date" name="date" id="date" value={checkpoint.date || ''}
+                        <Input readOnly={!checkpointId} type="date" name="date" id="date" value={checkpoint.date || ''}
                                onChange={this.handleChange} autoComplete="date" min="1"/>
                         <p className={'error-message'}>{(this.state.formErrors.date === '') ? ''
                             : 'Дата прохождения' + this.state.formErrors.date}</p>
                     </FormGroup>
 
                     <FormGroup>
+
                         <Label for="latitude">Широта</Label>
-                        <Input type="text" name="latitude" id="latitude" value={checkpoint.latitude || ''}
+                        <Input readOnly={checkpointId} type="text" name="latitude" id="latitude" value={checkpoint.latitude || ''}
                                onChange={this.handleChange} autoComplete="latitude"/>
                         <p className={'error-message'}>{(this.state.formErrors.latitude === '') ? ''
                             : 'Широта' + this.state.formErrors.latitude}</p>
@@ -112,19 +114,21 @@ class TempCheckpointComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="longitude">Долгота</Label>
-                        <Input type="text" name="longitude" id="longitude" value={checkpoint.longitude || ''}
+                        <Input readOnly={checkpointId} type="text" name="longitude" id="longitude" value={checkpoint.longitude || ''}
                                onChange={this.handleChange} autoComplete="longitude" min="0"/>
                         <p className={'error-message'}>{(this.state.formErrors.longitude === '') ? ''
                             : 'Долгота' + this.state.formErrors.longitude}</p>
                     </FormGroup>
 
                     <FormGroup>
-                        <MapComponent/>
+                        <MapComponent
+                            lat={checkpoint.latitude}
+                            lng={checkpoint.longitude}/>
                     </FormGroup>
 
                     <FormGroup>
                         <Label for="status">Статус</Label>
-                        <Input type="select" name="status" id="status" value={checkpoint.status || ''}
+                        <Input disabled={!checkpointId} type="select" name="status" id="status" value={checkpoint.status || ''}
                                onChange={this.handleChange} autoComplete="status">
                             <option value="PASSED">Пройдена</option>
                             <option value="NOT_PASSED">Не пройдена</option>

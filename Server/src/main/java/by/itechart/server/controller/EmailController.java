@@ -1,6 +1,5 @@
 package by.itechart.server.controller;
 
-import by.itechart.server.entity.User;
 import by.itechart.server.entity.Email;
 import by.itechart.server.service.EmailSenderService;
 import org.slf4j.Logger;
@@ -13,8 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/email")
@@ -33,10 +30,7 @@ public class EmailController {
     @PostMapping("")
     public ResponseEntity<?> sendEmail(final @RequestBody Email email) {
         LOGGER.info("REST request. Path:/email method: POST. email: {}", email);
-        final List<User> recipients = email.getRecipients();
-        for (User user : recipients) {
-            emailSenderService.sendEmail(user.getEmail(), email.getSubject(), email.getMessage());
-        }
+        emailSenderService.send(email);
         LOGGER.info("Success!Email was sent.");
         return ResponseEntity.status(HttpStatus.OK)
                 .body("Success!Email was sent");

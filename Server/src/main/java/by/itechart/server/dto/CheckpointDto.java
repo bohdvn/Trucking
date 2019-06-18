@@ -2,15 +2,14 @@ package by.itechart.server.dto;
 
 import by.itechart.server.entity.Checkpoint;
 import by.itechart.server.transformers.ToEntityTransformer;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-
+@Data
 public class CheckpointDto implements ToEntityTransformer {
 
     private Integer id;
-
-    private WayBillDto wayBill;
 
     private String name;
 
@@ -29,46 +28,6 @@ public class CheckpointDto implements ToEntityTransformer {
         return new CheckpointDto().new Builder();
     }
 
-    public Checkpoint.Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Checkpoint.Status status) {
-        this.status = status;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(final String latitude) {
-        this.latitude = latitude;
-    }
-
-    public String getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(final String longitude) {
-        this.longitude = longitude;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(final LocalDate date) {
-        this.date = date;
-    }
-
     @Override
     public Checkpoint transformToEntity() {
         final Checkpoint checkpoint = new Checkpoint();
@@ -78,7 +37,6 @@ public class CheckpointDto implements ToEntityTransformer {
         checkpoint.setLongitude(this.longitude);
         checkpoint.setName(this.name);
         checkpoint.setStatus(this.status);
-        //checkpoint.setWayBill(this.wayBill.transformToEntity());
         return checkpoint;
     }
 
@@ -88,11 +46,6 @@ public class CheckpointDto implements ToEntityTransformer {
 
         public Builder withId(final Integer id) {
             CheckpointDto.this.id = id;
-            return this;
-        }
-
-        public Builder withWayBill(final WayBillDto wayBill) {
-            CheckpointDto.this.wayBill = wayBill;
             return this;
         }
 

@@ -1,11 +1,14 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, FormGroup, Table, Input} from 'reactstrap';
+import {Button, ButtonGroup, Container, FormGroup, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 import Modal from 'react-bootstrap/Modal';
 import InvoiceComponent from "../forms/InvoiceComponent";
 import {ACCESS_TOKEN} from "../../constants/auth";
+import {connect} from "react-redux";
+import * as ROLE from "../../constants/userConstants";
+import {currentTime} from "../../utils/currentTime";
 
 class RequestListComponent extends React.Component {
 
@@ -18,14 +21,17 @@ class RequestListComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            request: '',
+            invoice: {
+                request: {}
+            },
             requests: [],
             activePage: 0,
             query: '',
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
-            show: false
+            show: false,
+            roles: props.loggedIn.claims.roles
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
@@ -39,7 +45,20 @@ class RequestListComponent extends React.Component {
     }
 
     fetchURL(page, query) {
-        axios.get(`/request/list/${query}?page=${page}&size=5`)
+        let url = '';
+        switch (this.props.location.pathname) {
+            case '/requests':
+                url = 'list';
+                break;
+
+            case '/notviewedrequests':
+                url = 'notviewed';
+                break;
+
+            default:
+                return;
+        }
+        axios.get(`/request/${url}/${query}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
@@ -71,9 +90,8 @@ class RequestListComponent extends React.Component {
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber - 1, this.state.query)
+        this.fetchURL(pageNumber - 1, this.state.query);
     }
-
     changeQuery() {
         this.fetchURL(0, this.state.query);
     }
@@ -87,8 +105,8 @@ class RequestListComponent extends React.Component {
         }));
         this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
-
     populateRowsWithData = () => {
+        const {roles} = this.state;
         const requests = this.state.requests.map(request => {
             return <tr key={request.id}>
                 <td>{request.car.name}</td>
@@ -96,10 +114,16 @@ class RequestListComponent extends React.Component {
                 <td>{this.requestStatusMap[request.status]}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link}
-                                to={"/request/" + request.id}>Редактировать</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(request.id)}>Удалить</Button>
-                        <Button size="sm" color="primary" onClick={() => this.handleShow(request.id)}>ТТН</Button>
+                        {roles.includes(ROLE.OWNER) && request.status!='ISSUED' ?
+                            <Button size="sm" color="primary" tag={Link}
+                                    to={"/request/" + request.id}>Редактировать
+                            </Button>
+                            : null}
+                        {roles.includes(ROLE.DISPATCHER) ?
+                            <Button size="sm" color="primary"
+                                    onClick={() => this.handleShow(request.id)}>ТТН
+                            </Button>
+                            : null}
                     </ButtonGroup>
                 </td>
 
@@ -124,73 +148,62 @@ class RequestListComponent extends React.Component {
     }
 
     createInvoice = () => {
-        this.setState({showExecuteWaybill: false});
-        let date = new Date();
-        let dateStr = date.getFullYear() + '-' + ((date.getMonth().toString().length === 1)
-            ? ('0' + (+date.getMonth() + 1)) : (+date.getMonth() + 1)) + '-' + ((date.getDate().toString().length === 1)
-            ? ('0' + date.getDate()) : date.getDate());
-        let invoice = {};
-        let request = this.state.request;
+        this.setState({show: false});
+        const dateStr = currentTime();
+        const {invoice} = this.state;
+        console.log(invoice);
+        let request = this.state.invoice.request;
         request.status = 'ISSUED';
-        invoice.request = request;
+        console.log(request);
         invoice.status = 'COMPLETED';
-        invoice.number = this.state.request.id;
         invoice.dateOfIssue = dateStr;
-        this.setState({request: ''});
-        this.saveInvoice(invoice);
-        this.saveRequest(request);
+        console.log(invoice);
+        this.setState({invoice: ''});
+        this.saveInvoice(invoice)
+            .then(response=>{
+                console.log(response);
+            });
         window.location.reload();
     };
 
     async saveInvoice(invoice) {
-        await fetch('/invoice/', {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            },
-            body: JSON.stringify(invoice)
-        });
-
-
-    }
-
-    async saveRequest(request) {
-        await fetch('/request/', {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            },
-            body: JSON.stringify(request)
+        await axios({
+            method: invoice.id ? 'PUT' : 'POST',
+            url: '/invoice/',
+            data: invoice
         });
     }
 
     async handleShow(id) {
-        const request = await(await
+        const request = await (await
                 fetch(`/request/${id}`,
                     {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
         ).json();
-        this.setState({show: true, request: request});
+        this.setState({show: true, invoice: {request: request}});
     }
 
     handleClose() {
         this.setState({show: false});
     }
 
+    handleInvoiceNumberChange = value => {
+        console.log(value);
+        let invoice = {...this.state.invoice};
+        invoice['number'] = value;
+        this.setState({invoice: invoice});
+        console.log(this.state);
+    };
+
     render() {
+        const {roles} = this.state;
         return (
             <div>
                 <Container fluid>
-                    <FormGroup>
-                        <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
-                               onChange={this.handleQueryChange} autoComplete="searchQuery"/>
-                    </FormGroup>
-                    <div className="float-right">
-                        <Button color="success" tag={Link} to="/request/create">Добавить</Button>
-                    </div>
+                    {roles.includes(ROLE.OWNER) ?
+                        <div className="float-right">
+                            <Button color="success" tag={Link} to="/request/create">Добавить</Button>
+                        </div>
+                        : null}
                     <Table className="mt-4">
                         <thead>
                         <tr>
@@ -217,25 +230,27 @@ class RequestListComponent extends React.Component {
                         />
                     </div>
 
-                    <Modal size="lg" show={this.state.showExecuteWaybill} onHide={this.handleClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>ТТН</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <FormGroup>
-                                <InvoiceComponent
-                                    name="InvoiceComponent"
-                                    id="InvoiceComponent"
-                                    request={this.state.request}
-                                />
-                            </FormGroup>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button color="primary" onClick={this.createInvoice}>
-                                Создать ТТН
-                            </Button>
-                        </Modal.Footer>
-                    </Modal>
+                    {roles.includes(ROLE.DISPATCHER) ?
+                        <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>ТТН</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <FormGroup>
+                                    <InvoiceComponent
+                                        name="InvoiceComponent"
+                                        id="InvoiceComponent"
+                                        invoice={this.state.invoice}
+                                        handleChange={this.handleInvoiceNumberChange.bind(this)}
+                                    />
+                                </FormGroup>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button color="primary" onClick={this.createInvoice}>
+                                    Создать ТТН
+                                </Button>
+                            </Modal.Footer>
+                        </Modal> : null}
 
                 </Container>
             </div>
@@ -243,4 +258,8 @@ class RequestListComponent extends React.Component {
     }
 }
 
-export default RequestListComponent;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    })
+)(RequestListComponent)

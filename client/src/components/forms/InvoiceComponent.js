@@ -12,8 +12,9 @@ class InvoiceComponent extends React.Component {
 
     constructor(props) {
         super(props);
+        console.log(props);
         this.state = {
-            request: props.request
+            invoice: props.invoice
         };
     }
 
@@ -28,15 +29,38 @@ class InvoiceComponent extends React.Component {
         });
     };
 
+    handleChange=event=>{
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        let invoice = {...this.state.invoice};
+        invoice[name] = value;
+        this.setState({invoice},()=>{
+            this.props.handleChange(value);
+        });
+        console.log(this.state);
+    };
+
     render() {
-        const {request} = this.state;
+        const {request} = this.state.invoice;
+        const {invoice} = this.state;
+        console.log(request);
         return (
             <Container className="col-3">
                 <h1>ТТН</h1>
                 <Form>
                     <FormGroup>
+                        <Label for="number">Номер</Label>
+                        <Input readOnly={invoice.id} type="text" name="number" id="number"
+                               value={invoice.number||''}
+                               onChange={this.handleChange}
+                               autoComplete="number"/>
+                    </FormGroup>
+
+                    <FormGroup>
                         <Label for="status">Статус</Label>
-                        <Input readOnly type="text" name="status" id="status" value={this.requestStatusMap[request.status]}
+                        <Input readOnly type="text" name="status" id="status"
+                               value={this.requestStatusMap[request.status]}
                                autoComplete="status"/>
                     </FormGroup>
 
@@ -48,11 +72,26 @@ class InvoiceComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="driver">Водитель</Label>
-                        <Input readOnly type="text" name="driver" id="driver" value={request.driver.name}
-                               autoComplete="driver"/>
+                        <Input readOnly type="text" name="driver" id="driver"
+                               value={`${request.driver.surname} ${request.driver.name}`}/>
                     </FormGroup>
-                    <FormGroup>
-                        <Label for="productTable">Продукты</Label>
+
+                    {invoice.dateOfIssue ?
+                        <FormGroup>
+                            <Label for="dateOfIssue">Дата оформления</Label>
+                            <Input readOnly type="date" name="dateOfIssue" id="dateOfIssue"
+                                   value={invoice.dateOfIssue}/>
+                        </FormGroup> : null}
+
+                    {invoice.dispatcherFrom ?
+                        <FormGroup>
+                            <Label for="dispatcherFrom">Оформил(а)</Label>
+                            <Input readOnly type="text" name="dispatcherFrom" id="dispatcherFrom"
+                                   value={`${invoice.dispatcherFrom.surname} ${invoice.dispatcherFrom.name}`}/>
+                        </FormGroup> : null}
+
+                    < FormGroup>
+                        < Label for="productTable"> Продукты </Label>
                         <Table name="productTable" id="productTable" className="mt-4">
                             <thead>
                             <tr>

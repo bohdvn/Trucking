@@ -143,7 +143,8 @@ class ClientListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('accessToken')
             }
         }).then(() => {
             let updateClients = [...this.state.clients].filter(i => i.id !== id);
@@ -164,7 +165,8 @@ class ClientListComponent extends React.Component {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer '+localStorage.getItem('accessToken')
             }
         }).then(() => {
             let updateClients = [...this.state.clients].filter(client => !client.value);

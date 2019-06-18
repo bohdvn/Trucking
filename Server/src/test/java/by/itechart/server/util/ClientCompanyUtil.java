@@ -1,4 +1,4 @@
-package by.itechart.Server.util;
+package by.itechart.server.util;
 
 import by.itechart.server.entity.ClientCompany;
 

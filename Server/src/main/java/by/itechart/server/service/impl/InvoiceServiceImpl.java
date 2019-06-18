@@ -4,6 +4,7 @@ import by.itechart.server.dto.InvoiceDto;
 import by.itechart.server.entity.Invoice;
 import by.itechart.server.repository.InvoiceRepository;
 import by.itechart.server.service.InvoiceService;
+import by.itechart.server.service.RequestService;
 import by.itechart.server.specifications.InvoiceSpecification;
 import by.itechart.server.specifications.SearchCriteria;
 import org.springframework.data.domain.Page;
@@ -18,9 +19,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
+
+    private RequestService requestService;
+
     private InvoiceRepository invoiceRepository;
 
-    public InvoiceServiceImpl(InvoiceRepository invoiceRepository) {
+    public InvoiceServiceImpl(RequestService requestService, InvoiceRepository invoiceRepository) {
+        this.requestService = requestService;
         this.invoiceRepository = invoiceRepository;
     }
 
@@ -28,6 +33,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     @Transactional
     public void save(InvoiceDto invoiceDto) {
+        requestService.save(invoiceDto.getRequest());
         invoiceRepository.save(invoiceDto.transformToEntity());
     }
 

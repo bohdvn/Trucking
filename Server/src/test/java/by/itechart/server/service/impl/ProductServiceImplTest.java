@@ -1,8 +1,7 @@
-package by.itechart.Server.service.impl;
+package by.itechart.server.service.impl;
 
 import by.itechart.server.entity.Product;
 import by.itechart.server.repository.ProductRepository;
-import by.itechart.server.service.impl.ProductServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

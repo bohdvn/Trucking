@@ -1,9 +1,13 @@
 import React from 'react';
-import {Container, Table, Input, FormGroup} from 'reactstrap';
+import {Container, FormGroup, Input, Table} from 'reactstrap';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 import {ACCESS_TOKEN} from "../../constants/auth";
-
+import {Link} from "react-router-dom";
+import {connect} from "react-redux";
+import {MANAGER} from "../../constants/userConstants";
+import Modal from 'react-bootstrap/Modal';
+import InvoiceComponent from '../forms/InvoiceComponent';
 
 class InvoiceListComponent extends React.Component {
 
@@ -26,12 +30,15 @@ class InvoiceListComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            invoice: {},
+            loggedIn: props.loggedIn,
             invoices: [],
             query: '',
             activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
-            totalItemsCount: null
+            totalItemsCount: null,
+            show: false,
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
@@ -43,17 +50,7 @@ class InvoiceListComponent extends React.Component {
     }
 
     fetchURL(page, query) {
-        axios.get(`/invoice/list/${query}?page=${page}&size=5`, {
-            proxy: {
-                host: 'http://localhost',
-                port: 8080
-            },
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            }
-        })
+        axios.get(`/invoice/list/${query}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
@@ -103,17 +100,51 @@ class InvoiceListComponent extends React.Component {
     }
 
     populateRowsWithData = () => {
+        const {roles} = this.state.loggedIn.claims;
         return this.state.invoices.map(invoice => {
             return <tr key={invoice.id}>
+                <td>{invoice.number}</td>
                 <td style={{whiteSpace: 'nowrap'}}>{invoice.request.car.name}</td>
                 <td>{this.carTypeMap[invoice.request.car.carType]}</td>
                 <td>{this.carStatusMap[invoice.request.car.status]}</td>
                 <td>{this.invoiceStatusMap[invoice.status]}</td>
                 <td>{invoice.request.driver.name}</td>
+                {roles.includes(MANAGER) && invoice.status === 'COMPLETED' ?
+                    <td>
+                        <ButtonGroup>
+                            <Button size="sm" color="primary" tag={Link}
+                                    onClick={() => this.handleShow(invoice.id)}>Проверить</Button>
+                        </ButtonGroup>
+                    </td>
+                    : null}
 
             </tr>
         });
 
+    };
+
+    async handleShow(id) {
+        const invoice = await (await
+                fetch(`/invoice/${id}`,
+                    {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
+        ).json();
+        this.setState({show: true, invoice: invoice});
+        console.log(this.state);
+    }
+
+    rejectRequest = () => {
+        this.setState({show: false});
+        const {invoice} = this.state;
+        invoice.request.status = 'REJECTED';
+        console.log(invoice);
+        axios.put('/invoice/', invoice)
+            .then(response => {
+                console.log(response);
+            });
+    };
+
+    handleClose = () => {
+        this.setState({show: false});
     };
 
     async remove(id) {
@@ -129,8 +160,14 @@ class InvoiceListComponent extends React.Component {
         });
     }
 
+    createWaybill = () => {
+        const {invoice} = this.state;
+        this.props.history.push("/waybill/create", {invoice: invoice});
+    };
+
 
     render() {
+        const {roles} = this.state.loggedIn.claims;
         return (
             <div>
                 <Container fluid>
@@ -141,11 +178,12 @@ class InvoiceListComponent extends React.Component {
                     <Table className="mt-4">
                         <thead>
                         <tr>
-                            <th width="20%">Машина</th>
-                            <th width="20%">Тип мфшины</th>
-                            <th width="20%">Статус машины</th>
+                            <th width="16%">Номер</th>
+                            <th width="16%">Машина</th>
+                            <th width="16%">Тип машины</th>
+                            <th width="16%">Статус машины</th>
                             <th>Статус ТТН</th>
-                            <th width="20%">Водитель</th>
+                            <th width="16%">Водитель</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -166,9 +204,36 @@ class InvoiceListComponent extends React.Component {
                         />
                     </div>
                 </Container>
+
+                {roles.includes(MANAGER) ? <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>ТТН</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <FormGroup>
+                            <InvoiceComponent
+                                name="InvoiceComponent"
+                                id="InvoiceComponent"
+                                invoice={this.state.invoice}
+                            />
+                        </FormGroup>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button color="primary" onClick={this.createWaybill}>
+                            Подтвердить
+                        </Button>
+                        <Button color="danger" onClick={this.rejectRequest}>
+                            Отклонить
+                        </Button>
+                    </Modal.Footer>
+                </Modal> : null}
             </div>
         );
     }
 }
 
-export default InvoiceListComponent;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    })
+)(InvoiceListComponent)

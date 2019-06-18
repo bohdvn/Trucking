@@ -1,11 +1,12 @@
 import React from 'react';
-import {Button, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
 import Modal from 'react-bootstrap/Modal';
 import TempProductComponent from "./TempProductComponent";
 import axios from 'axios';
-import {HEADERS} from '../../constants/requestConstants'
 import {ACCESS_TOKEN} from "../../constants/auth";
-
+import {Link} from "react-router-dom";
+import AddressFields from "./AddressFields";
+import {connect} from "react-redux";
 class RequestComponent extends React.Component {
 
     productStatusMap = {
@@ -28,19 +29,31 @@ class RequestComponent extends React.Component {
         status: 'NOT_VIEWED',
         car: '',
         driver: '',
-        products: []
+        products: [],
+        address: ''
     };
+
+    address = {
+        id: '',
+        city: '',
+        street: '',
+        building: '1',
+        flat: '1'
+    };
+
 
     constructor(props) {
         super(props);
         this.state = {
+            roles:props.loggedIn.claims.roles,
             request: this.emptyRequest,
             cars: [],
             drivers: [],
             formValid: true,
             productValid: false,
             show: false,
-            product: this.emptyProduct
+            product: this.emptyProduct,
+            productToEdit: this.emptyProduct
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -72,7 +85,7 @@ class RequestComponent extends React.Component {
 
 
     handleShow() {
-        this.setState({show: true});
+        this.setState({show: true, product: this.emptyProduct, productToEdit: this.emptyProduct});
     }
 
     async handleSubmit(event) {
@@ -95,12 +108,37 @@ class RequestComponent extends React.Component {
     saveProduct = () => {
         this.setState({showExecuteWaybill: false});
         let product = this.state.product;
+        let productToEdit = this.state.productToEdit;
         let products = this.state.request.products;
-        products.push(product);
+        if (productToEdit !== this.emptyProduct) {
+            for (let i = 0; i < products.length; i++) {
+                if (products[i] === productToEdit) {
+                    products[i] = product;
+                }
+            }
+        } else products.push(product);
+        let request = {...this.state.request};
+        request['products'] = products;
+        this.setState({request: request, product: this.emptyProduct, productToEdit: this.emptyProduct});
+    };
+
+    removeProduct(prod) {
+        let product = prod;
+        let products = this.state.request.products;
+        for (let i = 0; i < products.length; i++) {
+            if (products[i] === product) {
+                products.splice(i, 1);
+                i--;
+            }
+        }
         let request = {...this.state.request};
         request['products'] = products;
         this.setState({request: request, product: this.emptyProduct});
-    };
+    }
+
+    editProduct(prod) {
+        this.setState({show: true, product: prod, productToEdit: prod,});
+    }
 
     async getCar(id) {
         let newCar = {};
@@ -138,11 +176,21 @@ class RequestComponent extends React.Component {
     populateRowsWithData = () => {
         return this.state.request.products.map(product => {
             return <tr key={product.id}>
-                <td style={{whiteSpace: 'nowrap'}}>{product.name}</td>
+                <td style={{whiteSpace: 'nowrap'}}><Link onClick={() => this.editProduct(product)}>{product.name}</Link>
+                </td>
                 <td>{product.amount}</td>
                 <td>{product.type}</td>
                 <td>{product.price}</td>
                 <td>{this.productStatusMap[product.status]}</td>
+                <td>
+                    <ButtonGroup>
+                        <Button size="sm" color="primary" onClick={() => this.editProduct(product)}
+                        >Редактировать</Button>
+                        <Button size="sm" color="danger"
+                                onClick={() => this.removeProduct(product)}
+                        >Удалить</Button>
+                    </ButtonGroup>
+                </td>
             </tr>
         });
 
@@ -168,12 +216,18 @@ class RequestComponent extends React.Component {
 
     async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            let newRequest = {};
-            axios.get(`/request/${this.props.match.params.id}`)
+            await axios.get(`/request/${this.props.match.params.id}`)
                 .then(response => {
-                    newRequest = response.data;
+                    const newRequest = response.data;
+                    newRequest.status='ISSUED';
+                    this.setState({request: response.data});
+                    console.log(this.state);
                 });
-            this.setState({request: newRequest});
+        }
+        else{
+            const request = this.state.request;
+            request['address'] = this.address;
+            this.setState({request});
         }
 
         let cars = [];
@@ -193,17 +247,30 @@ class RequestComponent extends React.Component {
         this.setState({cars: cars, drivers: drivers});
         if (cars.length === 0 || drivers.length === 0) {
             this.setState({formValid: false});
+            return;
         }
+        let request = {...this.state.request};
+        request['car'] = cars[0];
+        request['driver'] = drivers[0];
+        this.setState({request: request});
     }
 
+    changeAddress(value) {
+        let request = {...this.state.request};
+        request['address'] = value.address;
+        this.setState({request: request});
+    };
 
-    async createProduct(id) {
-        this.props.history.push('/product/create/' + id);
-    }
+    validateForm = () => {
+        this.setState({
+            addressValid: this.state.addressValid,
+        });
+    };
+
 
     render() {
         const {request} = this.state;
-
+        console.log(request);
         return (
             <Container className="col-3">
                 <h1>Заявка</h1>
@@ -211,7 +278,7 @@ class RequestComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="status">Статус</Label>
-                        <Input type="select" name="status" id="status" value={request.status || ''}
+                        <Input disabled type="select" name="status" id="status" value={request.id?'ISSUED':'NOT_VIEWED' || ''}
                                onChange={this.handleChange} autoComplete="status">
                             <option value="NOT_VIEWED">Не просмотрена</option>
                             <option value="REJECTED">Отклонена</option>
@@ -232,6 +299,16 @@ class RequestComponent extends React.Component {
                             {this.fillDriverSelector()}
                         </Input>
                     </FormGroup>
+
+                    <FormGroup>
+                        {request.address ? <AddressFields
+                            name="address"
+                            id="addressFields"
+                            validationHandler={this.validateForm}
+                            changeState={this.changeAddress.bind(this)}
+                            address={request.address}/> : null}
+                    </FormGroup>
+
                     <FormGroup>
                         <Label for="productTable">Продукты</Label>
                         <Table name="productTable" id="productTable" className="mt-4">
@@ -242,6 +319,7 @@ class RequestComponent extends React.Component {
                                 <th width="20%">Тип</th>
                                 <th>Стоимость</th>
                                 <th>Статус</th>
+                                <th width="10%"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -268,15 +346,17 @@ class RequestComponent extends React.Component {
                             <TempProductComponent
                                 name="ProductComponent"
                                 id="ProductComponent"
-                                product={this.emptyProduct}
+                                product={this.state.product}
                                 validationHandlerProduct={this.validationHandlerProduct}
                                 changeFieldHandler={this.changeFieldHandler}
                             />
                         </FormGroup>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button color="primary" disabled={!this.state.productValid} onClick={this.saveProduct}>
-                            Добавить
+                        <Button color="primary"
+                                disabled={!this.state.productValid}
+                                onClick={this.saveProduct}>
+                            Сохранить
                         </Button>
                     </Modal.Footer>
                 </Modal>
@@ -287,4 +367,8 @@ class RequestComponent extends React.Component {
     }
 }
 
-export default RequestComponent;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    }),
+)(RequestComponent);

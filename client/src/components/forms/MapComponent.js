@@ -5,7 +5,8 @@ import withScriptjs from "react-google-maps/lib/withScriptjs";
 import withGoogleMap from "react-google-maps/lib/withGoogleMap";
 import Marker from "react-google-maps/lib/components/Marker";
 import GoogleMap from "react-google-maps/lib/components/GoogleMap";
-const _ = require("lodash");
+import reactTriggerChange from "react-trigger-change";
+import _ from "lodash"
 
 class WrappedMapComponent extends React.Component {
     componentWillMount() {
@@ -14,14 +15,16 @@ class WrappedMapComponent extends React.Component {
         this.setState({
             bounds: null,
             center: {
-                lat: 53.888449, lng: 27.544441
+                lat: parseFloat(this.props.lat) || 53.888449,
+                lng: parseFloat(this.props.lng) || 27.544441
             },
             markers: [
                 {
                     name: "Current position",
                     position: {
-                        lat: 53.888449, lng: 27.544441
-                    }
+                        lat: parseFloat(this.props.lat),
+                        lng: parseFloat(this.props.lng)
+                    },
                 }
             ],
             onMapMounted: ref => {
@@ -35,6 +38,18 @@ class WrappedMapComponent extends React.Component {
             },
             onSearchBoxMounted: ref => {
                 refs.searchBox = ref;
+            },
+
+            handleClick: (event) => {
+                let lat = event.latLng.lat();
+                let lng = event.latLng.lng();
+                document.getElementById("latitude").value = lat;
+                reactTriggerChange(document.getElementById("latitude"));
+                document.getElementById("longitude").value = lng;
+                reactTriggerChange(document.getElementById("longitude"));
+                this.setState({
+                    markers: [{position: {lat: parseFloat(lat), lng: parseFloat(lng)}}],
+                });
             },
 
             onPlacesChanged: () => {
@@ -56,7 +71,10 @@ class WrappedMapComponent extends React.Component {
                 let lng = nextMarkers.map(x => x.position.lng());
 
                 document.getElementById("latitude").value = lat;
+                reactTriggerChange(document.getElementById("latitude"));
                 document.getElementById("longitude").value = lng;
+                reactTriggerChange(document.getElementById("longitude"));
+
 
                 this.setState({
                     center: nextCenter,
@@ -65,6 +83,7 @@ class WrappedMapComponent extends React.Component {
             },
         })
     }
+
 
     render() {
         const {
@@ -79,9 +98,10 @@ class WrappedMapComponent extends React.Component {
         return (
             <GoogleMap
                 ref={onMapMounted}
-                defaultZoom={15}
+                zoom={10}
                 center={center}
                 onBoundsChanged={onBoundsChanged}
+                onClick={(e) => this.state.handleClick(e)}
             >
                 <SearchBox
                     ref={onSearchBoxMounted}
@@ -108,12 +128,14 @@ class WrappedMapComponent extends React.Component {
                         }}
                     />
                 </SearchBox>
-                {markers.map((marker, index) =>
+                {markers.map((marker, index) => (
                     <Marker key={index}
                             position={marker.position}
+                            draggable={true}
+                            onDragEnd={(e) => this.state.handleClick(e)}
                             name={marker.name}
                     />
-                )}
+                ))}
             </GoogleMap>
         );
     }

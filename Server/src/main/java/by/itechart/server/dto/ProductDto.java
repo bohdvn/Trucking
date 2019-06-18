@@ -2,10 +2,12 @@ package by.itechart.server.dto;
 
 import by.itechart.server.entity.Product;
 import by.itechart.server.transformers.ToEntityTransformer;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Data;
 
+@Data
 public class ProductDto implements ToEntityTransformer {
-    private int id;
+
+    private Integer id;
 
     private String name;
 
@@ -17,9 +19,8 @@ public class ProductDto implements ToEntityTransformer {
 
     private Product.Status status;
 
-    private Integer lostAmount;
+    private int lostAmount;
 
-    @JsonBackReference
     private RequestDto request;
 
     private ProductDto() {
@@ -29,74 +30,9 @@ public class ProductDto implements ToEntityTransformer {
         return new ProductDto().new Builder();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(final String type) {
-        this.type = type;
-    }
-
-    public Integer getAmount() {
-        return amount;
-    }
-
-    public void setAmount(final Integer amount) {
-        this.amount = amount;
-    }
-
-    public Integer getLostAmount() {
-        return lostAmount;
-    }
-
-    public void setLostAmount(final Integer lostAmount) {
-        this.lostAmount = lostAmount;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(final Integer price) {
-        this.price = price;
-    }
-
-    public Product.Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Product.Status status) {
-        this.status = status;
-    }
-
-    public RequestDto getRequest() {
-        return request;
-    }
-
-    public void setRequest(final RequestDto request) {
-        this.request = request;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(final int id) {
-        this.id = id;
-    }
-
     @Override
     public Product transformToEntity() {
         final Product product = new Product();
-        //product.setRequest(this.request.transformToEntity());
         product.setAmount(this.amount);
         product.setId(this.id);
         product.setLostAmount(this.lostAmount);
@@ -109,11 +45,6 @@ public class ProductDto implements ToEntityTransformer {
 
     public class Builder {
         private Builder() {
-        }
-
-        public Builder withRequest(final RequestDto request) {
-            ProductDto.this.request = request;
-            return this;
         }
 
         public Builder withId(final int id) {

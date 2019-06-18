@@ -2,6 +2,7 @@ package by.itechart.server.entity;
 
 import by.itechart.server.dto.CarDto;
 import by.itechart.server.transformers.ToDtoTransformer;
+import lombok.Data;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
 
+@Data
 @Entity
 @Table(name = "car")
 public class Car implements ToDtoTransformer {
@@ -59,84 +61,6 @@ public class Car implements ToDtoTransformer {
                 .withStatus(this.status)
                 //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-    public CarType getCarType() {
-        return carType;
-    }
-
-    public void setCarType(final CarType carType) {
-        this.carType = carType;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public Integer getConsumption() {
-        return consumption;
-    }
-
-    public void setConsumption(final Integer consumption) {
-        this.consumption = consumption;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final Status status) {
-        this.status = status;
-    }
-
-    public List<Request> getRequests() {
-        return requests;
-    }
-
-    public void setRequests(final List<Request> requests) {
-        this.requests = requests;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Car car = (Car) o;
-        return Objects.equals(id, car.id) &&
-                carType == car.carType &&
-                Objects.equals(name, car.name) &&
-                Objects.equals(consumption, car.consumption) &&
-                status == car.status;
-        //  Objects.equals(requests, car.requests);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, carType, name, consumption, status);
-    }
-
-    @Override
-    public String toString() {
-        return "Car{" +
-                "id=" + id +
-                ", carType=" + carType +
-                ", name='" + name + '\'' +
-                ", consumption=" + consumption +
-                ", status=" + status +
-                //   ", requests=" + requests +
-                '}';
     }
 
     public enum Status {

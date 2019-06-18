@@ -28,12 +28,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import javax.validation.Valid;
-
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -76,10 +73,10 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('OWNER') or hasAuthority('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable("id") int id) {
+    public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal, final @PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/user{} method: GET.", id);
         UserDto userDto = userService.findById(id);
-        if(Objects.nonNull(userDto)){
+        if (Objects.nonNull(userDto)) {
 
             User user = userDto.transformToEntity();
             ClientCompany clientCompany = user.getClientCompany();
@@ -93,7 +90,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/list/")
-    public ResponseEntity<Page<UserDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
+    public ResponseEntity<Page<UserDto>> getAll(@CurrentUser UserPrincipal userPrincipal, final Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
         Page<UserDto> users = userService.findAllByClientCompanyId(userPrincipal.getClientCompanyId(), pageable);
         LOGGER.info("Return userList.size:{}", users.getNumber());
@@ -110,16 +107,16 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/driverList/")
-    public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
+    public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, final Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
         Page<UserDto> drivers = userService.findAllByRolesContains(User.Role.DRIVER, pageable);
         LOGGER.info("Return userList.size:{}", drivers.getNumber());
         return new ResponseEntity<>(drivers, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('OWNER')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/driverList/{query}")
     public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, Pageable pageable,
                                                     @PathVariable("query") String query) {
@@ -140,7 +137,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('ADMIN')")
     @Transactional
-    @PostMapping("")
+    @PostMapping("/")
     public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody UserDto user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         if (userService.existsByEmail(user.getEmail()) || userService.existsByLogin(user.getLogin())) {
@@ -156,11 +153,10 @@ public class UserController {
                         Objects.nonNull(clientCompany) ?
                                 clientCompany : null);
             }
-            userService.save(user);
             ConfirmationToken confirmationToken = new ConfirmationToken(user.transformToEntity());
-            confirmationTokenService.save(confirmationToken.transformToDto());
+            confirmationTokenService.save(confirmationToken);
             String message = String.format("Hello, %s! To confirm your account, " +
-                            "please visit next link: http://localhost:8080/user/confirm-account/%s",
+                            "please visit next link: http://localhost:3000/confirm/%s",
                     user.getName(), confirmationToken.getConfirmationToken());
 
             emailSenderService.sendEmail(user.getEmail(), "Complete Registration!", message);
@@ -178,7 +174,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @Transactional
     @PutMapping("/")
-    public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody UserDto user) {
+    public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal, final @Valid @RequestBody UserDto user) {
         LOGGER.info("REST request. Path:/user method: POST. user: {}", user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userService.save(user);
@@ -188,7 +184,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @DeleteMapping("/{selectedUsers}")
     public ResponseEntity<?> remove(@CurrentUser UserPrincipal userPrincipal,
-                                    @PathVariable("selectedUsers") String selectedUsers) {
+                                    final @PathVariable("selectedUsers") String selectedUsers) {
         LOGGER.info("REST request. Path:/user/{} method: DELETE.", selectedUsers);
         final String delimeter = ",";
         final String[] usersId = selectedUsers.split(delimeter);
@@ -200,18 +196,17 @@ public class UserController {
 
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @Transactional
     @GetMapping("/confirm-account/{confirmationToken}")
-    public ResponseEntity<?> confirmUserAccount(@PathVariable String confirmationToken) {
+    public ResponseEntity<?> confirmUserAccount(final @PathVariable String confirmationToken) {
         final ConfirmationToken token =
-                confirmationTokenService.findByConfirmationToken(confirmationToken).transformToEntity();
+                confirmationTokenService.findByConfirmationToken(confirmationToken);
         if (token != null) {
             final UserDto user = userService.findByEmailIgnoreCase(token.getUser().getEmail());
-            if (!user.getEnabled()) {
+            if (!user.isEnabled()) {
                 user.setEnabled(true);
                 userService.save(user);
                 LOGGER.info("Users field isEnabled was change.");
-                confirmationTokenService.delete(token.transformToDto());
-                LOGGER.info("Confirmation token was deleted.");
             }
 
         } else {
@@ -225,7 +220,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(final @Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getLoginOrEmail(),

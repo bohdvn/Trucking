@@ -26,7 +26,7 @@ public class ReportController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReportController.class);
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @PutMapping("/download")
     public ResponseEntity<byte[]> download(@RequestBody Map<String, String> dates) throws IOException {
         LOGGER.info("REST request to get a xls report for dates: {} - {}", dates.get("startDate"), dates.get("endDate"));

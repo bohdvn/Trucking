@@ -39,6 +39,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> findAll() {
+        return userRepository.findAll().stream().map(User::transformToDto).collect(Collectors.toList());
+    }
+
+    @Override
     public Page<UserDto> findAllByClientCompanyId(final int id, final Pageable pageable, final String query) {
         final Specification<User> specification = new CustomSpecification<>(
                 new SearchCriteria(query, null, id, UserDto.class));
@@ -47,20 +52,10 @@ public class UserServiceImpl implements UserService {
                 .sorted(Comparator.comparing(UserDto::getSurname))
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
     }
-
     @Override
-    public List<UserDto> findAll() {
-        return userRepository.findAll().stream().map(User::transformToDto).collect(Collectors.toList());
+    public List<User> getAllByBirthday(final int month, final int day) {
+        return userRepository.findByMatchMonthAndMatchDay(month, day);
     }
-
-//    @Override
-//    public Page<UserDto> findAllByQuery(final Pageable pageable, final String query) {
-//        Specification<User> specification = new CustomSpecification<>(new SearchCriteria(query, UserDto.class));
-//        final Page<User> users = userRepository.findAll(specification, pageable);
-//        return new PageImpl<>(users.stream().map(User::transformToDto)
-//                .sorted(Comparator.comparing(UserDto::getSurname))
-//                .collect(Collectors.toList()), pageable, users.getTotalElements());
-//    }
 
     @Override
     public Page<UserDto> findAll(final Pageable pageable) {
@@ -69,7 +64,6 @@ public class UserServiceImpl implements UserService {
                 .sorted(Comparator.comparing(UserDto::getSurname))
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
     }
-
     @Override
     public UserDto findById(final int id) {
         return userRepository.findById(id).isPresent() ? userRepository.findById(id).get().transformToDto() : null;

@@ -24,27 +24,22 @@ class RoleSelect extends React.Component {
             switch (role) {
                 case ROLE.SYSADMIN:
                     if (this.state.client) {
-                        const adminOption = Object.assign({}, ROLE_OPTION.ADMIN_OPTION);
                         roleOptions.push(
-                            adminOption
+                            ROLE_OPTION.ADMIN_OPTION
                         );
                     } else {
-                        const driverOption = Object.assign({}, ROLE_OPTION.DRIVER_OPTION);
-                        roleOptions.push(driverOption);
+                        roleOptions.push(
+                            ROLE_OPTION.DRIVER_OPTION
+                        );
                     }
                     break;
 
                 case ROLE.ADMIN:
-                    const adminOption = Object.assign({}, ROLE_OPTION.ADMIN_OPTION);
-                    const managerOption = Object.assign({}, ROLE_OPTION.MANAGER_OPTION);
-                    const dispatcherOption = Object.assign({}, ROLE_OPTION.DISPATCHER_OPTION);
-                    const ownerOption = Object.assign({}, ROLE_OPTION.OWNER_OPTION);
-
                     roleOptions.push(
-                        adminOption,
-                        managerOption,
-                        dispatcherOption,
-                        ownerOption
+                        ROLE_OPTION.ADMIN_OPTION,
+                        ROLE_OPTION.MANAGER_OPTION,
+                        ROLE_OPTION.DISPATCHER_OPTION,
+                        ROLE_OPTION.OWNER_OPTION
                     );
                     break;
 

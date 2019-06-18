@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container,FormGroup, Input, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, FormGroup, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import Modal from 'react-bootstrap/Modal';
 import Pagination from "react-js-pagination";
@@ -67,8 +67,6 @@ class WaybillListComponent extends React.Component {
                     this.setState({itemsCountPerPage: itemsCountPerPage});
 
                     const results = response.data.content;
-                    console.log(this.state);
-
                     if (results != null) {
                         this.setState({waybills: results});
                         console.log(results);
@@ -108,9 +106,9 @@ class WaybillListComponent extends React.Component {
 
     async handleShowActOfLoss(id) {
         const waybill = await(await
-        fetch(`/waybill/${id}`,
-            {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
-    ).json();
+                fetch(`/waybill/${id}`,
+                    {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
+        ).json();
         this.setState({showActOfLoss: true, waybill: waybill});
     }
 
@@ -235,7 +233,6 @@ class WaybillListComponent extends React.Component {
                             itemClass='page-item'
                             linkClass='btn btn-light'
                             onChange={this.handlePageChange}
-
                         />
                     </div>
 
@@ -255,7 +252,8 @@ class WaybillListComponent extends React.Component {
                             </FormGroup>
                         </Modal.Body>
                         <Modal.Footer>
-                            <Button color="primary" onClick={this.updateWayBill} disabled={!this.state.productFormValid}>
+                            <Button color="primary" onClick={this.updateWayBill}
+                                    disabled={!this.state.productFormValid}>
                                 Поддтвердить
                             </Button>
                         </Modal.Footer>

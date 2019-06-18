@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class ClientCompanyDto implements ToEntityTransformer, FieldsInterface {
 
-    private int id;
+    private Integer id;
 
     @CriteriaAnnotation
     private String name;
@@ -39,40 +39,7 @@ public class ClientCompanyDto implements ToEntityTransformer, FieldsInterface {
         clientCompany.setName(this.name);
         clientCompany.setStatus(this.status);
         clientCompany.setType(this.type);
-        //clientCompany.setUsers(this.users.stream().map(UserDto::transformToEntity).collect(Collectors.toList()));
         return clientCompany;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(final int id) {
-        this.id = id;
-    }
-
-    public ClientCompany.Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(final ClientCompany.Status status) {
-        this.status = status;
-    }
-
-    public ClientCompany.Type getType() {
-        return type;
-    }
-
-    public void setType(final ClientCompany.Type type) {
-        this.type = type;
     }
 
     public class Builder {

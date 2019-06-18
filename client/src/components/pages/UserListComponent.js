@@ -27,8 +27,9 @@ class UserListComponent extends React.Component {
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
-            url: props.location.pathname,
-            selectedUsers: []
+            selectedUsers: [],
+            resultMessage: '',
+            url: props.location.pathname
         };
         this.queryTimeout = -1;
         this.handlePageChange = this.handlePageChange.bind(this);
@@ -144,20 +145,28 @@ class UserListComponent extends React.Component {
 
     sendEmail = () => {
         const selectedIds = getSelected();
-        const selectedUsers = [];
-        const {users} = this.state;
-        for (let selected = 0; selected < selectedIds.length; selected++) {
-            for (let userId = 0; userId < users.length; userId++) {
-                const user = users[userId];
-                if (selectedIds[selected] == user.id) {
-                    selectedUsers.push(user);
+        if (selectedIds.length > 0) {
+            const selectedUsers = [];
+            const {users} = this.state;
+            for (let selected = 0; selected < selectedIds.length; selected++) {
+                for (let userId = 0; userId < users.length; userId++) {
+                    const user = users[userId];
+                    if (selectedIds[selected] == user.id) {
+                        selectedUsers.push(user);
+                    }
                 }
             }
+            this.props.history.push({
+                pathname: "/email",
+                state: {users: selectedUsers}
+            });
+        } else {
+            this.setState({
+                resultMessage: "Не выбрано ни одного получателя! Пожалуйста выберите одного или несколько получателей."
+            }, () => {
+                alert(this.state.resultMessage);
+            });
         }
-        this.props.history.push({
-            pathname: "/email",
-            state: {users: selectedUsers}
-        });
     };
 
     populateRowsWithData = () => {
@@ -266,7 +275,6 @@ class UserListComponent extends React.Component {
                                 onChange={this.handlePageChange}
                             />
                         </div>
-                        {/*<SendEmail email={this.state.selectedUsers}/>*/}
                     </Container>
                 </div>
             </form>

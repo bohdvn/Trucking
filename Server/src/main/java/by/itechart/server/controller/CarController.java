@@ -44,7 +44,7 @@ public class CarController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN') or hasAuthority('OWNER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/car/{} method: GET.", id);

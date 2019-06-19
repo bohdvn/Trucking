@@ -6,6 +6,8 @@ import Pagination from "react-js-pagination";
 import axios from 'axios';
 import CheckProductsComponent from "../forms/CheckProductsComponent";
 import ActOfLossComponent from "../forms/ActOfLossComponent";
+import * as ROLE from "../../constants/userConstants";
+import {connect} from "react-redux";
 
 
 class WaybillListComponent extends React.Component {
@@ -19,6 +21,7 @@ class WaybillListComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            roles:props.loggedIn.claims.roles,
             waybill: '',
             waybills: [],
             query: '',
@@ -28,8 +31,12 @@ class WaybillListComponent extends React.Component {
             totalItemsCount: null,
             showExecuteWaybill: false,
             showActOfLoss: false,
-            productFormValid: true
+            productFormValid: true,
         };
+        this.state.url=this.state.roles.includes(ROLE.OWNER)?'/clients/':'/list/';
+        const check=this.state.roles.includes(ROLE.OWNER);
+        this.state.waybillURL=check?`/waybill/our`
+            : `/waybill`;
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.handleShowExecuteWaybill = this.handleShowExecuteWaybill.bind(this);
@@ -49,7 +56,7 @@ class WaybillListComponent extends React.Component {
     };
 
     fetchURL(page, query) {
-        axios.get(`/waybill/list/${query}?page=${page}&size=5`)
+        axios.get(`/waybill/${this.state.url}/${query}?page=${page}&size=5`)
             .then(response => {
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
@@ -92,7 +99,7 @@ class WaybillListComponent extends React.Component {
     }
 
     handleShowActOfLoss(id) {
-        axios.get(`/waybill/${id}`)
+        axios.get(`${this.state.waybillURL}/${id}`)
             .then(response => {
                 this.setState({showActOfLoss: true, waybill: response.data})
             }, error => this.handleError(error));
@@ -142,7 +149,7 @@ class WaybillListComponent extends React.Component {
                                     to={"/waybill/" + waybill.id}>Редактировать
                             </Button>
                             : null}
-                        {waybill.status === 'FINISHED' ?
+                        {waybill.status === 'FINISHED' && this.state.roles.includes(ROLE.DRIVER)?
                             <Button
                                 size="sm" color="primary" onClick={() => this.handleShowExecuteWaybill(waybill.id)}>Оформить
                             </Button>
@@ -244,4 +251,8 @@ class WaybillListComponent extends React.Component {
     }
 }
 
-export default WaybillListComponent;
+export default connect(
+    state => ({
+        loggedIn: state.loggedIn,
+    }),
+)(WaybillListComponent);

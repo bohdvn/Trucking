@@ -14,5 +14,9 @@ public interface WayBillRepository extends JpaRepository<WayBill,Integer>, JpaSp
 
     Page<WayBill> findAllByInvoiceRequestDriverId(int id, Pageable pageable);
 
-    Optional<WayBill> findByIdAndInvoiceRequestDriverId(int id, Integer integer);
+    Optional<WayBill> findByIdAndInvoiceRequestDriverId(int id, Integer driver);
+
+    Optional<WayBill> findByIdAndInvoiceRequestClientCompanyFromId(int id, Integer client);
+
+    Page<WayBill> findAllByInvoiceRequestClientCompanyFromId(final int id, Pageable pageable);
 }

@@ -81,6 +81,9 @@ class Navigation extends React.Component {
                     navs.push(
                         <NavItem>
                             <NavLink href="/requests">Заявки</NavLink>
+                        </NavItem>,
+                        <NavItem>
+                            <NavLink href="/waybills">Путевые листы</NavLink>
                         </NavItem>
                     );
                     break;

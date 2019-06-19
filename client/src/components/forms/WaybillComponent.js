@@ -113,14 +113,17 @@ class WaybillComponent extends React.Component {
     }
 
 
-    componentWillMount() {
+    // componentWillMount() {
+    getRoute=()=>{
         const {waybill, roles} = this.state;
-        console.log(typeof waybill);
+        console.log(waybill);
         if (typeof waybill.invoice !== 'undefined'
             && typeof waybill.invoice.request !== 'undefined'
             && (roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER))) {
             const addressFrom = waybill.invoice.request.clientCompanyFrom.address;
             const addressTo = waybill.invoice.request.address;
+            console.log(addressFrom);
+            console.log(addressTo);
             Geocode.setApiKey('AIzaSyB2JLf08WBJ9takbdrl8DQhoS-mBK_XA_0');
             Geocode.fromAddress(addressFrom.city + ' ' + addressFrom.street + ' ' + addressFrom.building).then(
                 response => {
@@ -230,9 +233,11 @@ class WaybillComponent extends React.Component {
 
     };
 
-    componentDidMount() {
+    async componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            axios.get(`/waybill/${this.props.match.params.id}`)
+            const check=this.state.roles.includes(ROLE.OWNER);
+            const url=check?`/waybill/our/${this.props.match.params.id}`:`/waybill/${this.props.match.params.id}`;
+            await axios.get(url)
                 .then(response => {
                     console.log(response.data);
                     this.setState({waybill: response.data})
@@ -241,16 +246,13 @@ class WaybillComponent extends React.Component {
                     const data = {status, statusText}
                     this.props.history.push('/error', {error: data});
                 });
-        }
+        };
+        this.getRoute();
     }
 
     finishWaybillCheck = () => {
         const {waybill, roles} = this.state;
         const {checkpoints} = waybill;
-        console.log(checkpoints);
-        console.log(!roles.includes(ROLE.DRIVER) && !waybill.id);
-        console.log(checkpoints[checkpoints.length - 1]);
-        console.log(checkpoints[checkpoints.length - 1] === 'PASSED');
         return (!roles.includes(ROLE.DRIVER) && !waybill.id)
             || (checkpoints.length && checkpoints[checkpoints.length - 1].status === 'NOT_PASSED');
     };
@@ -258,7 +260,6 @@ class WaybillComponent extends React.Component {
     render() {
         const {waybill, roles} = this.state;
         const check = this.finishWaybillCheck();
-        console.log(check);
         return (
             <Container className="col-3" style={{'max-width':'65%'}}>
                 <h1>Путевой лист</h1>
@@ -315,12 +316,15 @@ class WaybillComponent extends React.Component {
                             : null}
                     </FormGroup>
                     <FormGroup>
-                        {!waybill.id && (roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER)) ?
+                        {(roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER)) ?
                             <Button color="primary" onClick={this.handleShowRoute}>Показать маршрут</Button>
                             : null}
                     </FormGroup>
+
                     <FormGroup>
-                        <Button color="primary" type="submit">Сохранить</Button>{' '}
+                        {!roles.includes(ROLE.OWNER)?
+                            <Button color="primary" type="submit">Сохранить</Button>
+                        :null}
                     </FormGroup>
 
                 </Form>

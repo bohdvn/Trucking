@@ -38,17 +38,15 @@ public class WayBillController {
     private static final Logger LOGGER = LoggerFactory.getLogger(WayBillController.class);
     private WayBillService wayBillService;
     private UserService userService;
-    private InvoiceService invoiceService;
 
     public WayBillController(WayBillService wayBillService, UserService userService, InvoiceService invoiceService) {
         this.wayBillService = wayBillService;
         this.userService = userService;
-        this.invoiceService = invoiceService;
     }
 
     @PreAuthorize("hasAuthority('DRIVER')")
     @PutMapping("/")
-    public ResponseEntity<?> edit(@CurrentUser @Valid @RequestBody WayBillDto wayBill) {
+    public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody WayBillDto wayBill) {
         LOGGER.info("REST request. Path:/waybill method: POST. waybill: {}", wayBill);
         wayBillService.save(wayBill);
         return new ResponseEntity<>(HttpStatus.CREATED);

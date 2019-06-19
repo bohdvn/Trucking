@@ -43,6 +43,7 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/car/:id" allowed={[ROLE.SYSADMIN]} component={CarComponent}/>
                 <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
                 <ProtectedRoute exact path='/report' allowed={[ROLE.SYSADMIN]} component={ReportComponent}/>
+                <ProtectedRoute exact path='/drivers' allowed={[ROLE.SYSADMIN]} component={UserListComponent}/>
                 <ProtectedRoute exact path='/template' allowed={[ROLE.SYSADMIN]} component={TemplateComponent}/>
 
 
@@ -51,22 +52,24 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/user/:id" allowed={[ROLE.ADMIN]} component={UserComponent}/>
 
                 {/*OWNER*/}
-                <ProtectedRoute exact path='/request/:id' allowed={[ROLE.OWNER,ROLE.DISPATCHER]} component={RequestComponent}/>
+                <ProtectedRoute exact path='/request/:id' allowed={[ROLE.OWNER, ROLE.DISPATCHER]}
+                                component={RequestComponent}/>
                 <ProtectedRoute exact path="/requests" allowed={ROLE.OWNER} component={RequestListComponent}/>
                 {/*DISPATCHER*/}
-                <ProtectedRoute exact path="/notviewedrequests" allowed={ROLE.DISPATCHER} component={RequestListComponent}/>
-                <ProtectedRoute exact path="/invoices" allowed={[ROLE.DISPATCHER,ROLE.MANAGER]} component={InvoiceListComponent}/>
+                <ProtectedRoute exact path="/notviewedrequests" allowed={ROLE.DISPATCHER}
+                                component={RequestListComponent}/>
+                <ProtectedRoute exact path="/invoices" allowed={[ROLE.DISPATCHER, ROLE.MANAGER]}
+                                component={InvoiceListComponent}/>
 
                 {/*MANAGER*/}
-                <ProtectedRoute exact path="/waybill/:id" allowed={[ROLE.MANAGER, ROLE.DRIVER]} component={WaybillComponent}/>
+                <ProtectedRoute exact path="/waybill/:id" allowed={[ROLE.MANAGER, ROLE.DRIVER]}
+                                component={WaybillComponent}/>
 
 
                 {/*DRIVER*/}
                 <ProtectedRoute exact path="/waybills" allowed={ROLE.DRIVER} component={WaybillListComponent}/>
 
                 {/*MANAGER*/}
-
-
 
 
                 {/*<Route path="/user/:id" component={UserComponent}/>*/}

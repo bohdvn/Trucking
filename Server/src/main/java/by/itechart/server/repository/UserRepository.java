@@ -1,6 +1,5 @@
 package by.itechart.server.repository;
 
-import by.itechart.server.entity.ClientCompany;
 import by.itechart.server.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +13,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User,Integer>, JpaSpecificationExecutor<User> {
+public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
-    Page<User> findAllByClientCompanyId(Integer id,Pageable pageable);
+    Page<User> findAllByClientCompanyId(Integer id, Pageable pageable);
 
     Optional<User> findByLoginOrEmail(String login, String email);
 
@@ -26,14 +25,14 @@ public interface UserRepository extends JpaRepository<User,Integer>, JpaSpecific
 
     User findByEmailIgnoreCase(String email);
 
-    Page<User> findAllByRolesContains(User.Role role,Pageable pageable);
+    Page<User> findAllByRolesContains(User.Role role, Pageable pageable);
 
     List<User> findAllByRolesContains(User.Role role);
 
-    @Query(value = "SELECT * FROM user " +
-            "WHERE email IS NOT NULL " +
-            "AND extract(MONTH FROM date_of_birth) = :m " +
-            "AND extract(DAY FROM date_of_birth) = :d",
+    @Query(value = "SELECT * FROM user "
+            + "WHERE email IS NOT NULL "
+            + "AND extract(MONTH FROM date_of_birth) = :m "
+            + "AND extract(DAY FROM date_of_birth) = :d",
             nativeQuery = true)
     List<User> findByMatchMonthAndMatchDay(@Param("m") int month, @Param("d") int day);
 }

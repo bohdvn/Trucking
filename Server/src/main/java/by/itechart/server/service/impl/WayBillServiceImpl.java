@@ -5,13 +5,20 @@ import by.itechart.server.entity.WayBill;
 import by.itechart.server.repository.WayBillRepository;
 import by.itechart.server.service.InvoiceService;
 import by.itechart.server.service.WayBillService;
+import by.itechart.server.specifications.CustomSpecification;
+import by.itechart.server.specifications.SearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,7 +30,7 @@ public class WayBillServiceImpl implements WayBillService {
 
     private WayBillRepository wayBillRepository;
 
-    public WayBillServiceImpl(InvoiceService invoiceService, WayBillRepository wayBillRepository) {
+    public WayBillServiceImpl(final InvoiceService invoiceService, final WayBillRepository wayBillRepository) {
         this.invoiceService = invoiceService;
         this.wayBillRepository = wayBillRepository;
     }
@@ -38,17 +45,38 @@ public class WayBillServiceImpl implements WayBillService {
     }
 
     @Override
-    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, WayBill.Status status, final Pageable pageable) {
+    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, final WayBill.Status status,
+                                                                     final Pageable pageable) {
         final Page<WayBill> wayBills =
-                wayBillRepository.findAllByInvoiceRequestDriverIdAndStatus(id,status,pageable);
+                wayBillRepository.findAllByInvoiceRequestDriverIdAndStatus(id, status, pageable);
         return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
                 .sorted(Comparator.comparing(WayBillDto::getDateFrom))
                 .collect(Collectors.toList()), pageable, wayBills.getTotalElements());
     }
 
     @Override
+    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, final WayBill.Status status,
+                                                                     final Pageable pageable, final String query) {
+        final Map<List<String>, Object> conditions = new HashMap<>();
+        conditions.put(Arrays.asList("invoice", "request", "id"), id);
+        conditions.put(Arrays.asList("status"), status);
+
+        final SearchCriteria<WayBill> newSearchCriteria = new SearchCriteria(conditions, WayBill.class, query);
+        final Specification<WayBill> specification = new CustomSpecification<>(newSearchCriteria);
+        final Page<WayBill> wayBills = wayBillRepository.findAll(specification, pageable);
+        return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
+                .sorted(Comparator.comparing(WayBillDto::getDateFrom))
+                .collect(Collectors.toList()), pageable, wayBills.getTotalElements());
+    }
+
+    @Override
+    public WayBillDto findById(final int id) {
+        return wayBillRepository.findById(id).isPresent() ? wayBillRepository.findById(id).get().transformToDto() : null;
+    }
+
+    @Override
     public WayBillDto findByIdAndInvoiceRequestDriverId(final int id, final int driverId) {
-        Optional<WayBill> optionalWayBill=wayBillRepository.findByIdAndInvoiceRequestDriverId(id,driverId);
+        Optional<WayBill> optionalWayBill = wayBillRepository.findByIdAndInvoiceRequestDriverId(id, driverId);
         return optionalWayBill.isPresent() ? optionalWayBill.get().transformToDto() : null;
     }
 

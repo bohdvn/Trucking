@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, FormGroup, Table} from 'reactstrap';
+import {Container, FormGroup, Input, Table, Button, ButtonGroup} from 'reactstrap';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 import {ACCESS_TOKEN} from "../../constants/auth";
@@ -8,7 +8,6 @@ import {connect} from "react-redux";
 import {MANAGER} from "../../constants/userConstants";
 import Modal from 'react-bootstrap/Modal';
 import InvoiceComponent from '../forms/InvoiceComponent';
-import {currentTime} from "../../utils/currentTime";
 
 class InvoiceListComponent extends React.Component {
 
@@ -34,6 +33,7 @@ class InvoiceListComponent extends React.Component {
             invoice: {},
             loggedIn: props.loggedIn,
             invoices: [],
+            query: '',
             activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
@@ -43,10 +43,14 @@ class InvoiceListComponent extends React.Component {
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.remove = this.remove.bind(this);
+
+        this.queryTimeout = -1;
+        this.handleQueryChange = this.handleQueryChange.bind(this);
+        this.changeQuery = this.changeQuery.bind(this);
     }
 
-    fetchURL(page) {
-        axios.get(`/invoice/list?page=${page}&size=5`)
+    fetchURL(page, query) {
+        axios.get(`/invoice/list/${query}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
@@ -72,15 +76,28 @@ class InvoiceListComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchURL(this.state.activePage)
+        this.fetchURL(this.state.activePage, this.state.query);
     }
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber - 1)
+        this.fetchURL(pageNumber - 1, this.state.query);
     }
 
+    changeQuery() {
+        this.fetchURL(0, this.state.query);
+    }
+
+    handleQueryChange(event) {
+        clearTimeout(this.queryTimeout);
+        const target = event.target;
+        const value = target.value;
+        this.setState(() => ({
+            query: value
+        }));
+        this.queryTimeout = setTimeout(this.changeQuery, 1000);
+    }
 
     populateRowsWithData = () => {
         const {roles} = this.state.loggedIn.claims;
@@ -101,13 +118,6 @@ class InvoiceListComponent extends React.Component {
                     </td>
                     : null}
 
-                {/*{roles.includes(MANAGER) && invoice.status==='CHECKED' ?*/}
-                {/*<td>*/}
-                {/*<ButtonGroup>*/}
-                {/*<Button size="sm" color="primary" onClick={()=>this.createWaybill(invoice)} tag={Link}>Путевой лист</Button>*/}
-                {/*</ButtonGroup>*/}
-                {/*</td>*/}
-                {/*: null}*/}
             </tr>
         });
 
@@ -122,13 +132,13 @@ class InvoiceListComponent extends React.Component {
         console.log(this.state);
     }
 
-    rejectRequest=()=>{
-        this.setState({show:false});
+    rejectRequest = () => {
+        this.setState({show: false});
         const {invoice} = this.state;
-        invoice.request.status='REJECTED';
+        invoice.request.status = 'REJECTED';
         console.log(invoice);
-        axios.put('/invoice/',invoice)
-            .then(response=>{
+        axios.put('/invoice/', invoice)
+            .then(response => {
                 console.log(response);
             });
     };
@@ -150,20 +160,6 @@ class InvoiceListComponent extends React.Component {
         });
     }
 
-    // confirmInvoice = () => {
-    //     this.setState({show: false});
-    //     const {invoice} = this.state;
-    //     this.props.history.push("/waybill/create", {invoice: invoice});
-    //     console.log(invoice);
-    //     invoice.status='CHECKED';
-    //     invoice.dateOfCheck=currentTime();
-    //     axios.put('/invoice/',invoice)
-    //         .then(response => {
-    //             console.log(response);
-    //         });
-    //     window.location.reload();
-    // };
-
     createWaybill = () => {
         const {invoice} = this.state;
         this.props.history.push("/waybill/create", {invoice: invoice});
@@ -175,6 +171,10 @@ class InvoiceListComponent extends React.Component {
         return (
             <div>
                 <Container fluid>
+                    <FormGroup>
+                        <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                               onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                    </FormGroup>
                     <Table className="mt-4">
                         <thead>
                         <tr>

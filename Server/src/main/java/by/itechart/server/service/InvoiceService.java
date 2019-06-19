@@ -8,14 +8,16 @@ import java.util.List;
 
 public interface InvoiceService {
 
-    void save(InvoiceDto invoiceDto);
+    void save(final InvoiceDto invoiceDto);
 
     List<InvoiceDto> findAll();
 
-    InvoiceDto findById(int id);
+    InvoiceDto findById(final int id);
 
-    void deleteById(int id);
+    void deleteById(final int id);
 
-    Page<InvoiceDto> findAll(Pageable pageable);
+    Page<InvoiceDto> findAll(final Pageable pageable);
+
+    Page<InvoiceDto> findAllByQuery(final Pageable pageable, final String query);
 }
 

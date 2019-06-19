@@ -30,7 +30,7 @@ public class SchedulerService {
         if (!list.isEmpty()) {
             list.forEach(user -> {
                 try {
-                    String message = "С Днем Рождения уважаемый " + user.getName() + "!";
+                    String message = "С Днем Рождения, уважаемый " + user.getName() + "!";
                     emailSenderService.sendEmail(user.getEmail(), "С Днем Рождения!", message);
                     LOGGER.info("Email have been sent. User id: {}, Date: {}", user.getId(), date);
                 } catch (Exception e) {

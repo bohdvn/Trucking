@@ -10,7 +10,7 @@
             <columnExists tableName="user" columnName="user_role"/>
         </preConditions>
         <dropColumn columnName="user_role"
-                    schemaName="trucking"
+                    schemaName="testingdatabase"
                     tableName="user"/>
     </changeSet>
 </databaseChangeLog>

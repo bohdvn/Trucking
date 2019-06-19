@@ -45,7 +45,9 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public Page<CarDto> findAllByQuery(final Pageable pageable, final String query) {
-        Specification<Car> specification = new CustomSpecification<>(new SearchCriteria(query, CarDto.class));
+        final SearchCriteria<Car> newSearchCriteria = new SearchCriteria(Car.class, query);
+        final Specification<Car> specification = new CustomSpecification<>(newSearchCriteria);
+
         final Page<Car> cars = carRepository.findAll(specification, pageable);
         return new PageImpl<>(cars.stream().map(Car::transformToDto)
                 .sorted(Comparator.comparing(CarDto::getStatus))

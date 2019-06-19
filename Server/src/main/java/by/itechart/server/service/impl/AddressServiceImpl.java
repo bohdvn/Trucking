@@ -30,7 +30,8 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressDto findById(int id) {
-        return addressRepository.findById(id).isPresent() ? addressRepository.findById(id).get().transformToDto() : null;
+        return addressRepository.findById(id).isPresent()
+                ? addressRepository.findById(id).get().transformToDto() : null;
     }
 
     @Override

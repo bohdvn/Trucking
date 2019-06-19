@@ -206,8 +206,8 @@
             </not>
         </preConditions>
         <addColumn
-                catalogName="trucking"
-                schemaName="trucking"
+                catalogName="testingdatabase"
+                schemaName="testingdatabase"
                 tableName="user">
             <column name="email" type="varchar(255)"/>
         </addColumn>
@@ -215,11 +215,11 @@
 
     <changeSet author="aliaksandr.yakutsin" id="11">
         <renameColumn
-                catalogName="trucking"
+                catalogName="testingdatabase"
                 columnDataType="varchar(255)"
                 newColumnName="longitude"
                 oldColumnName="longtitude"
-                schemaName="trucking"
+                schemaName="testingdatabase"
                 tableName="address"/>
     </changeSet>
 
@@ -228,11 +228,11 @@
             <columnExists columnName="longtitude" tableName="address"/>
         </preConditions>
         <renameColumn
-                catalogName="trucking"
+                catalogName="testingdatabase"
                 columnDataType="varchar(255)"
                 newColumnName="longitude"
                 oldColumnName="longtitude"
-                schemaName="trucking"
+                schemaName="testingdatabase"
                 tableName="address"/>
     </changeSet>
 </databaseChangeLog>

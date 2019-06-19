@@ -5,7 +5,11 @@ import by.itechart.server.dto.UserDto;
 import by.itechart.server.entity.ClientCompany;
 import by.itechart.server.entity.ConfirmationToken;
 import by.itechart.server.entity.User;
-import by.itechart.server.security.*;
+import by.itechart.server.security.CurrentUser;
+import by.itechart.server.security.JwtAuthenticationResponse;
+import by.itechart.server.security.JwtTokenProvider;
+import by.itechart.server.security.LoginRequest;
+import by.itechart.server.security.UserPrincipal;
 import by.itechart.server.service.ClientCompanyService;
 import by.itechart.server.service.ConfirmationTokenService;
 import by.itechart.server.service.EmailSenderService;
@@ -26,7 +30,16 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -64,7 +77,7 @@ public class UserController {
     public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal, final @PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/user{} method: GET.", id);
         UserDto userDto = userService.findById(id);
-        if(Objects.nonNull(userDto)){
+        if (Objects.nonNull(userDto)) {
 
             User user = userDto.transformToEntity();
             ClientCompany clientCompany = user.getClientCompany();
@@ -77,23 +90,41 @@ public class UserController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/list")
+    @GetMapping("/list/")
     public ResponseEntity<Page<UserDto>> getAll(@CurrentUser UserPrincipal userPrincipal, final Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
         Page<UserDto> users = userService.findAllByClientCompanyId(userPrincipal.getClientCompanyId(), pageable);
         LOGGER.info("Return userList.size:{}", users.getNumber());
-        return users.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(users, HttpStatus.OK);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/list/{query}")
+    public ResponseEntity<Page<UserDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable,
+                                                @PathVariable("query") String query) {
+        LOGGER.info("REST request. Path:/user method: GET.");
+        Page<UserDto> users = userService.findAllByClientCompanyId(userPrincipal.getClientCompanyId(), pageable, query);
+        LOGGER.info("Return userList.size:{}", users.getNumber());
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('SYSADMIN')")
-    @GetMapping("/driverList")
+    @GetMapping("/driverList/")
     public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, final Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
         Page<UserDto> drivers = userService.findAllByRolesContains(User.Role.DRIVER, pageable);
         LOGGER.info("Return userList.size:{}", drivers.getNumber());
-        return drivers.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(drivers, HttpStatus.OK);
+        return new ResponseEntity<>(drivers, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('SYSADMIN')")
+    @GetMapping("/driverList/{query}")
+    public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, Pageable pageable,
+                                                    @PathVariable("query") String query) {
+        LOGGER.info("REST request. Path:/user method: GET.");
+        Page<UserDto> drivers = userService.findAllByRolesContains(User.Role.DRIVER, pageable, query);
+        LOGGER.info("Return userList.size:{}", drivers.getNumber());
+        return new ResponseEntity<>(drivers, HttpStatus.OK);
     }
 
 
@@ -102,8 +133,7 @@ public class UserController {
     public ResponseEntity<?> getDrivers() {
         LOGGER.info("REST request. Path:/user method: GET.");
         final List<UserDto> drivers = userService.findAllByRolesContains(User.Role.DRIVER);
-        return drivers.isEmpty() ?
-                new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(drivers, HttpStatus.OK);
+        return new ResponseEntity<>(drivers, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('SYSADMIN') or hasAuthority('ADMIN')")
@@ -205,20 +235,4 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
-    @GetMapping("/list/{query}")
-    public ResponseEntity<Page<UserDto>> getAll(final Pageable pageable, final @PathVariable("query") String query) {
-        LOGGER.info("REST request. Path:/user method: GET.");
-        final Page<UserDto> userDtos = userService.findAllByQuery(pageable, query);
-        LOGGER.info("Return userList.size:{}", userDtos.getNumber());
-        return new ResponseEntity<>(userDtos, HttpStatus.OK);
-    }
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
-    @GetMapping("/list/")
-    public ResponseEntity<Page<UserDto>> getAllWithoutQuery(final Pageable pageable) {
-        LOGGER.info("REST request. Path:/user method: GET.");
-        final Page<UserDto> userDtos = userService.findAll(pageable);
-        LOGGER.info("Return userList.size:{}", userDtos.getNumber());
-        return new ResponseEntity<>(userDtos, HttpStatus.OK);
-    }
 }

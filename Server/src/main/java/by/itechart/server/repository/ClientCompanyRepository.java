@@ -8,7 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ClientCompanyRepository
-        extends JpaRepository<ClientCompany,Integer>, JpaSpecificationExecutor<ClientCompany> {
-
-    //Page<ClientCompany> findClientCompaniesByCompanyType(ClientCompany.CompanyType companyType, Pageable pageable);
+        extends JpaRepository<ClientCompany, Integer>, JpaSpecificationExecutor<ClientCompany> {
 }

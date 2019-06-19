@@ -1,18 +1,15 @@
 package by.itechart.server.dto;
 
-import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.Car;
-import by.itechart.server.interfaces.FieldsInterface;
 import by.itechart.server.transformers.ToEntityTransformer;
 import lombok.Data;
 
 @Data
-public class CarDto implements ToEntityTransformer, FieldsInterface {
+public class CarDto implements ToEntityTransformer {
     private Integer id;
 
     private Car.CarType carType;
 
-    @CriteriaAnnotation
     private String name;
 
     private Integer consumption;

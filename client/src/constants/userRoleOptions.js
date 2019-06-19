@@ -1,12 +1,6 @@
 import React from "react";
 import * as ROLE from './userConstants';
 
-export const SYSADMIN_OPTION = {
-    id:ROLE.SYSADMIN,
-    value:ROLE.SYSADMIN,
-    label:ROLE.SYSADMIN_RU,
-};
-
 export const ADMIN_OPTION = {
     id:ROLE.ADMIN,
     value:ROLE.ADMIN,

@@ -61,7 +61,6 @@ public class Car implements ToDtoTransformer, GetPathInterface {
                 .withConsumption(this.consumption)
                 .withName(this.name)
                 .withStatus(this.status)
-                //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
     }
 

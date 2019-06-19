@@ -38,7 +38,6 @@ class RequestListComponent extends React.Component {
         this.remove = this.remove.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
-
         this.queryTimeout = -1;
         this.handleQueryChange = this.handleQueryChange.bind(this);
         this.changeQuery = this.changeQuery.bind(this);
@@ -60,25 +59,22 @@ class RequestListComponent extends React.Component {
         }
         axios.get(`/request/${url}/${query}?page=${page}&size=5`)
             .then(response => {
-                    console.log(response);
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
                     const totalItemsCount = response.data.totalElements;
 
-                    this.setState({totalPages: totalPages});
-                    this.setState({totalItemsCount: totalItemsCount});
-                    this.setState({itemsCountPerPage: itemsCountPerPage});
-
-                    const results = response.data.content;
-                    console.log(this.state);
-
-                    if (results != null) {
-                        this.setState({requests: results});
-                        console.log(results);
-                    }
-
-                    console.log(this.state.activePage);
-                    console.log(this.state.itemsCountPerPage);
+                    this.setState({
+                        totalPages: totalPages,
+                        totalItemsCount: totalItemsCount,
+                        itemsCountPerPage: itemsCountPerPage,
+                        requests: response.data.content || []
+                    }, () => {
+                        console.log(this.state);
+                    });
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 }
             );
     }
@@ -116,7 +112,7 @@ class RequestListComponent extends React.Component {
                 <td>{this.requestStatusMap[request.status]}</td>
                 <td>
                     <ButtonGroup>
-                        {roles.includes(ROLE.OWNER) && request.status !== 'ISSUED' ?
+                        {roles.includes(ROLE.OWNER) && request.status != 'ISSUED' ?
                             <Button size="sm" color="primary" tag={Link}
                                     to={"/request/" + request.id}>Редактировать
                             </Button>
@@ -198,9 +194,9 @@ class RequestListComponent extends React.Component {
 
     render() {
         const {roles} = this.state;
+        const check = !this.state.requests.length;
         return (
-            <div>
-                <Container fluid>
+                <Container className="text-center" fluid>
                     <FormGroup>
                         <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
                                onChange={this.handleQueryChange} autoComplete="searchQuery"/>
@@ -210,57 +206,57 @@ class RequestListComponent extends React.Component {
                             <Button color="success" tag={Link} to="/request/create">Добавить</Button>
                         </div>
                         : null}
-                    <Table className="mt-4">
-                        <thead>
-                        <tr>
-                            <th width="20%">Машина</th>
-                            <th width="20%">Водитель</th>
-                            <th>Статус</th>
-                            <th width="10%"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {this.populateRowsWithData()}
-                        </tbody>
-                    </Table>
+                    {check ? <h3>Список пуст</h3> :
+                        <div>
+                            <Table className="mt-4">
+                                <thead>
+                                <tr>
+                                    <th width="20%">Машина</th>
+                                    <th width="20%">Водитель</th>
+                                    <th>Статус</th>
+                                    <th width="10%"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {this.populateRowsWithData()}
+                                </tbody>
+                            </Table>
 
-                    <div className="d-flex justify-content-center">
-                        <Pagination
-                            activePage={this.state.activePage}
-                            itemsCountPerPage={this.state.itemsCountPerPage}
-                            totalItemsCount={this.state.totalItemsCount}
-                            itemClass='page-item'
-                            linkClass='btn btn-light'
-                            onChange={this.handlePageChange}
+                            <div className="d-flex justify-content-center">
+                                <Pagination
+                                    activePage={this.state.activePage}
+                                    itemsCountPerPage={this.state.itemsCountPerPage}
+                                    totalItemsCount={this.state.totalItemsCount}
+                                    itemClass='page-item'
+                                    linkClass='btn btn-light'
+                                    onChange={this.handlePageChange}
 
-                        />
-                    </div>
+                                />
+                            </div>
 
-                    {roles.includes(ROLE.DISPATCHER) ?
-                        <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>ТТН</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <FormGroup>
-                                    <InvoiceComponent
-                                        name="InvoiceComponent"
-                                        id="InvoiceComponent"
-                                        invoice={this.state.invoice}
-                                        handleChange={this.handleInvoiceNumberChange.bind(this)}
-                                    />
-                                </FormGroup>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button color="primary" onClick={this.createInvoice}>
-                                    Создать ТТН
-                                </Button>
-                            </Modal.Footer>
-                        </Modal> : null}
-
-                </Container>
-            </div>
-        );
+                            {roles.includes(ROLE.DISPATCHER) ?
+                                <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title>ТТН</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <FormGroup>
+                                            <InvoiceComponent
+                                                name="InvoiceComponent"
+                                                id="InvoiceComponent"
+                                                invoice={this.state.invoice}
+                                                handleChange={this.handleInvoiceNumberChange.bind(this)}
+                                            />
+                                        </FormGroup>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button color="primary" onClick={this.createInvoice}>
+                                            Создать ТТН
+                                        </Button>
+                                    </Modal.Footer>
+                                </Modal> : null}
+                        </div>}
+                </Container>);
     }
 }
 

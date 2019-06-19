@@ -29,13 +29,13 @@ class InvoiceComponent extends React.Component {
         });
     };
 
-    handleChange=event=>{
+    handleChange = event => {
         const target = event.target;
         const value = target.value;
         const name = target.name;
         let invoice = {...this.state.invoice};
         invoice[name] = value;
-        this.setState({invoice},()=>{
+        this.setState({invoice}, () => {
             this.props.handleChange(value);
         });
         console.log(this.state);
@@ -52,7 +52,7 @@ class InvoiceComponent extends React.Component {
                     <FormGroup>
                         <Label for="number">Номер</Label>
                         <Input readOnly={invoice.id} type="text" name="number" id="number"
-                               value={invoice.number||''}
+                               value={invoice.number || ''}
                                onChange={this.handleChange}
                                autoComplete="number"/>
                     </FormGroup>
@@ -90,7 +90,7 @@ class InvoiceComponent extends React.Component {
                                    value={`${invoice.dispatcherFrom.surname} ${invoice.dispatcherFrom.name}`}/>
                         </FormGroup> : null}
 
-                    < FormGroup>
+                    <FormGroup>
                         < Label for="productTable"> Продукты </Label>
                         <Table name="productTable" id="productTable" className="mt-4">
                             <thead>

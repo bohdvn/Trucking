@@ -109,15 +109,14 @@ class InvoiceListComponent extends React.Component {
                 <td>{this.carStatusMap[invoice.request.car.status]}</td>
                 <td>{this.invoiceStatusMap[invoice.status]}</td>
                 <td>{invoice.request.driver.name}</td>
-                {roles.includes(MANAGER) && invoice.status === 'COMPLETED' ?
-                    <td>
+                <td>
+                    {roles.includes(MANAGER) && invoice.request.status === 'ISSUED' && invoice.status === 'COMPLETED' ?
                         <ButtonGroup>
                             <Button size="sm" color="primary" tag={Link}
                                     onClick={() => this.handleShow(invoice.id)}>Проверить</Button>
                         </ButtonGroup>
-                    </td>
-                    : null}
-
+                        : null}
+                </td>
             </tr>
         });
 
@@ -168,66 +167,69 @@ class InvoiceListComponent extends React.Component {
 
     render() {
         const {roles} = this.state.loggedIn.claims;
+        const check = !this.state.invoices.length;
         return (
-            <div>
-                <Container fluid>
-                    <FormGroup>
-                        <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
-                               onChange={this.handleQueryChange} autoComplete="searchQuery"/>
-                    </FormGroup>
-                    <Table className="mt-4">
-                        <thead>
-                        <tr>
-                            <th width="16%">Номер</th>
-                            <th width="16%">Машина</th>
-                            <th width="16%">Тип машины</th>
-                            <th width="16%">Статус машины</th>
-                            <th>Статус ТТН</th>
-                            <th width="16%">Водитель</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {this.populateRowsWithData()}
-                        </tbody>
+            <Container className="text-center" fluid>
+                <FormGroup>
+                    <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                           onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                </FormGroup>
+                {check ? <h3>Список пуст</h3> :
+                    <div>
+                        <Table className="mt-4">
+                            <thead>
+                            <tr>
+                                <th width="16%">Номер</th>
+                                <th width="16%">Машина</th>
+                                <th width="16%">Тип машины</th>
+                                <th width="16%">Статус машины</th>
+                                <th>Статус ТТН</th>
+                                <th width="16%">Водитель</th>
+                                <th width="10%"></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {this.populateRowsWithData()}
+                            </tbody>
 
-                    </Table>
+                        </Table>
 
-                    <div className="d-flex justify-content-center">
-                        <Pagination
-                            activePage={this.state.activePage}
-                            itemsCountPerPage={this.state.itemsCountPerPage}
-                            totalItemsCount={this.state.totalItemsCount}
-                            itemClass='page-item'
-                            linkClass='btn btn-light'
-                            onChange={this.handlePageChange}
+                        <div className="d-flex justify-content-center">
+                            <Pagination
+                                activePage={this.state.activePage}
+                                itemsCountPerPage={this.state.itemsCountPerPage}
+                                totalItemsCount={this.state.totalItemsCount}
+                                itemClass='page-item'
+                                linkClass='btn btn-light'
+                                onChange={this.handlePageChange}
 
-                        />
-                    </div>
-                </Container>
-
-                {roles.includes(MANAGER) ? <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>ТТН</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <FormGroup>
-                            <InvoiceComponent
-                                name="InvoiceComponent"
-                                id="InvoiceComponent"
-                                invoice={this.state.invoice}
                             />
-                        </FormGroup>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button color="primary" onClick={this.createWaybill}>
-                            Подтвердить
-                        </Button>
-                        <Button color="danger" onClick={this.rejectRequest}>
-                            Отклонить
-                        </Button>
-                    </Modal.Footer>
-                </Modal> : null}
-            </div>
+                        </div>
+
+                        {roles.includes(MANAGER) ? <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>ТТН</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <FormGroup>
+                                    <InvoiceComponent
+                                        name="InvoiceComponent"
+                                        id="InvoiceComponent"
+                                        invoice={this.state.invoice}
+                                    />
+                                </FormGroup>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button color="primary" onClick={this.createWaybill}>
+                                    Подтвердить
+                                </Button>
+                                <Button color="danger" onClick={this.rejectRequest}>
+                                    Отклонить
+                                </Button>
+                            </Modal.Footer>
+                        </Modal> : null}
+                    </div>}
+            </Container>
         );
     }
 }

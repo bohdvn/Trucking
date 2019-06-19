@@ -2,7 +2,6 @@ import React from 'react';
 import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import "react-datepicker/dist/react-datepicker.css";
-import {getUserById, saveUser} from "../../utils/APIUtils";
 import {connect} from "react-redux";
 import axios from 'axios';
 import RoleSelect from "../RoleSelect";
@@ -66,25 +65,18 @@ class UserComponent extends React.Component {
 
     componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            getUserById(`/user/${this.props.match.params.id}`)
-                .then(response =>
-                    response.json().then(json => {
-                        console.log(response.status);
-                        if (!response.ok) {
-                            return Promise.reject(json);
-                        }
-                        return json;
-                    })
-                )
-                .then(newUser => {
-                    console.log(newUser);
+            axios.get(`/user/${this.props.match.params.id}`)
+                .then(response => {
                     this.setState({
-                        user: newUser, surnameValid: true, nameValid: true, patronymicValid: true,
+                        user: response.data, surnameValid: true, nameValid: true, patronymicValid: true,
                         passportNumberValid: true, passportIssuedValid: true, dateOfBirthValid: true, emailValid: true,
                         loginValid: true, passwordValid: true, addressValid: true, userFormValid: true
                     });
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 });
-            console.log(this.state);
         } else {
             const user = this.state.user;
             user['address'] = this.address;
@@ -190,9 +182,9 @@ class UserComponent extends React.Component {
     validateUserForm() {
         this.setState({
             userFormValid: this.state.nameValid && this.state.surnameValid && this.state.patronymicValid
-            && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
-            && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid
-            && this.state.addressValid
+                && this.state.dateOfBirthValid && this.state.emailValid && this.state.passportIssuedValid
+                && this.state.passportNumberValid && this.state.loginValid && this.state.passwordValid
+                && this.state.addressValid
         });
 
     }
@@ -225,10 +217,16 @@ class UserComponent extends React.Component {
         if (client) {
             client.users = [];
             client.users.push(user);
-            axios.post('/client/', client);
-            this.props.history.push('/clients');
+            axios.post('/client/', client)
+                .then(repsonse => {
+                    this.props.history.push('/clients');
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText};
+                    this.props.history.push('/error', {error: data});
+                });
         } else {
-            axios({url:'/user/', data:user, method:user.id?'PUT':'POST'})
+            axios({url: '/user/', data: user, method: user.id ? 'PUT' : 'POST'})
                 .then(resp => {
                     if (resp.status === 400) {
                         return resp.json();
@@ -245,7 +243,7 @@ class UserComponent extends React.Component {
                     alert(s);
                 }
             });
-            this.props.history.push('/home');
+            // this.props.history.push('/home');
         }
     }
 

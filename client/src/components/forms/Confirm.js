@@ -1,5 +1,5 @@
-import React, {Component} from 'react'
-import {getUserById} from "../../utils/APIUtils";
+import React, {Component} from 'react';
+import axios from 'axios';
 
 class Confirm extends Component {
 
@@ -12,7 +12,7 @@ class Confirm extends Component {
 
     componentDidMount = () => {
         const {id} = this.props.match.params;
-        getUserById(`/user/confirm-account/${id}`)
+        axios.get(`/user/confirm-account/${id}`)
             .then(resp => {
                 if (resp.status === 200) {
                     this.setState({

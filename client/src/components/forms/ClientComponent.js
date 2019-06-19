@@ -1,20 +1,11 @@
 import React from 'react';
-import "../../styles.css";
+// import "../../styles.css";
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
 import AddressFields from "./AddressFields";
 import * as CLIENT from "../../constants/clientConstants";
 import axios from 'axios';
 
 class ClientComponent extends React.Component {
-    emptyClient = {
-        id: '',
-        name: '',
-        address: '',
-        type: CLIENT.LEGAL,
-        status: CLIENT.ACTIVE,
-        companyType: CLIENT.CLIENT,
-    };
-
     address = {
         id: '',
         city: '',
@@ -23,12 +14,18 @@ class ClientComponent extends React.Component {
         flat: '1'
     };
 
-    state={
-        client:this.emptyClient,
+    state = {
+        client: {
+            id: '',
+            name: '',
+            address: '',
+            type: CLIENT.LEGAL,
+            status: CLIENT.ACTIVE,
+        },
         formErrors: {name: ''},
     };
 
-    handleChange=(event)=>{
+    handleChange = (event) => {
         const target = event.target;
         const value = target.value;
         const name = target.name;
@@ -41,7 +38,7 @@ class ClientComponent extends React.Component {
         console.log(this.state);
     };
 
-    validateField=(fieldName, value) => {
+    validateField = (fieldName, value) => {
         let fieldValidationErrors = this.state.formErrors;
         let nameValid = this.state.nameValid;
         switch (fieldName) {
@@ -58,39 +55,38 @@ class ClientComponent extends React.Component {
         }, this.validateForm);
     };
 
-    validateForm=()=>{
+    validateForm = () => {
         this.setState({
             formValid: this.state.nameValid,
             addressValid: this.state.addressValid,
-            userValid:this.state.userValid
+            userValid: this.state.userValid
         });
     };
 
-    changeAddressFields=value=> {
+    changeAddressFields = value => {
         console.log(value);
         let client = {...this.state.client};
         client['address'] = value.address;
         this.setState({client: client});
     };
 
-    buttonClick=(event)=>{
-        const {client}=this.state;
+    buttonClick = (event) => {
+        const {client} = this.state;
         console.log(client);
         console.log(this.props);
-        const urlId=this.props.match.params.id;
+        const urlId = this.props.match.params.id;
         console.log(urlId);
-        if(urlId==='create'){
+        if (urlId === 'create') {
             this.props.history.push({
-                pathname:"/admin/create",
-                state:{client:client}
+                pathname: "/admin/create",
+                state: {client: client}
             });
-        }
-        else{
+        } else {
             this.handleSubmit(event);
         }
     };
 
-    handleSubmit =(event)=>{
+    handleSubmit = (event) => {
         event.preventDefault();
         const {client} = this.state;
         // axios.post('/client/',{client})
@@ -99,19 +95,18 @@ class ClientComponent extends React.Component {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization':'Bearer ' + localStorage.getItem('accessToken')
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
             },
             body: JSON.stringify(client)
         })
             .then(resp => {
-            if (resp.status === 400) {
-                return resp.json();
-            }
-            else {
-                this.props.history.push('/clients');
-                return null;
-            }
-        }).then(data => {
+                if (resp.status === 400) {
+                    return resp.json();
+                } else {
+                    this.props.history.push('/clients');
+                    return null;
+                }
+            }).then(data => {
             if (data) {
                 let s = '';
                 for (const k in data) {
@@ -122,15 +117,16 @@ class ClientComponent extends React.Component {
         });
     };
 
-    async componentDidMount() {
+    componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            let newClient={};
-             await axios.get(`/client/${this.props.match.params.id}`)
-                 .then(response=>{
-                     newClient=response.data;
-                 });
-            console.log(newClient);
-            this.setState({client: newClient, nameValid: true, formValid: true, addressValid: true});
+            axios.get(`/client/${this.props.match.params.id}`)
+                .then(response => {
+                    this.setState({client: response.data, nameValid: true, formValid: true, addressValid: true});
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
+                });
         } else {
             const client = this.state.client;
             client['address'] = this.address;
@@ -166,15 +162,6 @@ class ClientComponent extends React.Component {
                                onChange={this.handleChange} autoComplete="status">
                             <option value={CLIENT.ACTIVE}>{CLIENT.ACTIVE_RU}</option>
                             <option value={CLIENT.BLOCKED}>{CLIENT.BLOCKED_RU}</option>
-                        </Input>
-                    </FormGroup>
-
-                    <FormGroup>
-                        <Label htmlFor="status">Тип компании</Label>
-                        <Input type="select" name="companyType" id="companyType" value={client.companyType || ''}
-                               onChange={this.handleChange} autoComplete="companyType">
-                            <option value={CLIENT.CLIENT}>{CLIENT.CLIENT_RU}</option>
-                            <option value={CLIENT.WAREHOUSE}>{CLIENT.WAREHOUSE_RU}</option>
                         </Input>
                     </FormGroup>
 

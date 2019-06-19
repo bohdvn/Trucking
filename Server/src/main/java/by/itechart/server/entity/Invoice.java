@@ -61,7 +61,7 @@ public class Invoice implements ToDtoTransformer, GetPathInterface {
     /**
      * One invoice can have only one request.
      */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "request_id")
     @SearchCriteriaAnnotation(path = "car name; driver surname; driver name; driver patronymic")
     private Request request;

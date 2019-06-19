@@ -189,45 +189,50 @@ class WaybillComponent extends React.Component {
     };
 
     populateRowsWithData = () => {
+        const {roles} = this.props.loggedIn.claims;
         const {checkpoints} = this.state.waybill;
         return checkpoints.map((checkpoint, index, array) => {
             return <tr key={checkpoint.id}>
-                <td style={{whiteSpace: 'nowrap'}}><Link
-                    onClick={() => this.editCheckpoint(checkpoint)}>{checkpoint.name}</Link></td>
+                <td>{checkpoint.name}</td>
                 <td>{checkpoint.latitude}</td>
                 <td>{checkpoint.longitude}</td>
                 <td>{checkpoint.date}</td>
                 <td>{this.checkpointStatusMap[checkpoint.status]}</td>
 
-                {checkpoint.id ?
                 <td>
-                    <ButtonGroup>
-                        <Button size="sm" color="primary" onClick={() => this.editCheckpoint(checkpoint)}
-                        >Редактировать</Button>
-                        <Button size="sm" color="danger"
-                                onClick={() => this.removeCheckpoint(checkpoint)}
-                        >Удалить</Button>
-                    </ButtonGroup>
-                </td>
-                : null}
+                    {roles.includes(ROLE.MANAGER) ?
+                        <ButtonGroup>
+                            <Button size="sm" color="primary"
+                                    onClick={() => this.editCheckpoint(checkpoint)}>Редактировать</Button>
+                            <Button size="sm" color="danger"
+                                    onClick={() => this.removeCheckpoint(checkpoint)}
+                            >Удалить</Button>
+                        </ButtonGroup>
+                        : null}
 
-                {checkpoint.id && checkpoint.status === 'NOT_PASSED' ? <td>
-                    <Button disabled={array[index - 1] && array[index - 1].status === 'NOT_PASSED'}
-                            size="sm" color="primary"
-                            onClick={() => this.handleShow(checkpoint)}>
-                        Посмотреть
-                    </Button>
-                </td> : null}
+                    {roles.includes(ROLE.DRIVER) && checkpoint.id && checkpoint.status === 'NOT_PASSED' ?
+                        <Button disabled={array[index - 1] && array[index - 1].status === 'NOT_PASSED'}
+                                size="sm" color="primary"
+                                onClick={() => this.handleShow(checkpoint)}>
+                            Посмотреть
+                        </Button>
+                        : null}
+                </td>
             </tr>
         });
 
     };
 
-    async componentDidMount() {
+    componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            await axios.get(`/waybill/${this.props.match.params.id}`)
+            axios.get(`/waybill/${this.props.match.params.id}`)
                 .then(response => {
+                    console.log(response.data);
                     this.setState({waybill: response.data})
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 });
         }
     }
@@ -235,8 +240,12 @@ class WaybillComponent extends React.Component {
     finishWaybillCheck = () => {
         const {waybill, roles} = this.state;
         const {checkpoints} = waybill;
+        console.log(checkpoints);
+        console.log(!roles.includes(ROLE.DRIVER) && !waybill.id);
+        console.log(checkpoints[checkpoints.length - 1]);
+        console.log(checkpoints[checkpoints.length - 1] === 'PASSED');
         return (!roles.includes(ROLE.DRIVER) && !waybill.id)
-            || (checkpoints[checkpoints.length - 1] === 'NOT_PASSED');
+            || (checkpoints.length && checkpoints[checkpoints.length - 1].status === 'NOT_PASSED');
     };
 
     render() {
@@ -244,8 +253,7 @@ class WaybillComponent extends React.Component {
         const check = this.finishWaybillCheck();
         console.log(check);
         return (
-            <Container className="col-3" style={{
-            }}>
+            <Container className="col-3" style={{}}>
                 <h1>Путевой лист</h1>
                 <Form onSubmit={this.handleSubmit}>
 
@@ -268,10 +276,10 @@ class WaybillComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="dateTo">Дата окончания</Label>
-                        <Input readOnly={check}
+                        <Input readOnly
                                type="date" name="dateTo"
                                id="dateTo"
-                               value={waybill.dateTo || ''}
+                               value={!check ? currentTime() : ''}
                                onChange={this.handleChange} autoComplete="dateTo"/>
                     </FormGroup>
                     <FormGroup>
@@ -313,7 +321,7 @@ class WaybillComponent extends React.Component {
 
                 <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Добавление контрольной точки</Modal.Title>
+                        <Modal.Title>Контрольная точка</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <FormGroup>

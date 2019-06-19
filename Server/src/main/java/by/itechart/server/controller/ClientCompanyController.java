@@ -36,24 +36,23 @@ public class ClientCompanyController {
         this.clientCompanyService = clientCompanyService;
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @PutMapping("/")
-    public ResponseEntity<?> edit(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ClientCompanyDto clientCompanyDto) {
+    public ResponseEntity<?> edit(@Valid @RequestBody ClientCompanyDto clientCompanyDto) {
         LOGGER.info("REST request. Path:/client method: PUT. client: {}", clientCompanyDto);
         clientCompanyService.save(clientCompanyDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @PostMapping("/")
-    public ResponseEntity<?> create(@CurrentUser UserPrincipal userPrincipal,
-                                    @Valid @RequestBody ClientCompanyDto clientCompanyDto) {
+    public ResponseEntity<?> create(@Valid @RequestBody ClientCompanyDto clientCompanyDto) {
         LOGGER.info("REST request. Path:/client method: POST. client: {}", clientCompanyDto);
         clientCompanyService.save(clientCompanyDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/client/{} method: GET.", id);
@@ -86,7 +85,7 @@ public class ClientCompanyController {
     }
 
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/list/")
     public ResponseEntity<Page<ClientCompanyDto>> getAllWithoutQuery(Pageable pageable) {
         LOGGER.info("REST request. Path:/car method: GET.");

@@ -37,37 +37,23 @@ class CarListComponent extends React.Component {
     }
 
     fetchURL(page, query) {
-        axios.get(`/car/list/${query}?page=${page}&size=5`, {
-            proxy: {
-                host: 'http://localhost',
-                port: 8080
-            },
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            }
-        })
+        axios.get(`/car/list/${query}?page=${page}&size=5`)
             .then(response => {
-                    console.log(response);
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
                     const totalItemsCount = response.data.totalElements;
 
-                    this.setState({totalPages: totalPages});
-                    this.setState({totalItemsCount: totalItemsCount});
-                    this.setState({itemsCountPerPage: itemsCountPerPage});
+                    this.setState({
+                        totalPages: totalPages,
+                        totalItemsCount: totalItemsCount,
+                        itemsCountPerPage: itemsCountPerPage,
+                        cars: response.data.content
 
-                    const results = response.data.content;
-                    console.log(this.state);
-
-                    if (results != null) {
-                        this.setState({cars: results});
-                        console.log(results);
-                    }
-
-                    console.log(this.state.activePage);
-                    console.log(this.state.itemsCountPerPage);
+                    });
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 }
             );
     }
@@ -77,7 +63,6 @@ class CarListComponent extends React.Component {
     }
 
     handlePageChange(pageNumber) {
-        console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
         this.fetchURL(pageNumber - 1, this.state.query);
     }
@@ -96,7 +81,28 @@ class CarListComponent extends React.Component {
         this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
+    getSelected=()=>{
+        return Array.apply(this,
+            document.getElementsByName("selectedСars")).filter(function (el) {
+            return el.checked === true
+        }).map(function (el) {
+            return el.value
+        });
+    };
 
+    handleChange = e => {
+        const id = e.target.id;
+        console.log(this.state);
+        this.setState(prevState => {
+            return {
+                cars: prevState.cars.map(
+                    car => (car.id === +id ? {
+                        ...car, value: !car.value
+                    } : car)
+                )
+            }
+        })
+    };
 
     populateRowsWithData = () => {
         const cars = this.state.cars.map(car => {
@@ -104,15 +110,13 @@ class CarListComponent extends React.Component {
                 <td><Input
                     type="checkbox"
                     id={car.id || ''}
-                    name="selected_cars"
+                    name="selectedСars"
                     value={car.id || ''}
                     checked={car.value || ''}
                     onChange={this.handleChange}/></td>
                 <td style={{whiteSpace: 'nowrap'}}><Link to={"/car/" + car.id}>{car.name}</Link></td>
-                <td style={{whiteSpace: 'nowrap'}}>{car.name}</td>
                 <td>{this.carTypeMap[car.carType]}</td>
                 <td>{car.consumption}</td>
-                <td>{this.carStatusMap[car.status]}</td>
                 <td>
                     <ButtonGroup>
                         <Button size="sm" color="primary" tag={Link} to={"/car/" + car.id}>Редактировать</Button>
@@ -125,28 +129,21 @@ class CarListComponent extends React.Component {
         return cars
     };
 
-    async remove(id) {
-        await fetch(`/car/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            }
-        }).then(() => {
-            let updateCars = [...this.state.cars].filter(i => i.id !== id);
-            this.setState({cars: updateCars});
-            this.handlePageChange(0);
-        });
+    remove(id) {
+        axios.delete(`/car/${id}`)
+            .then(() => {
+                let updateCars = [...this.state.cars].filter(i => i.id !== id);
+                this.setState({cars: updateCars});
+                this.handlePageChange(0);
+            }, error => {
+                const {status, statusText} = error.response;
+                const data = {status, statusText}
+                this.props.history.push('/error', {error: data});
+            });
     }
 
     async removeChecked() {
-        const selectedCars = Array.apply(null,
-            document.cars.selected_cars).filter(function (el) {
-            return el.checked === true
-        }).map(function (el) {
-            return el.value
-        });
+        const selectedCars = this.getSelected();
         console.log(selectedCars);
         await fetch(`/car/${selectedCars}`, {
             method: 'DELETE',
@@ -164,28 +161,28 @@ class CarListComponent extends React.Component {
 
 
     render() {
+        const check = !this.state.cars.length;
         return (
-            <form name="cars">
-                <div>
-                    <Container fluid>
-                        <FormGroup>
-                            <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
-                                   onChange={this.handleQueryChange} autoComplete="searchQuery"/>
-                        </FormGroup>
-                        <div className="float-right">
-                            <ButtonGroup>
-                                <Button color="success" tag={Link} to="/car/create">Добавить</Button>
-                                <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
-                            </ButtonGroup>
-                        </div>
+            <Container className="text-center" fluid>
+                <FormGroup>
+                    <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                           onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                </FormGroup>
+                <div className="float-right">
+                    <ButtonGroup>
+                        <Button color="success" tag={Link} to="/car/create">Добавить</Button>
+                        <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
+                    </ButtonGroup>
+                </div>
+                {check ? <h3>Список пуст</h3> :
+                    <div>
                         <Table className="mt-4">
                             <thead>
                             <tr>
-                                <th></th>
+                                <th width="5%"></th>
                                 <th width="20%">Название</th>
                                 <th width="20%">Тип</th>
                                 <th width="20%">Расход топлива</th>
-                                <th>Статус</th>
                                 <th width="10%"></th>
                             </tr>
                             </thead>
@@ -205,10 +202,8 @@ class CarListComponent extends React.Component {
 
                             />
                         </div>
-                    </Container>
-                </div>
-
-            </form>
+                    </div>}
+            </Container>
         );
     }
 }

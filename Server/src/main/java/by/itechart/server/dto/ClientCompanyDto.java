@@ -5,6 +5,7 @@ import by.itechart.server.transformers.ToEntityTransformer;
 import lombok.Data;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class ClientCompanyDto implements ToEntityTransformer {
@@ -36,6 +37,8 @@ public class ClientCompanyDto implements ToEntityTransformer {
         clientCompany.setName(this.name);
         clientCompany.setStatus(this.status);
         clientCompany.setType(this.type);
+        clientCompany.setUsers(this.users!=null?
+                this.users.stream().map(UserDto::transformToEntity).collect(Collectors.toList()):null);
         return clientCompany;
     }
 

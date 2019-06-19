@@ -1,6 +1,5 @@
 package by.itechart.server.security;
 
-import by.itechart.server.controller.AddressController;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +13,7 @@ import java.util.Map;
 
 @Component
 public class JwtTokenProvider {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddressController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     @Value("${app.jwtSecret}")
     private String jwtSecret;

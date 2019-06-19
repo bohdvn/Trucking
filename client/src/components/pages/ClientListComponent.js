@@ -3,8 +3,6 @@ import {Button, ButtonGroup, Container, FormGroup, Input, Table} from 'reactstra
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
-import {ACCESS_TOKEN} from "../../constants/auth";
-
 
 class ClientListComponent extends React.Component {
 
@@ -42,6 +40,7 @@ class ClientListComponent extends React.Component {
 
     handleChange = e => {
         const id = e.target.id;
+        console.log(this.state);
         this.setState(prevState => {
             return {
                 clients: prevState.clients.map(
@@ -54,37 +53,22 @@ class ClientListComponent extends React.Component {
     };
 
     fetchURL(page, query) {
-        axios.get(`/client/list/${query}?page=${page}&size=5&companyType=${this.state.client.companyType}`, {
-            proxy: {
-                host: 'http://localhost',
-                port: 8080
-            },
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            }
-        })
+        axios.get(`/client/list/${query}?page=${page}&size=5&companyType=${this.state.client.companyType}`)
             .then(response => {
-                    console.log(response);
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
                     const totalItemsCount = response.data.totalElements;
 
-                    this.setState({totalPages: totalPages});
-                    this.setState({totalItemsCount: totalItemsCount});
-                    this.setState({itemsCountPerPage: itemsCountPerPage});
-
-                    const results = response.data.content;
-                    console.log(this.state);
-
-                    if (results != null) {
-                        this.setState({clients: results});
-                        console.log(results);
-                    }
-
-                    console.log(this.state.activePage);
-                    console.log(this.state.itemsCountPerPage);
+                    this.setState({
+                        totalPages: totalPages,
+                        totalItemsCount: totalItemsCount,
+                        itemsCountPerPage: itemsCountPerPage,
+                        clients: response.data.content
+                    });
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 }
             );
     }
@@ -119,7 +103,7 @@ class ClientListComponent extends React.Component {
                 <td><Input
                     type="checkbox"
                     id={client.id || ''}
-                    name="selected_clients"
+                    name="selectedClients"
                     value={client.id || ''}
                     checked={client.value || ''}
                     onChange={this.handleChange}/></td>
@@ -144,7 +128,7 @@ class ClientListComponent extends React.Component {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer '+localStorage.getItem('accessToken')
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
             }
         }).then(() => {
             let updateClients = [...this.state.clients].filter(i => i.id !== id);
@@ -153,20 +137,24 @@ class ClientListComponent extends React.Component {
         });
     }
 
-    async removeChecked() {
-        const selectedClients = Array.apply(null,
-            document.clients.selected_clients).filter(function (el) {
+    getSelected=()=>{
+        return Array.apply(this,
+            document.getElementsByName("selectedClients")).filter(function (el) {
             return el.checked === true
         }).map(function (el) {
             return el.value
         });
+    };
+
+    async removeChecked() {
+        const selectedClients = this.getSelected();
         console.log(selectedClients);
         await fetch(`/client/${selectedClients}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer '+localStorage.getItem('accessToken')
+                'Authorization': 'Bearer ' + localStorage.getItem('accessToken')
             }
         }).then(() => {
             let updateClients = [...this.state.clients].filter(client => !client.value);
@@ -177,24 +165,25 @@ class ClientListComponent extends React.Component {
 
 
     render() {
+        const check = !this.state.clients.length;
         return (
-            <form name="clients">
-                <div>
-                    <Container fluid>
-                        <FormGroup>
-                            <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
-                                   onChange={this.handleQueryChange} autoComplete="searchQuery"/>
-                        </FormGroup>
-                        <div className="float-right">
-                            <ButtonGroup>
-                                <Button color="success" tag={Link} to="/client/create">Добавить</Button>
-                                <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
-                            </ButtonGroup>
-                        </div>
+            <Container className="text-center" fluid>
+                <FormGroup>
+                    <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                           onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                </FormGroup>
+                <div className="float-right">
+                    <ButtonGroup>
+                        <Button color="success" tag={Link} to="/client/create">Добавить</Button>
+                        <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
+                    </ButtonGroup>
+                </div>
+                {check ? <h3>Список пуст</h3> :
+                    <div>
                         <Table className="mt-4">
                             <thead>
                             <tr>
-                                <th></th>
+                                <th width="5%"></th>
                                 <th width="30%">Название</th>
                                 <th width="30%">Тип</th>
                                 <th>Статус</th>
@@ -217,9 +206,8 @@ class ClientListComponent extends React.Component {
 
                             />
                         </div>
-                    </Container>
-                </div>
-            </form>
+                    </div>}
+            </Container>
         );
     }
 }

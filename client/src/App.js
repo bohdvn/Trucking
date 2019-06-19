@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Router} from 'react-router'
+import {Router, Route} from 'react-router';
 import createBrowserHistory from './helpers/history';
 import UserComponent from "./components/forms/UserComponent";
 import CarComponent from "./components/forms/CarComponent";
@@ -23,28 +23,24 @@ import Navigation from './components/Navigation'
 import ReportComponent from './components/forms/ReportComponent';
 import SendEmail from "./components/forms/SendEmail";
 import * as ROLE from './constants/userConstants';
-import TemplateComponent from "./components/forms/TemplateComponent";
+import Error from './components/error/Error';
 
 class App extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <Router history={createBrowserHistory}>
                 <Navigation/>
 
-                <Route path="/home" component={Home}/>
+                <Route exact path="/home" component={Home}/>
                 <ProtectedRoute exact path="/driver/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
+                <ProtectedRoute exact path="/drivers" allowed={[ROLE.SYSADMIN]} component={UserListComponent}/>
                 <ProtectedRoute exact path="/clients" allowed={[ROLE.SYSADMIN]} component={ClientListComponent}/>
                 <ProtectedRoute exact path="/client/:id" allowed={[ROLE.SYSADMIN]} component={ClientComponent}/>
                 <ProtectedRoute exact path="/cars" allowed={[ROLE.SYSADMIN]} component={CarListComponent}/>
                 <ProtectedRoute exact path="/car/:id" allowed={[ROLE.SYSADMIN]} component={CarComponent}/>
                 <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
                 <ProtectedRoute exact path='/report' allowed={[ROLE.SYSADMIN]} component={ReportComponent}/>
-                <ProtectedRoute exact path='/drivers' allowed={[ROLE.SYSADMIN]} component={UserListComponent}/>
-                <ProtectedRoute exact path='/template' allowed={[ROLE.SYSADMIN]} component={TemplateComponent}/>
+                <ProtectedRoute exact path='/email' allowed={[ROLE.SYSADMIN, ROLE.ADMIN]} component={SendEmail}/>
 
 
                 {/*ADMIN*/}
@@ -56,6 +52,7 @@ class App extends React.Component {
                                 component={RequestComponent}/>
                 <ProtectedRoute exact path="/requests" allowed={ROLE.OWNER} component={RequestListComponent}/>
                 {/*DISPATCHER*/}
+
                 <ProtectedRoute exact path="/notviewedrequests" allowed={ROLE.DISPATCHER}
                                 component={RequestListComponent}/>
                 <ProtectedRoute exact path="/invoices" allowed={[ROLE.DISPATCHER, ROLE.MANAGER]}
@@ -65,20 +62,14 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/waybill/:id" allowed={[ROLE.MANAGER, ROLE.DRIVER]}
                                 component={WaybillComponent}/>
 
-
                 {/*DRIVER*/}
                 <ProtectedRoute exact path="/waybills" allowed={ROLE.DRIVER} component={WaybillListComponent}/>
 
                 {/*MANAGER*/}
 
-
-                {/*<Route path="/user/:id" component={UserComponent}/>*/}
                 <Route path="/login" component={LoginForm}/>
-
-                {/*<Route path="/request/:id" component={RequestComponent}/>*/}
-
                 <Route path='/confirm/:id' component={Confirm}/>
-                <Route path='/email' component={SendEmail}/>
+                <Route path='/error' component={Error}/>
             </Router>
         );
     }
@@ -87,7 +78,5 @@ class App extends React.Component {
 export default connect(
     state => ({
         loggedIn: state.loggedIn,
-    }), {
-        changeLoggedIn,
-    }
+    })
 )(App);

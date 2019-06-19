@@ -1,24 +1,20 @@
 import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label} from "reactstrap";
-import {login} from '../../utils/APIUtils';
 import {connect} from "react-redux";
 import {changeLoggedIn} from "../../actions/user";
 import {setToken} from "../../utils/tokenParser";
+import axios from 'axios';
+
+const ACCESS_DENIED_INFO = "accessDeniedInfo";
 
 class LoginForm extends React.Component {
-    loginRequest = {
-        loginOrEmail: '',
-        password: ''
-    };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            loginRequest: this.loginRequest
-        };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
+    state={
+        loginRequest : {
+            loginOrEmail: '',
+            password: ''
+        }
+    };
 
     handleChange = (event) => {
         const target = event.target;
@@ -32,24 +28,24 @@ class LoginForm extends React.Component {
     handleSubmit = (event) => {
         event.preventDefault();
         const {loginRequest} = this.state;
-        login('/user/login', loginRequest)
-            .then(response =>
-                response.json().then(json => {
-                    if (!response.ok) {
-                        return Promise.reject(json);
+        axios.post('/user/login', loginRequest)
+            .then(response => {
+                    const token = response.data.accessToken;
+                    const loggedIn = setToken(token);
+                    this.props.changeLoggedIn(loggedIn);
+                    this.props.history.push('/home');
+                }, error => {
+                    if(error.response.status===401){
+                        const accessDeniedBox = document.getElementById(ACCESS_DENIED_INFO);
+                        accessDeniedBox.innerText = "Неправильные логин и пароль";
                     }
-                    return json;
-                })
-            )
-            .then(data => {
-                const token = data.accessToken;
-                const loggedIn=setToken(token);
-                console.log(loggedIn);
-                this.props.changeLoggedIn(loggedIn);
-                console.log(localStorage.getItem('accessToken'));
-                this.props.history.push('/home');
-                alert(`${this.state.loginRequest.loginOrEmail}, добро пожаловать!`);
-            });
+                    else{
+                        const {status, statusText} = error.response;
+                        const data={status, statusText}
+                        this.props.history.push('/error',{error:data});
+                    }
+                }
+            );
     };
 
     render() {
@@ -57,7 +53,8 @@ class LoginForm extends React.Component {
         return (
             <Container className="col-3">
                 <Form onSubmit={this.handleSubmit}>
-                    <h1>Вход</h1>
+                    <h1 className="text-center">Вход</h1>
+                    <p className="text-center error-message" id={ACCESS_DENIED_INFO}></p>
                     <FormGroup>
                         <Label for="loginOrEmail">Логин/email</Label>
                         <Input type="text" name="loginOrEmail" id="loginOrEmail" value={loginRequest.loginOrEmail || ''}
@@ -68,7 +65,7 @@ class LoginForm extends React.Component {
                         <Input type="password" name="password" id="password" value={loginRequest.password || ''}
                                onChange={this.handleChange} autoComplete="password"/>
                     </FormGroup>
-                    <FormGroup>
+                    <FormGroup className="text-center">
                         <Button color="primary" type="submit">Войти</Button>{' '}
                     </FormGroup>
                 </Form>

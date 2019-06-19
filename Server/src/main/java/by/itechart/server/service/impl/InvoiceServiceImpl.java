@@ -4,7 +4,6 @@ import by.itechart.server.dto.InvoiceDto;
 import by.itechart.server.entity.Invoice;
 import by.itechart.server.repository.InvoiceRepository;
 import by.itechart.server.service.InvoiceService;
-import by.itechart.server.service.RequestService;
 import by.itechart.server.specifications.CustomSpecification;
 import by.itechart.server.specifications.SearchCriteria;
 import org.springframework.data.domain.Page;
@@ -23,14 +22,14 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private InvoiceRepository invoiceRepository;
 
-    public InvoiceServiceImpl(RequestService requestService, InvoiceRepository invoiceRepository) {
+    public InvoiceServiceImpl(final InvoiceRepository invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
     }
 
 
     @Override
     @Transactional
-    public void save(InvoiceDto invoiceDto) {
+    public void save(final InvoiceDto invoiceDto) {
         invoiceRepository.save(invoiceDto.transformToEntity());
     }
 
@@ -40,18 +39,18 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public InvoiceDto findById(int id) {
+    public InvoiceDto findById(final int id) {
         return invoiceRepository.findById(id).isPresent() ?
                 invoiceRepository.findById(id).get().transformToDto() : null;
     }
 
     @Override
-    public void deleteById(int id) {
+    public void deleteById(final int id) {
         invoiceRepository.deleteById(id);
     }
 
     @Override
-    public Page<InvoiceDto> findAll(Pageable pageable) {
+    public Page<InvoiceDto> findAll(final Pageable pageable) {
         final Page<Invoice> invoices = invoiceRepository.findAll(pageable);
         return new PageImpl<>(invoices.stream().map(Invoice::transformToDto)
                 .sorted(Comparator.comparing(InvoiceDto::getStatus))

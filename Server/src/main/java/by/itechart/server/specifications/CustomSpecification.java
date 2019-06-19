@@ -27,7 +27,7 @@ public class CustomSpecification<T extends GetPathInterface> implements Specific
     public Predicate toPredicate(final Root<T> root, final CriteriaQuery<?> criteriaQuery, final CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
 
-        if(Objects.nonNull(newSearchCriteria.getConditions())) {
+        if (Objects.nonNull(newSearchCriteria.getConditions())) {
             for (Map.Entry<List<String>, Object> entry : newSearchCriteria.getConditions().entrySet()) {
                 final List<String> names = entry.getKey();
                 Path path = root.get(names.get(0));

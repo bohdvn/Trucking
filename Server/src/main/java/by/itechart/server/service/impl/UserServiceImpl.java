@@ -53,8 +53,6 @@ public class UserServiceImpl implements UserService {
 
         final SearchCriteria<User> newSearchCriteria = new SearchCriteria(conditions, User.class, query);
         final Specification<User> specification = new CustomSpecification<>(newSearchCriteria);
-//        final Specification<User> specification = new CustomSpecification<>(
-//                new SearchCriteria(query, null, id, UserDto.class));
         Page<User> users = userRepository.findAll(specification, pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)
                 .sorted(Comparator.comparing(UserDto::getSurname))
@@ -110,9 +108,6 @@ public class UserServiceImpl implements UserService {
 
         final SearchCriteria<User> newSearchCriteria = new SearchCriteria(conditions, User.class, query);
         final Specification<User> specification = new CustomSpecification<>(newSearchCriteria);
-
-//        final Specification<User> specification = new CustomSpecification<>(
-//                new SearchCriteria(query, role, -1,  UserDto.class));
         final Page<User> users = userRepository.findAll(specification, pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)
                 .collect(Collectors.toList()), pageable, users.getTotalElements());

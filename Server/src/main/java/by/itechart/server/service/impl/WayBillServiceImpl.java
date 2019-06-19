@@ -30,7 +30,7 @@ public class WayBillServiceImpl implements WayBillService {
 
     private WayBillRepository wayBillRepository;
 
-    public WayBillServiceImpl(InvoiceService invoiceService, WayBillRepository wayBillRepository) {
+    public WayBillServiceImpl(final InvoiceService invoiceService, final WayBillRepository wayBillRepository) {
         this.invoiceService = invoiceService;
         this.wayBillRepository = wayBillRepository;
     }
@@ -45,7 +45,8 @@ public class WayBillServiceImpl implements WayBillService {
     }
 
     @Override
-    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, WayBill.Status status, final Pageable pageable) {
+    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, final WayBill.Status status,
+                                                                     final Pageable pageable) {
         final Page<WayBill> wayBills =
                 wayBillRepository.findAllByInvoiceRequestDriverIdAndStatus(id, status, pageable);
         return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
@@ -54,7 +55,8 @@ public class WayBillServiceImpl implements WayBillService {
     }
 
     @Override
-    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, final WayBill.Status status, final Pageable pageable, final String query) {
+    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, final WayBill.Status status,
+                                                                     final Pageable pageable, final String query) {
         final Map<List<String>, Object> conditions = new HashMap<>();
         conditions.put(Arrays.asList("invoice", "request", "id"), id);
         conditions.put(Arrays.asList("status"), status);
@@ -68,7 +70,7 @@ public class WayBillServiceImpl implements WayBillService {
     }
 
     @Override
-    public WayBillDto findById(int id) {
+    public WayBillDto findById(final int id) {
         return wayBillRepository.findById(id).isPresent() ? wayBillRepository.findById(id).get().transformToDto() : null;
     }
 

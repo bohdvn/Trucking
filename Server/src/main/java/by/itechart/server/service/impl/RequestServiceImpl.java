@@ -66,7 +66,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Page<RequestDto> findAllByClientCompanyFromIdAndStatus(final int id, Request.Status status,
+    public Page<RequestDto> findAllByClientCompanyFromIdAndStatus(final int id, final Request.Status status,
                                                                   final Pageable pageable) {
         final Page<Request> requests = requestRepository.findAllByClientCompanyFromIdAndStatus(id, status, pageable);
         return new PageImpl<>(requests.stream().map(Request::transformToDto)

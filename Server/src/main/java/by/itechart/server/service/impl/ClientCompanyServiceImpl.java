@@ -25,7 +25,7 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
 
     private ClientCompanyRepository clientCompanyRepository;
 
-    public ClientCompanyServiceImpl(ClientCompanyRepository clientCompanyRepository) {
+    public ClientCompanyServiceImpl(final ClientCompanyRepository clientCompanyRepository) {
         this.clientCompanyRepository = clientCompanyRepository;
     }
 
@@ -41,7 +41,7 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public Page<ClientCompanyDto> findAll(Pageable pageable) {
+    public Page<ClientCompanyDto> findAll(final Pageable pageable) {
         final Page<ClientCompany> companies = clientCompanyRepository.findAll(pageable);
         return new PageImpl<>(companies.stream().map(ClientCompany::transformToDto)
                 .sorted(Comparator.comparing(ClientCompanyDto::getName))
@@ -49,18 +49,18 @@ public class ClientCompanyServiceImpl implements ClientCompanyService {
     }
 
     @Override
-    public ClientCompanyDto findById(int id) {
+    public ClientCompanyDto findById(final int id) {
         return clientCompanyRepository.findById(id).isPresent() ?
                 clientCompanyRepository.findById(id).get().transformToDto() : null;
     }
 
     @Override
-    public void delete(ClientCompanyDto clientCompanyDto) {
+    public void delete(final ClientCompanyDto clientCompanyDto) {
         clientCompanyRepository.delete(clientCompanyDto.transformToEntity());
     }
 
     @Override
-    public void deleteById(int id) {
+    public void deleteById(final int id) {
         clientCompanyRepository.deleteById(id);
     }
 

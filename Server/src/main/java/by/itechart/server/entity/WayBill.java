@@ -66,7 +66,7 @@ public class WayBill implements ToDtoTransformer, GetPathInterface {
         STARTED,
         FINISHED
     }
-
+    
     @Override
     public WayBillDto transformToDto() {
         return WayBillDto.builder()

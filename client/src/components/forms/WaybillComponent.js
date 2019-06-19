@@ -147,6 +147,7 @@ class WaybillComponent extends React.Component {
     };
 
     populateRowsWithData = () => {
+        const {roles} = this.props.loggedIn.claims;
         const {checkpoints} = this.state.waybill;
         return checkpoints.map((checkpoint, index, array) => {
             return <tr key={checkpoint.id}>
@@ -157,15 +158,27 @@ class WaybillComponent extends React.Component {
                 <td>{checkpoint.date}</td>
                 <td>{this.checkpointStatusMap[checkpoint.status]}</td>
 
-                {checkpoint.id?<td>
-                    <ButtonGroup>
-                        <Button size="sm" color="primary" onClick={() => this.editCheckpoint(checkpoint)}
-                        >Редактировать</Button>
-                        <Button size="sm" color="danger"
-                                onClick={() => this.removeCheckpoint(checkpoint)}
-                        >Удалить</Button>
-                    </ButtonGroup>
-                </td> : null}
+                <td>
+                    {roles.includes(ROLE.MANAGER) ?
+                        <ButtonGroup>
+                            <Button size="sm" color="primary"
+                                    onClick={() => this.editCheckpoint(checkpoint)}>Редактировать</Button>
+                            <Button size="sm" color="danger"
+                                    onClick={() => this.removeCheckpoint(checkpoint)}
+                            >Удалить</Button>
+                        </ButtonGroup>
+                        : null}
+
+                    {roles.includes(ROLE.DRIVER) && checkpoint.id && checkpoint.status === 'NOT_PASSED' ?
+                        <Button disabled={array[index - 1] && array[index - 1].status === 'NOT_PASSED'}
+                                size="sm" color="primary"
+                                onClick={() => this.handleShow(checkpoint)}>
+                            Посмотреть
+                        </Button>
+                        : null}
+
+
+                </td>
 
                 {checkpoint.id && checkpoint.status === 'NOT_PASSED' ? <td>
                     <Button disabled={array[index - 1] && array[index - 1].status === 'NOT_PASSED'}
@@ -184,6 +197,10 @@ class WaybillComponent extends React.Component {
             await axios.get(`/waybill/${this.props.match.params.id}`)
                 .then(response => {
                     this.setState({waybill: response.data})
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 });
         }
     }
@@ -192,12 +209,12 @@ class WaybillComponent extends React.Component {
         const {waybill, roles} = this.state;
         const {checkpoints} = waybill;
         return (!roles.includes(ROLE.DRIVER) && !waybill.id)
-        || (checkpoints[checkpoints.length - 1] === 'NOT_PASSED');
+            || (checkpoints[checkpoints.length - 1] === 'NOT_PASSED');
     };
 
     render() {
         const {waybill, roles} = this.state;
-        const check=this.finishWaybillCheck();
+        const check = this.finishWaybillCheck();
         console.log(check);
         return (
             <Container className="col-3">
@@ -262,7 +279,7 @@ class WaybillComponent extends React.Component {
 
                 <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
-                        <Modal.Title>Добавление контрольной точки</Modal.Title>
+                        <Modal.Title>Контрольная точка</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         <FormGroup>

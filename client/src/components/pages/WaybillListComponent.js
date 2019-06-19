@@ -29,26 +29,20 @@ class WaybillListComponent extends React.Component {
     fetchURL(page) {
         axios.get(`/waybill/list?page=${page}&size=5`)
             .then(response => {
-                    console.log(response);
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
                     const totalItemsCount = response.data.totalElements;
-
-                    this.setState({totalPages: totalPages});
-                    this.setState({totalItemsCount: totalItemsCount});
-                    this.setState({itemsCountPerPage: itemsCountPerPage});
-
-                    const results = response.data.content;
-                    console.log(response.data);
-                    console.log(this.state);
-
-                    if (results != null) {
-                        this.setState({waybills: results});
-                        console.log(results);
-                    }
-
-                    console.log(this.state.activePage);
-                    console.log(this.state.itemsCountPerPage);
+                    console.log(response);
+                    this.setState({
+                        totalPages: totalPages,
+                        totalItemsCount: totalItemsCount,
+                        itemsCountPerPage: itemsCountPerPage,
+                        waybills: response.data.content || []
+                    });
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 }
             );
     }
@@ -107,37 +101,40 @@ class WaybillListComponent extends React.Component {
 
 
     render() {
+        const check = !this.state.waybills.length;
         return (
-            <div>
-                <Container fluid>
-                    <Table className="mt-4">
-                        <thead>
-                        <tr>
-                            <th width="20%">Номер ТТН</th>
-                            <th width="20%">Пункт отправления</th>
-                            <th width="20%">Пункт назначения</th>
-                            <th width="20%">Дата отправления</th>
-                            <th>Статус</th>
-                            <th width="10%"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {this.populateRowsWithData()}
-                        </tbody>
-                    </Table>
+            <Container className="text-center" fluid>
+                {check ? <h3>Список пуст</h3> :
+                        <div>
+                            <Table className="mt-4">
+                                <thead>
+                                <tr>
+                                    <th width="20%">Номер ТТН</th>
+                                    <th width="20%">Пункт отправления</th>
+                                    <th width="20%">Пункт назначения</th>
+                                    <th width="20%">Дата отправления</th>
+                                    <th>Статус</th>
+                                    <th width="10%"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {this.populateRowsWithData()}
+                                </tbody>
+                            </Table>
 
-                    <div className="d-flex justify-content-center">
-                        <Pagination
-                            activePage={this.state.activePage}
-                            itemsCountPerPage={this.state.itemsCountPerPage}
-                            totalItemsCount={this.state.totalItemsCount}
-                            itemClass='page-item'
-                            linkClass='btn btn-light'
-                            onChange={this.handlePageChange}
-                        />
-                    </div>
-                </Container>
-            </div>
+                            <div className="d-flex justify-content-center">
+                                <Pagination
+                                    activePage={this.state.activePage}
+                                    itemsCountPerPage={this.state.itemsCountPerPage}
+                                    totalItemsCount={this.state.totalItemsCount}
+                                    itemClass='page-item'
+                                    linkClass='btn btn-light'
+                                    onChange={this.handlePageChange}
+                                />
+                            </div>
+                        </div>
+                }
+            </Container>
         );
     }
 }

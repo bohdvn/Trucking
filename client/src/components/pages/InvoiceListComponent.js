@@ -122,13 +122,13 @@ class InvoiceListComponent extends React.Component {
         console.log(this.state);
     }
 
-    rejectRequest=()=>{
-        this.setState({show:false});
+    rejectRequest = () => {
+        this.setState({show: false});
         const {invoice} = this.state;
-        invoice.request.status='REJECTED';
+        invoice.request.status = 'REJECTED';
         console.log(invoice);
-        axios.put('/invoice/',invoice)
-            .then(response=>{
+        axios.put('/invoice/', invoice)
+            .then(response => {
                 console.log(response);
             });
     };
@@ -150,20 +150,6 @@ class InvoiceListComponent extends React.Component {
         });
     }
 
-    // confirmInvoice = () => {
-    //     this.setState({show: false});
-    //     const {invoice} = this.state;
-    //     this.props.history.push("/waybill/create", {invoice: invoice});
-    //     console.log(invoice);
-    //     invoice.status='CHECKED';
-    //     invoice.dateOfCheck=currentTime();
-    //     axios.put('/invoice/',invoice)
-    //         .then(response => {
-    //             console.log(response);
-    //         });
-    //     window.location.reload();
-    // };
-
     createWaybill = () => {
         const {invoice} = this.state;
         this.props.history.push("/waybill/create", {invoice: invoice});
@@ -172,9 +158,11 @@ class InvoiceListComponent extends React.Component {
 
     render() {
         const {roles} = this.state.loggedIn.claims;
+        const check = !this.state.invoices.length;
         return (
-            <div>
-                <Container fluid>
+            <Container className="text-center" fluid>
+                {check ? <h3>Список пуст</h3> :
+                <div>
                     <Table className="mt-4">
                         <thead>
                         <tr>
@@ -203,31 +191,31 @@ class InvoiceListComponent extends React.Component {
 
                         />
                     </div>
-                </Container>
 
-                {roles.includes(MANAGER) ? <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>ТТН</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <FormGroup>
-                            <InvoiceComponent
-                                name="InvoiceComponent"
-                                id="InvoiceComponent"
-                                invoice={this.state.invoice}
-                            />
-                        </FormGroup>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button color="primary" onClick={this.createWaybill}>
-                            Подтвердить
-                        </Button>
-                        <Button color="danger" onClick={this.rejectRequest}>
-                            Отклонить
-                        </Button>
-                    </Modal.Footer>
-                </Modal> : null}
-            </div>
+                    {roles.includes(MANAGER) ? <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>ТТН</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <FormGroup>
+                                <InvoiceComponent
+                                    name="InvoiceComponent"
+                                    id="InvoiceComponent"
+                                    invoice={this.state.invoice}
+                                />
+                            </FormGroup>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button color="primary" onClick={this.createWaybill}>
+                                Подтвердить
+                            </Button>
+                            <Button color="danger" onClick={this.rejectRequest}>
+                                Отклонить
+                            </Button>
+                        </Modal.Footer>
+                    </Modal> : null}
+                </div>}
+            </Container>
         );
     }
 }

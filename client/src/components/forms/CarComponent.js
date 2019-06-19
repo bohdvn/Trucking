@@ -1,32 +1,28 @@
 import React from 'react';
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
-import "../../styles.css";
+// import "../../styles.css";
 import axios from 'axios';
-import {ACCESS_TOKEN} from "../../constants/auth";
 
 class CarComponent extends React.Component {
-    emptyCar = {
-        id: '',
-        carType: 'TILT',
-        name: '',
-        consumption: '1',
-        status: 'AVAILABLE',
+
+    state = {
+        car: {
+            id: '',
+            carType: 'TILT',
+            name: '',
+            consumption: '1',
+            status: 'AVAILABLE',
+        },
+        formErrors: {
+            name: '',
+            consumption: ''
+        },
+        nameValid: false,
+        consumptionValid: true,
+        formValid: false
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            car: this.emptyCar,
-            formErrors: {name: '', consumption: ''},
-            nameValid: false,
-            consumptionValid: true,
-            formValid: false
-        };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-
-    handleChange(event) {
+    handleChange = event => {
         const target = event.target;
         const value = target.value;
         const name = target.name;
@@ -36,7 +32,7 @@ class CarComponent extends React.Component {
             () => {
                 this.validateField(name, value)
             });
-    }
+    };
 
     validateField(fieldName, value) {
         let fieldValidationErrors = this.state.formErrors;
@@ -68,26 +64,18 @@ class CarComponent extends React.Component {
         });
     }
 
-    async handleSubmit(event) {
+    handleSubmit = event => {
         event.preventDefault();
         const {car} = this.state;
-        await axios.post(`/car/`, car)
-        // await fetch('/car/', {
-        //     method: 'PUT',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(car)
-        // })
-    .then(resp => {
-            if (resp.status === 400) {
-                return resp.json();
-            } else {
-                this.props.history.push('/cars');
-                return null;
-            }
-        }).then(data => {
+        axios.post(`/car/`, car)
+            .then(resp => {
+                if (resp.status === 400) {
+                    return resp.json();
+                } else {
+                    this.props.history.push('/cars');
+                    return null;
+                }
+            }).then(data => {
             if (data) {
                 let s = '';
                 for (const k in data) {
@@ -96,16 +84,19 @@ class CarComponent extends React.Component {
                 alert(s);
             }
         });
-    }
+    };
 
-    async componentDidMount() {
+    componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            let newCar = {};
-            await axios.get(`/car/${this.props.match.params.id}`)
+            console.log("qwe");
+            axios.get(`/car/${this.props.match.params.id}`)
                 .then(response => {
-                    newCar = response.data;
+                    this.setState({car: response.data, nameValid: true, consumptionValid: true, formValid: true});
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 });
-            this.setState({car: newCar, nameValid: true, consumptionValid: true, formValid: true});
         }
     }
 

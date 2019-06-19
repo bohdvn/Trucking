@@ -4,9 +4,8 @@ import createBrowserHistory from './helpers/history';
 import UserComponent from "./components/forms/UserComponent";
 import CarComponent from "./components/forms/CarComponent";
 import CarListComponent from "./components/pages/CarListComponent";
-import ProductListComponent from "./components/pages/ProductListComponent";
+// import ProductListComponent from "./components/pages/ProductListComponent";
 import UserListComponent from "./components/pages/UserListComponent";
-import ProductComponent from "./components/forms/ProductComponent";
 import ClientComponent from "./components/forms/ClientComponent";
 import LoginForm from "./components/forms/LoginForm";
 import Home from "./components/home/Home"
@@ -25,6 +24,7 @@ import Navigation from './components/Navigation'
 import ReportComponent from './components/forms/ReportComponent';
 import SendEmail from "./components/forms/SendEmail";
 import * as ROLE from './constants/userConstants';
+import Error from './components/error/Error';
 
 class App extends React.Component {
     constructor(props) {
@@ -38,6 +38,7 @@ class App extends React.Component {
 
                 <Route path="/home" component={Home}/>
                 <ProtectedRoute exact path="/driver/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
+                <ProtectedRoute exact path="/drivers" allowed={[ROLE.SYSADMIN]} component={UserListComponent}/>
                 <ProtectedRoute exact path="/clients" allowed={[ROLE.SYSADMIN]} component={ClientListComponent}/>
                 <ProtectedRoute exact path="/client/:id" allowed={[ROLE.SYSADMIN]} component={ClientComponent}/>
                 <ProtectedRoute exact path="/cars" allowed={[ROLE.SYSADMIN]} component={CarListComponent}/>
@@ -55,10 +56,10 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/requests" allowed={ROLE.OWNER} component={RequestListComponent}/>
                 {/*DISPATCHER*/}
                 <ProtectedRoute exact path="/notviewedrequests" allowed={ROLE.DISPATCHER} component={RequestListComponent}/>
-                <ProtectedRoute exact path="/invoices" allowed={[ROLE.DISPATCHER,ROLE.MANAGER]} component={InvoiceListComponent}/>
 
                 {/*MANAGER*/}
                 <ProtectedRoute exact path="/waybill/:id" allowed={[ROLE.MANAGER, ROLE.DRIVER]} component={WaybillComponent}/>
+                <ProtectedRoute exact path="/invoices" allowed={ROLE.MANAGER} component={InvoiceListComponent}/>
 
 
                 {/*DRIVER*/}
@@ -69,13 +70,9 @@ class App extends React.Component {
 
 
 
-                {/*<Route path="/user/:id" component={UserComponent}/>*/}
                 <Route path="/login" component={LoginForm}/>
-
-                {/*<Route path="/request/:id" component={RequestComponent}/>*/}
-
                 <Route path='/confirm/:id' component={Confirm}/>
-                <Route path='/email' component={SendEmail}/>
+                <Route path='/error' component={Error}/>
             </Router>
         );
     }

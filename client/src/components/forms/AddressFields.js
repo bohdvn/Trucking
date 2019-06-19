@@ -4,22 +4,17 @@ import FormGroup from "reactstrap/es/FormGroup";
 import {Input, Label} from "reactstrap";
 
 class AddressFields extends React.Component {
+    state={
+        address: this.props.address,
+        formErrors: {city: '', flat: '', building: '', street: ''},
+        cityValid: false,
+        streetValid: false,
+        buildingValid: true,
+        flatValid: true,
+        formValid: false
+    };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            address: props.address,
-            formErrors: {city: '', flat: '', building: '', street: ''},
-            cityValid: false,
-            streetValid: false,
-            buildingValid: true,
-            flatValid: true,
-            formValid: false
-        };
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    handleChange(event) {
+    handleChange=(event)=>{
         const target = event.target;
         const value = target.value;
         const name = target.name;
@@ -30,7 +25,7 @@ class AddressFields extends React.Component {
                 this.validateField(name, value);
                 this.props.changeState(this.state);
             });
-    }
+    };
 
     validateField(fieldName, value) {
         let fieldValidationErrors = this.state.formErrors;

@@ -2,6 +2,8 @@ package by.itechart.server.controller;
 
 import by.itechart.server.dto.InvoiceDto;
 import by.itechart.server.dto.UserDto;
+import by.itechart.server.entity.Invoice;
+import by.itechart.server.entity.Request;
 import by.itechart.server.security.CurrentUser;
 import by.itechart.server.security.UserPrincipal;
 import by.itechart.server.service.InvoiceService;
@@ -71,20 +73,12 @@ public class InvoiceController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<InvoiceDto>> getAll() {
-        LOGGER.info("REST request. Path:/invoice method: GET.");
-        List<InvoiceDto> invoicesDto = invoiceService.findAll();
-        LOGGER.info("Return invoiceList.size:{}", invoicesDto.size());
-        return invoicesDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(invoicesDto, HttpStatus.OK);
-    }
-
-
+    @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping("/list")
-    public ResponseEntity<Page<InvoiceDto>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<InvoiceDto>> getAll(@CurrentUser UserPrincipal user, Pageable pageable) {
         LOGGER.info("REST request. Path:/invoice method: GET.");
-        final Page<InvoiceDto> invoiceDtos = invoiceService.findAll(pageable);
+        final Page<InvoiceDto> invoiceDtos = invoiceService
+                .findAllByRequestClientCompanyFromIdAndStatus(user.getClientCompanyId(), Invoice.Status.COMPLETED,pageable);
         LOGGER.info("Return carList.size:{}", invoiceDtos.getNumber());
         return invoiceDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(invoiceDtos, HttpStatus.OK);

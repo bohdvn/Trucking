@@ -2,6 +2,7 @@ package by.itechart.server.service.impl;
 
 import by.itechart.server.dto.InvoiceDto;
 import by.itechart.server.entity.Invoice;
+import by.itechart.server.entity.Request;
 import by.itechart.server.repository.InvoiceRepository;
 import by.itechart.server.service.InvoiceService;
 import by.itechart.server.service.RequestService;
@@ -34,10 +35,10 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoiceRepository.save(invoiceDto.transformToEntity());
     }
 
-    @Override
-    public List<InvoiceDto> findAll() {
-        return invoiceRepository.findAll().stream().map(Invoice::transformToDto).collect(Collectors.toList());
-    }
+//    @Override
+//    public List<InvoiceDto> findAll() {
+//        return invoiceRepository.findAll().stream().map(Invoice::transformToDto).collect(Collectors.toList());
+//    }
 
     @Override
     public InvoiceDto findById(int id) {
@@ -51,8 +52,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public Page<InvoiceDto> findAll(Pageable pageable) {
-        final Page<Invoice> invoices = invoiceRepository.findAll(pageable);
+    public Page<InvoiceDto> findAllByRequestClientCompanyFromIdAndStatus(
+            final int id, Invoice.Status status, Pageable pageable) {
+        final Page<Invoice> invoices = invoiceRepository
+                .findAllByRequestClientCompanyFromIdAndStatus(id, status, pageable);
         return new PageImpl<>(invoices.stream().map(Invoice::transformToDto)
                 .sorted(Comparator.comparing(InvoiceDto::getStatus))
                 .collect(Collectors.toList()), pageable, invoices.getTotalElements());

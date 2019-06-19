@@ -106,7 +106,7 @@ class TempCheckpointComponent extends React.Component {
                     <FormGroup>
 
                         <Label for="latitude">Широта</Label>
-                        <Input readOnly={checkpointId} type="text" name="latitude" id="latitude" value={checkpoint.latitude || ''}
+                        <Input readOnly type="text" name="latitude" id="latitude" value={checkpoint.latitude || ''}
                                onChange={this.handleChange} autoComplete="latitude"/>
                         <p className={'error-message'}>{(this.state.formErrors.latitude === '') ? ''
                             : 'Широта' + this.state.formErrors.latitude}</p>
@@ -114,7 +114,7 @@ class TempCheckpointComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="longitude">Долгота</Label>
-                        <Input readOnly={checkpointId} type="text" name="longitude" id="longitude" value={checkpoint.longitude || ''}
+                        <Input readOnly type="text" name="longitude" id="longitude" value={checkpoint.longitude || ''}
                                onChange={this.handleChange} autoComplete="longitude" min="0"/>
                         <p className={'error-message'}>{(this.state.formErrors.longitude === '') ? ''
                             : 'Долгота' + this.state.formErrors.longitude}</p>

@@ -1,6 +1,8 @@
 package by.itechart.server.service;
 
 import by.itechart.server.dto.InvoiceDto;
+import by.itechart.server.entity.Invoice;
+import by.itechart.server.entity.Request;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,12 +12,10 @@ public interface InvoiceService {
 
     void save(InvoiceDto invoiceDto);
 
-    List<InvoiceDto> findAll();
-
     InvoiceDto findById(int id);
 
     void deleteById(int id);
 
-    Page<InvoiceDto> findAll(Pageable pageable);
+    Page<InvoiceDto> findAllByRequestClientCompanyFromIdAndStatus(final int id, Invoice.Status status, Pageable pageable);
 }
 

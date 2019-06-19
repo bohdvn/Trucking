@@ -8,16 +8,11 @@ import {changeLoggedIn} from "../actions/user";
 import * as ROLE from "../constants/userConstants";
 
 class Navigation extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            loggedIn: props.loggedIn
-        };
-        console.log(this.state.loggedIn);
-    }
+    state={
+        loggedIn: this.props.loggedIn
+    };
 
     componentWillReceiveProps({loggedIn}) {
-        console.log(loggedIn);
         this.setState({loggedIn: loggedIn});
     }
 
@@ -29,8 +24,8 @@ class Navigation extends React.Component {
     getNavs = () => {
         const navs = [];
         const roles = this.state.loggedIn.claims.roles;
-        console.log(roles);
         const logout = <NavItem><NavLink onClick={this.logout} href="/home">Выйти</NavLink></NavItem>;
+        const login = <NavItem><NavLink href="/login">Войти</NavLink></NavItem>
         roles.forEach(role => {
             switch (role) {
                 case ROLE.SYSADMIN:
@@ -63,10 +58,6 @@ class Navigation extends React.Component {
                         <NavItem>
                             <NavLink href="/notviewedrequests">Непросмотренные заявки</NavLink>
                         </NavItem>
-                        // ,
-                        // <NavItem>
-                        //     <NavLink href="/invoices">Список ТТН</NavLink>
-                        // </NavItem>
                     );
                     break;
 
@@ -93,15 +84,9 @@ class Navigation extends React.Component {
                         </NavItem>
                     );
                     break;
-                default:
-                    navs.push(
-                        <NavItem>
-                            <NavLink href="/login">Войти</NavLink>
-                        </NavItem>
-                    );
             }
         });
-        navs.push(logout);
+        navs.push(navs.length?logout:login);
         return navs;
     };
 
@@ -119,7 +104,5 @@ class Navigation extends React.Component {
 export default connect(
     state => ({
         loggedIn: state.loggedIn,
-    }), {
-        changeLoggedIn,
-    }
+    })
 )(Navigation);

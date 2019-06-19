@@ -29,8 +29,6 @@ class TempProductComponent extends React.Component {
                 this.validateField(name, value)
             });
         this.props.changeFieldHandler(product);
-        // const state = this.state;
-        // this.props.changeState(state);
     }
 
     validateField(fieldName, value) {

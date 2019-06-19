@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, FormGroup, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, FormGroup, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
@@ -37,7 +37,6 @@ class RequestListComponent extends React.Component {
         this.remove = this.remove.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        console.log(props);
     }
 
     fetchURL(page) {
@@ -56,25 +55,20 @@ class RequestListComponent extends React.Component {
         }
         axios.get(`/request/${url}?page=${page}&size=5`)
             .then(response => {
-                    console.log(response);
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
                     const totalItemsCount = response.data.totalElements;
 
-                    this.setState({totalPages: totalPages});
-                    this.setState({totalItemsCount: totalItemsCount});
-                    this.setState({itemsCountPerPage: itemsCountPerPage});
-
-                    const results = response.data.content;
-                    console.log(this.state);
-
-                    if (results != null) {
-                        this.setState({requests: results});
-                        console.log(results);
-                    }
-
-                    console.log(this.state.activePage);
-                    console.log(this.state.itemsCountPerPage);
+                    this.setState({
+                        totalPages: totalPages,
+                        totalItemsCount: totalItemsCount,
+                        itemsCountPerPage: itemsCountPerPage,
+                        requests: response.data.content || []
+                    });
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 }
             );
     }
@@ -98,17 +92,17 @@ class RequestListComponent extends React.Component {
                 <td>{this.requestStatusMap[request.status]}</td>
                 <td>
                     <ButtonGroup>
-                        {roles.includes(ROLE.OWNER) && request.status!='ISSUED' ?
+                        {roles.includes(ROLE.OWNER) && request.status != 'ISSUED' ?
                             <Button size="sm" color="primary" tag={Link}
                                     to={"/request/" + request.id}>Редактировать
                             </Button>
                             : null}
 
                         {/*{roles.includes(ROLE.OWNER) ?*/}
-                            {/*<Button size="sm" color="danger"*/}
-                                    {/*onClick={() => this.remove(request.id)}>Удалить*/}
-                            {/*</Button>*/}
-                            {/*: null}*/}
+                        {/*<Button size="sm" color="danger"*/}
+                        {/*onClick={() => this.remove(request.id)}>Удалить*/}
+                        {/*</Button>*/}
+                        {/*: null}*/}
 
                         {roles.includes(ROLE.DISPATCHER) ?
                             <Button size="sm" color="primary"
@@ -151,7 +145,7 @@ class RequestListComponent extends React.Component {
         console.log(invoice);
         this.setState({invoice: ''});
         this.saveInvoice(invoice)
-            .then(response=>{
+            .then(response => {
                 console.log(response);
             });
         window.location.reload();
@@ -188,66 +182,71 @@ class RequestListComponent extends React.Component {
 
     render() {
         const {roles} = this.state;
-        console.log(roles);
+        const check = !this.state.requests.length;
         return (
-            <div>
+            <div className="text-center">
+                <FormGroup>
+                    <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                           onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                </FormGroup>
                 <Container fluid>
                     {roles.includes(ROLE.OWNER) ?
                         <div className="float-right">
                             <Button color="success" tag={Link} to="/request/create">Добавить</Button>
                         </div>
                         : null}
-                    <Table className="mt-4">
-                        <thead>
-                        <tr>
-                            <th width="20%">Машина</th>
-                            <th width="20%">Водитель</th>
-                            <th>Статус</th>
-                            <th width="10%"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {this.populateRowsWithData()}
-                        </tbody>
-                    </Table>
+                    {check ? <h3>Список пуст</h3> :
+                        <div>
+                            <Table className="mt-4">
+                                <thead>
+                                <tr>
+                                    <th width="20%">Машина</th>
+                                    <th width="20%">Водитель</th>
+                                    <th>Статус</th>
+                                    <th width="10%"></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {this.populateRowsWithData()}
+                                </tbody>
+                            </Table>
 
-                    <div className="d-flex justify-content-center">
-                        <Pagination
-                            activePage={this.state.activePage}
-                            itemsCountPerPage={this.state.itemsCountPerPage}
-                            totalItemsCount={this.state.totalItemsCount}
-                            itemClass='page-item'
-                            linkClass='btn btn-light'
-                            onChange={this.handlePageChange}
+                            <div className="d-flex justify-content-center">
+                                <Pagination
+                                    activePage={this.state.activePage}
+                                    itemsCountPerPage={this.state.itemsCountPerPage}
+                                    totalItemsCount={this.state.totalItemsCount}
+                                    itemClass='page-item'
+                                    linkClass='btn btn-light'
+                                    onChange={this.handlePageChange}
 
-                        />
-                    </div>
+                                />
+                            </div>
 
-                    {roles.includes(ROLE.DISPATCHER) ?
-                        <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>ТТН</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <FormGroup>
-                                    <InvoiceComponent
-                                        name="InvoiceComponent"
-                                        id="InvoiceComponent"
-                                        invoice={this.state.invoice}
-                                        handleChange={this.handleInvoiceNumberChange.bind(this)}
-                                    />
-                                </FormGroup>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button color="primary" onClick={this.createInvoice}>
-                                    Создать ТТН
-                                </Button>
-                            </Modal.Footer>
-                        </Modal> : null}
-
+                            {roles.includes(ROLE.DISPATCHER) ?
+                                <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title>ТТН</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <FormGroup>
+                                            <InvoiceComponent
+                                                name="InvoiceComponent"
+                                                id="InvoiceComponent"
+                                                invoice={this.state.invoice}
+                                                handleChange={this.handleInvoiceNumberChange.bind(this)}
+                                            />
+                                        </FormGroup>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button color="primary" onClick={this.createInvoice}>
+                                            Создать ТТН
+                                        </Button>
+                                    </Modal.Footer>
+                                </Modal> : null}
+                        </div>}
                 </Container>
-            </div>
-        );
+            </div>);
     }
 }
 

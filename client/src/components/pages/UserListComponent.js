@@ -56,8 +56,8 @@ class UserListComponent extends React.Component {
     }
 
     getUserUrl = () => {
-        const {url}=this.state;
-        switch(url){
+        const {url} = this.state;
+        switch (url) {
             case '/drivers':
                 return 'driver';
 
@@ -87,17 +87,6 @@ class UserListComponent extends React.Component {
                 return;
         }
 
-        // axios.get(`/user/list/${query}?page=${page}&size=5`, {
-        //     proxy: {
-        //         host: 'http://localhost',
-        //         port: 8080
-        //     },
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json',
-        //         'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-        //     }
-        // })
         axios.get(`/user/${apiUrl}/${query}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
@@ -105,17 +94,17 @@ class UserListComponent extends React.Component {
                     const itemsCountPerPage = response.data.size;
                     const totalItemsCount = response.data.totalElements;
 
-                    this.setState({totalPages: totalPages});
-                    this.setState({totalItemsCount: totalItemsCount});
-                    this.setState({itemsCountPerPage: itemsCountPerPage});
-
-                    const results = response.data.content;
-                    console.log(this.state);
-
-                    this.setState({users: results});
-                    console.log(results);
-                    console.log(this.state.activePage);
-                    console.log(this.state.itemsCountPerPage);
+                    this.setState({
+                        totalPages: totalPages,
+                        totalItemsCount: totalItemsCount,
+                        itemsCountPerPage: itemsCountPerPage,
+                        users: response.data.content
+                    });
+                    console.log(this.state)
+                }, error => {
+                    const {status, statusText} = error.response;
+                    const data = {status, statusText}
+                    this.props.history.push('/error', {error: data});
                 }
             );
     }
@@ -186,7 +175,8 @@ class UserListComponent extends React.Component {
                 <td>{user.login}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link} to={`/${this.getUserUrl()}/${user.id}`}>Редактировать</Button>
+                        <Button size="sm" color="primary" tag={Link}
+                                to={`/${this.getUserUrl()}/${user.id}`}>Редактировать</Button>
                         <Button size="sm" color="danger" onClick={() => this.remove(user.id)}>Удалить</Button>
                     </ButtonGroup>
                 </td>
@@ -234,21 +224,23 @@ class UserListComponent extends React.Component {
     }
 
     render() {
+        const check = !this.state.users.length;
+        console.log(check);
         return (
-            <form name="users">
-                <div>
-                    <Container fluid>
-                        <FormGroup>
-                            <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
-                                   onChange={this.handleQueryChange} autoComplete="searchQuery"/>
-                        </FormGroup>
-                        <div className="float-right">
-                            <ButtonGroup>
-                                <Button color="success" tag={Link} to={`/${this.getUserUrl()}/create`}>Добавить</Button>
-                                <Button color="info" onClick={() => this.sendEmail()}>Отправить письмо</Button>
-                                <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
-                            </ButtonGroup>
-                        </div>
+            <Container className="text-center" fluid>
+                <FormGroup>
+                    <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                           onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                </FormGroup>
+                <div className="float-right">
+                    <ButtonGroup>
+                        <Button color="success" tag={Link} to={`/${this.getUserUrl()}/create`}>Добавить</Button>
+                        <Button color="info" onClick={() => this.sendEmail()}>Отправить письмо</Button>
+                        <Button color="danger" onClick={() => this.removeChecked()}>Удалить выбранные</Button>
+                    </ButtonGroup>
+                </div>
+                {check ? <h3>Список пуст</h3> :
+                    <div>
                         <Table className="mt-4">
                             <thead>
                             <tr>
@@ -275,9 +267,9 @@ class UserListComponent extends React.Component {
                                 onChange={this.handlePageChange}
                             />
                         </div>
-                    </Container>
-                </div>
-            </form>
+                    </div>
+                }
+            </Container>
         );
     }
 }

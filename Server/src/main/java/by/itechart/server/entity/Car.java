@@ -50,7 +50,6 @@ public class Car implements ToDtoTransformer {
                 .withConsumption(this.consumption)
                 .withName(this.name)
                 .withStatus(this.status)
-                //.withRequests(this.requests.stream().map(Request::transform).collect(Collectors.toList()))
                 .build();
     }
 

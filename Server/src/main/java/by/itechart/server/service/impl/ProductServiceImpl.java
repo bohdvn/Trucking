@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,7 +24,20 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto save(final ProductDto productDto) {
-        return productRepository.save(productDto.transformToEntity()).transformToDto();
+        if (Objects.isNull(productDto.getId())) {
+            return productRepository.save(productDto.transformToEntity()).transformToDto();
+            //костыыыыль
+        } else {
+            final Product entity = productRepository.findById(productDto.getId()).orElseThrow(IllegalStateException::new);
+            entity.setAmount(productDto.getAmount());
+            entity.setLostAmount(productDto.getLostAmount());
+            entity.setName(productDto.getName());
+            entity.setPrice(productDto.getPrice());
+            entity.setStatus(productDto.getStatus());
+            entity.setType(productDto.getType());
+            return productRepository.save(entity).transformToDto();
+        }
+
     }
 
     @Override

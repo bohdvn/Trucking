@@ -12,8 +12,8 @@
             </not>
         </preConditions>
         <addColumn
-                catalogName="trucking"
-                schemaName="trucking"
+                catalogName="testingdatabase"
+                schemaName="testingdatabase"
                 tableName="client_company">
             <column name="status" type="int"/>
         </addColumn>
@@ -26,8 +26,8 @@
             </not>
         </preConditions>
         <addColumn
-                catalogName="trucking"
-                schemaName="trucking"
+                catalogName="testingdatabase"
+                schemaName="testingdatabase"
                 tableName="client_company">
             <column name="type" type="int"/>
         </addColumn>
@@ -40,8 +40,8 @@
             </not>
         </preConditions>
         <addColumn
-                catalogName="trucking"
-                schemaName="trucking"
+                catalogName="testingdatabase"
+                schemaName="testingdatabase"
                 tableName="product">
             <column name="act_of_loss_id" type="int"/>
         </addColumn>

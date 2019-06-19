@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class ProductDto implements ToEntityTransformer {
+
     private Integer id;
 
     private String name;

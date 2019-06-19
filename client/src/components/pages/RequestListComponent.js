@@ -26,6 +26,7 @@ class RequestListComponent extends React.Component {
             },
             requests: [],
             activePage: 0,
+            query: '',
             totalPages: null,
             itemsCountPerPage: null,
             totalItemsCount: null,
@@ -37,9 +38,12 @@ class RequestListComponent extends React.Component {
         this.remove = this.remove.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.queryTimeout = -1;
+        this.handleQueryChange = this.handleQueryChange.bind(this);
+        this.changeQuery = this.changeQuery.bind(this);
     }
 
-    fetchURL(page) {
+    fetchURL(page, query) {
         let url = '';
         switch (this.props.location.pathname) {
             case '/requests':
@@ -53,7 +57,7 @@ class RequestListComponent extends React.Component {
             default:
                 return;
         }
-        axios.get(`/request/${url}?page=${page}&size=5`)
+        axios.get(`/request/${url}/${query}?page=${page}&size=5`)
             .then(response => {
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
@@ -74,13 +78,27 @@ class RequestListComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchURL(this.state.activePage)
+        this.fetchURL(this.state.activePage, this.state.query)
     }
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber - 1)
+        this.fetchURL(pageNumber - 1, this.state.query);
+    }
+
+    changeQuery() {
+        this.fetchURL(0, this.state.query);
+    }
+
+    handleQueryChange(event) {
+        clearTimeout(this.queryTimeout);
+        const target = event.target;
+        const value = target.value;
+        this.setState(() => ({
+            query: value
+        }));
+        this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
     populateRowsWithData = () => {
@@ -97,13 +115,6 @@ class RequestListComponent extends React.Component {
                                     to={"/request/" + request.id}>Редактировать
                             </Button>
                             : null}
-
-                        {/*{roles.includes(ROLE.OWNER) ?*/}
-                        {/*<Button size="sm" color="danger"*/}
-                        {/*onClick={() => this.remove(request.id)}>Удалить*/}
-                        {/*</Button>*/}
-                        {/*: null}*/}
-
                         {roles.includes(ROLE.DISPATCHER) ?
                             <Button size="sm" color="primary"
                                     onClick={() => this.handleShow(request.id)}>ТТН
@@ -165,7 +176,6 @@ class RequestListComponent extends React.Component {
                     {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
         ).json();
         this.setState({show: true, invoice: {request: request}});
-        console.log(this.state);
     }
 
     handleClose() {
@@ -184,12 +194,11 @@ class RequestListComponent extends React.Component {
         const {roles} = this.state;
         const check = !this.state.requests.length;
         return (
-            <div className="text-center">
-                <FormGroup>
-                    <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
-                           onChange={this.handleQueryChange} autoComplete="searchQuery"/>
-                </FormGroup>
-                <Container fluid>
+                <Container className="text-center" fluid>
+                    <FormGroup>
+                        <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                               onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                    </FormGroup>
                     {roles.includes(ROLE.OWNER) ?
                         <div className="float-right">
                             <Button color="success" tag={Link} to="/request/create">Добавить</Button>
@@ -245,8 +254,7 @@ class RequestListComponent extends React.Component {
                                     </Modal.Footer>
                                 </Modal> : null}
                         </div>}
-                </Container>
-            </div>);
+                </Container>);
     }
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, FormGroup, Table} from 'reactstrap';
+import {Container, FormGroup, Input, Table, Button, ButtonGroup} from 'reactstrap';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 import {ACCESS_TOKEN} from "../../constants/auth";
@@ -8,7 +8,6 @@ import {connect} from "react-redux";
 import {MANAGER} from "../../constants/userConstants";
 import Modal from 'react-bootstrap/Modal';
 import InvoiceComponent from '../forms/InvoiceComponent';
-import {currentTime} from "../../utils/currentTime";
 
 class InvoiceListComponent extends React.Component {
 
@@ -34,6 +33,7 @@ class InvoiceListComponent extends React.Component {
             invoice: {},
             loggedIn: props.loggedIn,
             invoices: [],
+            query: '',
             activePage: 0,
             totalPages: null,
             itemsCountPerPage: null,
@@ -43,10 +43,14 @@ class InvoiceListComponent extends React.Component {
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
         this.remove = this.remove.bind(this);
+
+        this.queryTimeout = -1;
+        this.handleQueryChange = this.handleQueryChange.bind(this);
+        this.changeQuery = this.changeQuery.bind(this);
     }
 
-    fetchURL(page) {
-        axios.get(`/invoice/list?page=${page}&size=5`)
+    fetchURL(page, query) {
+        axios.get(`/invoice/list/${query}?page=${page}&size=5`)
             .then(response => {
                     console.log(response);
                     const totalPages = response.data.totalPages;
@@ -72,15 +76,28 @@ class InvoiceListComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.fetchURL(this.state.activePage)
+        this.fetchURL(this.state.activePage, this.state.query);
     }
 
     handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({activePage: pageNumber});
-        this.fetchURL(pageNumber - 1)
+        this.fetchURL(pageNumber - 1, this.state.query);
     }
 
+    changeQuery() {
+        this.fetchURL(0, this.state.query);
+    }
+
+    handleQueryChange(event) {
+        clearTimeout(this.queryTimeout);
+        const target = event.target;
+        const value = target.value;
+        this.setState(() => ({
+            query: value
+        }));
+        this.queryTimeout = setTimeout(this.changeQuery, 1000);
+    }
 
     populateRowsWithData = () => {
         const {roles} = this.state.loggedIn.claims;
@@ -101,13 +118,6 @@ class InvoiceListComponent extends React.Component {
                     </td>
                     : null}
 
-                {/*{roles.includes(MANAGER) && invoice.status==='CHECKED' ?*/}
-                {/*<td>*/}
-                {/*<ButtonGroup>*/}
-                {/*<Button size="sm" color="primary" onClick={()=>this.createWaybill(invoice)} tag={Link}>Путевой лист</Button>*/}
-                {/*</ButtonGroup>*/}
-                {/*</td>*/}
-                {/*: null}*/}
             </tr>
         });
 
@@ -161,60 +171,64 @@ class InvoiceListComponent extends React.Component {
         const check = !this.state.invoices.length;
         return (
             <Container className="text-center" fluid>
+                <FormGroup>
+                    <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                           onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                </FormGroup>
                 {check ? <h3>Список пуст</h3> :
-                <div>
-                    <Table className="mt-4">
-                        <thead>
-                        <tr>
-                            <th width="16%">Номер</th>
-                            <th width="16%">Машина</th>
-                            <th width="16%">Тип машины</th>
-                            <th width="16%">Статус машины</th>
-                            <th>Статус ТТН</th>
-                            <th width="16%">Водитель</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {this.populateRowsWithData()}
-                        </tbody>
+                    <div>
+                        <Table className="mt-4">
+                            <thead>
+                            <tr>
+                                <th width="16%">Номер</th>
+                                <th width="16%">Машина</th>
+                                <th width="16%">Тип машины</th>
+                                <th width="16%">Статус машины</th>
+                                <th>Статус ТТН</th>
+                                <th width="16%">Водитель</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {this.populateRowsWithData()}
+                            </tbody>
 
-                    </Table>
+                        </Table>
 
-                    <div className="d-flex justify-content-center">
-                        <Pagination
-                            activePage={this.state.activePage}
-                            itemsCountPerPage={this.state.itemsCountPerPage}
-                            totalItemsCount={this.state.totalItemsCount}
-                            itemClass='page-item'
-                            linkClass='btn btn-light'
-                            onChange={this.handlePageChange}
+                        <div className="d-flex justify-content-center">
+                            <Pagination
+                                activePage={this.state.activePage}
+                                itemsCountPerPage={this.state.itemsCountPerPage}
+                                totalItemsCount={this.state.totalItemsCount}
+                                itemClass='page-item'
+                                linkClass='btn btn-light'
+                                onChange={this.handlePageChange}
 
-                        />
-                    </div>
+                            />
+                        </div>
 
-                    {roles.includes(MANAGER) ? <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>ТТН</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            <FormGroup>
-                                <InvoiceComponent
-                                    name="InvoiceComponent"
-                                    id="InvoiceComponent"
-                                    invoice={this.state.invoice}
-                                />
-                            </FormGroup>
-                        </Modal.Body>
-                        <Modal.Footer>
-                            <Button color="primary" onClick={this.createWaybill}>
-                                Подтвердить
-                            </Button>
-                            <Button color="danger" onClick={this.rejectRequest}>
-                                Отклонить
-                            </Button>
-                        </Modal.Footer>
-                    </Modal> : null}
-                </div>}
+                        {roles.includes(MANAGER) ? <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>ТТН</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <FormGroup>
+                                    <InvoiceComponent
+                                        name="InvoiceComponent"
+                                        id="InvoiceComponent"
+                                        invoice={this.state.invoice}
+                                    />
+                                </FormGroup>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button color="primary" onClick={this.createWaybill}>
+                                    Подтвердить
+                                </Button>
+                                <Button color="danger" onClick={this.rejectRequest}>
+                                    Отклонить
+                                </Button>
+                            </Modal.Footer>
+                        </Modal> : null}
+                    </div>}
             </Container>
         );
     }

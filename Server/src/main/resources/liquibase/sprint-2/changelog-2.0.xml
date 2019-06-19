@@ -12,8 +12,8 @@
             </not>
         </preConditions>
         <addColumn
-                catalogName="trucking"
-                schemaName="trucking"
+                catalogName="testingdatabase"
+                schemaName="testingdatabase"
                 tableName="user">
             <column name="is_enabled" type="tinyint"/>
         </addColumn>

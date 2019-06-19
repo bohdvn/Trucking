@@ -59,7 +59,6 @@ class RequestComponent extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleShow = this.handleShow.bind(this);
         this.handleClose = this.handleClose.bind(this);
-
     }
 
 

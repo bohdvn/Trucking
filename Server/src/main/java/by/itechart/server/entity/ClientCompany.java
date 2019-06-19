@@ -1,6 +1,8 @@
 package by.itechart.server.entity;
 
+import by.itechart.server.annotations.SearchCriteriaAnnotation;
 import by.itechart.server.dto.ClientCompanyDto;
+import by.itechart.server.specifications.GetPathInterface;
 import by.itechart.server.transformers.ToDtoTransformer;
 import lombok.Data;
 
@@ -19,12 +21,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Data
 @Table(name = "client_company")
-public class ClientCompany implements ToDtoTransformer {
+public class ClientCompany implements ToDtoTransformer, GetPathInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -32,6 +33,7 @@ public class ClientCompany implements ToDtoTransformer {
     @NotNull(message = "Name cannot be null")
     @Size(min = 2, max = 150, message = "Name must be between 2 and 150 characters")
     @Column(name = "name")
+    @SearchCriteriaAnnotation
     private String name;
 
     @Enumerated

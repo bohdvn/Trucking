@@ -12,8 +12,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,25 +48,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserDto> findAllByClientCompanyId(final int id, final Pageable pageable, final String query) {
-        final Specification<User> specification = new CustomSpecification<>(
-                new SearchCriteria(query, null, id, UserDto.class));
+        final Map<List<String>, Object> conditions = new HashMap<>();
+        conditions.put(Arrays.asList("clientCompany", "id"), id);
+
+        final SearchCriteria<User> newSearchCriteria = new SearchCriteria(conditions, User.class, query);
+        final Specification<User> specification = new CustomSpecification<>(newSearchCriteria);
+//        final Specification<User> specification = new CustomSpecification<>(
+//                new SearchCriteria(query, null, id, UserDto.class));
         Page<User> users = userRepository.findAll(specification, pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)
                 .sorted(Comparator.comparing(UserDto::getSurname))
                 .collect(Collectors.toList()), pageable, users.getTotalElements());
     }
+
     @Override
     public List<User> getAllByBirthday(final int month, final int day) {
         return userRepository.findByMatchMonthAndMatchDay(month, day);
     }
 
-    @Override
-    public Page<UserDto> findAll(final Pageable pageable) {
-        final Page<User> users = userRepository.findAll(pageable);
-        return new PageImpl<>(users.stream().map(User::transformToDto)
-                .sorted(Comparator.comparing(UserDto::getSurname))
-                .collect(Collectors.toList()), pageable, users.getTotalElements());
-    }
     @Override
     public UserDto findById(final int id) {
         return userRepository.findById(id).isPresent() ? userRepository.findById(id).get().transformToDto() : null;
@@ -103,8 +105,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserDto> findAllByRolesContains(final User.Role role, final Pageable pageable, final String query) {
-        final Specification<User> specification = new CustomSpecification<>(
-                new SearchCriteria(query, role, -1,  UserDto.class));
+        final Map<List<String>, Object> conditions = new HashMap<>();
+        conditions.put(Arrays.asList("roles"), role);
+
+        final SearchCriteria<User> newSearchCriteria = new SearchCriteria(conditions, User.class, query);
+        final Specification<User> specification = new CustomSpecification<>(newSearchCriteria);
+
+//        final Specification<User> specification = new CustomSpecification<>(
+//                new SearchCriteria(query, role, -1,  UserDto.class));
         final Page<User> users = userRepository.findAll(specification, pageable);
         return new PageImpl<>(users.stream().map(User::transformToDto)
                 .collect(Collectors.toList()), pageable, users.getTotalElements());

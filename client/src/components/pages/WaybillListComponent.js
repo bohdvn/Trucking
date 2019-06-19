@@ -154,9 +154,6 @@ class WaybillListComponent extends React.Component {
                 <td>{waybill.invoice.request.clientCompanyFrom.address.city}
                     {waybill.invoice.request.clientCompanyFrom.address.street}
                     {waybill.invoice.request.clientCompanyFrom.address.building}</td>
-                <td>{waybill.invoice.request.clientCompanyTo.address.city}
-                    {waybill.invoice.request.clientCompanyTo.address.street}
-                    {waybill.invoice.request.clientCompanyTo.address.building}</td>
                 <td>{waybill.dateFrom}</td>
                 <td>{this.waybillStatusMap[waybill.status]}</td>
                 <td>
@@ -214,7 +211,6 @@ class WaybillListComponent extends React.Component {
                         <tr>
                             <th width="20%">Номер ТТН</th>
                             <th width="20%">Пункт отправления</th>
-                            <th width="20%">Пункт назначения</th>
                             <th width="20%">Дата отправления</th>
                             <th>Статус</th>
                             <th width="10%"></th>

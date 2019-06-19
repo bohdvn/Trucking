@@ -10,7 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface WayBillRepository extends JpaRepository<WayBill,Integer> {
+public interface WayBillRepository extends JpaRepository<WayBill,Integer>, JpaSpecificationExecutor<WayBill> {
+
     Page<WayBill> findAllByInvoiceRequestDriverIdAndStatus(int id, WayBill.Status status, Pageable pageable);
 
     Optional<WayBill> findByIdAndInvoiceRequestDriverId(int id, Integer integer);

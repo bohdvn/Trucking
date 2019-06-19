@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Integer>, JpaSpecificationExecutor<Request> {
+
     Optional<Request> findByIdAndClientCompanyFromId(Integer id, Integer clientId);
 
     Page<Request> findAllByClientCompanyFromId(int id, Pageable pageable);

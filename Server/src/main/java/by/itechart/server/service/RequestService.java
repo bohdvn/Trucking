@@ -11,11 +11,15 @@ public interface RequestService {
 
     Page<RequestDto> findAllByClientCompanyFromId(final int id, final Pageable pageable);
 
-    Page<RequestDto> findAllByClientCompanyFromIdAndStatus(final int id, Request.Status status, final Pageable pageable);
+    Page<RequestDto> findAllByClientCompanyFromId(final int id, final Pageable pageable, final String query);
+
+    Page<RequestDto> findAllByClientCompanyFromIdAndStatus(final int id, Request.Status status,
+                                                           final Pageable pageable);
+
+    Page<RequestDto> findAllByClientCompanyFromIdAndStatus(final int id, Request.Status status,
+                                                           final Pageable pageable, final String query);
 
     RequestDto findByIdAndClientCompanyFromId(final int id, final int clientId);
-
-    Page<RequestDto> findAllByQuery(final Pageable pageable, final String query);
 
     RequestDto findById(final int id);
 

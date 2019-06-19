@@ -1,8 +1,6 @@
 package by.itechart.server.dto;
 
-import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.User;
-import by.itechart.server.interfaces.FieldsInterface;
 import by.itechart.server.transformers.ToEntityTransformer;
 import lombok.Data;
 
@@ -10,19 +8,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class UserDto implements ToEntityTransformer, FieldsInterface {
+public class UserDto implements ToEntityTransformer {
 
     private Integer id;
 
-    @CriteriaAnnotation
     private String name;
 
     private boolean isEnabled;
 
-    @CriteriaAnnotation
     private String patronymic;
 
-    @CriteriaAnnotation
     private String surname;
 
     private String passportNumber;
@@ -55,7 +50,7 @@ public class UserDto implements ToEntityTransformer, FieldsInterface {
     public User transformToEntity() {
         final User user = new User();
         user.setAddress(this.address.transformToEntity());
-        user.setClientCompany(this.clientCompany!=null?this.clientCompany.transformToEntity():null);
+        user.setClientCompany(this.clientCompany != null ? this.clientCompany.transformToEntity() : null);
         user.setDateOfBirth(this.dateOfBirth);
         user.setEmail(this.email);
         user.setEnabled(this.isEnabled);

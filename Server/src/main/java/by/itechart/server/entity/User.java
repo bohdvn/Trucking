@@ -1,6 +1,8 @@
 package by.itechart.server.entity;
 
+import by.itechart.server.annotations.SearchCriteriaAnnotation;
 import by.itechart.server.dto.UserDto;
+import by.itechart.server.specifications.GetPathInterface;
 import by.itechart.server.transformers.ToDtoTransformer;
 import lombok.Data;
 
@@ -30,7 +32,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "user")
-public class User implements ToDtoTransformer {
+public class User implements ToDtoTransformer, GetPathInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -38,15 +40,18 @@ public class User implements ToDtoTransformer {
     @NotNull(message = "Name cannot be null")
     @Size(min = 2, max = 45, message = "Name must be between 2 and 45 characters")
     @Column(name = "name")
+    @SearchCriteriaAnnotation
     private String name;
 
     @Size(min = 2, max = 45, message = "Patronymic must be between 2 and 45 characters")
     @Column(name = "patronymic")
+    @SearchCriteriaAnnotation
     private String patronymic;
 
     @NotNull(message = "Surname cannot be null")
     @Size(min = 2, max = 45, message = "Surname must be between 2 and 45 characters")
     @Column(name = "surname")
+    @SearchCriteriaAnnotation
     private String surname;
 
     @NotNull(message = "Passport number cannot be null")

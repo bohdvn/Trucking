@@ -1,19 +1,16 @@
 package by.itechart.server.dto;
 
-import by.itechart.server.annotations.CriteriaAnnotation;
 import by.itechart.server.entity.ClientCompany;
-import by.itechart.server.interfaces.FieldsInterface;
 import by.itechart.server.transformers.ToEntityTransformer;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class ClientCompanyDto implements ToEntityTransformer, FieldsInterface {
+public class ClientCompanyDto implements ToEntityTransformer {
 
     private Integer id;
 
-    @CriteriaAnnotation
     private String name;
 
     private ClientCompany.Status status;

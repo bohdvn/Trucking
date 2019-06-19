@@ -42,6 +42,7 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/car/:id" allowed={[ROLE.SYSADMIN]} component={CarComponent}/>
                 <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
                 <ProtectedRoute exact path='/report' allowed={[ROLE.SYSADMIN]} component={ReportComponent}/>
+                <ProtectedRoute exact path='/drivers' allowed={[ROLE.SYSADMIN]} component={UserListComponent}/>
 
 
                 {/*ADMIN*/}

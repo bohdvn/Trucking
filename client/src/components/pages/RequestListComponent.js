@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup, Container, FormGroup, Table} from 'reactstrap';
+import {Button, ButtonGroup, Container, FormGroup, Input, Table} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
@@ -92,6 +92,7 @@ class RequestListComponent extends React.Component {
         this.setState({activePage: pageNumber});
         this.fetchURL(pageNumber - 1, this.state.query);
     }
+
     changeQuery() {
         this.fetchURL(0, this.state.query);
     }
@@ -105,6 +106,7 @@ class RequestListComponent extends React.Component {
         }));
         this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
+
     populateRowsWithData = () => {
         const {roles} = this.state;
         const requests = this.state.requests.map(request => {
@@ -114,7 +116,7 @@ class RequestListComponent extends React.Component {
                 <td>{this.requestStatusMap[request.status]}</td>
                 <td>
                     <ButtonGroup>
-                        {roles.includes(ROLE.OWNER) && request.status!='ISSUED' ?
+                        {roles.includes(ROLE.OWNER) && request.status !== 'ISSUED' ?
                             <Button size="sm" color="primary" tag={Link}
                                     to={"/request/" + request.id}>Редактировать
                             </Button>
@@ -160,7 +162,7 @@ class RequestListComponent extends React.Component {
         console.log(invoice);
         this.setState({invoice: ''});
         this.saveInvoice(invoice)
-            .then(response=>{
+            .then(response => {
                 console.log(response);
             });
         window.location.reload();
@@ -199,6 +201,10 @@ class RequestListComponent extends React.Component {
         return (
             <div>
                 <Container fluid>
+                    <FormGroup>
+                        <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
+                               onChange={this.handleQueryChange} autoComplete="searchQuery"/>
+                    </FormGroup>
                     {roles.includes(ROLE.OWNER) ?
                         <div className="float-right">
                             <Button color="success" tag={Link} to="/request/create">Добавить</Button>

@@ -106,7 +106,7 @@ class RequestComponent extends React.Component {
     }
 
     saveProduct = () => {
-        this.setState({showExecuteWaybill: false});
+        this.setState({show: false});
         let product = this.state.product;
         let productToEdit = this.state.productToEdit;
         let products = this.state.request.products;
@@ -337,7 +337,7 @@ class RequestComponent extends React.Component {
 
                 </Form>
 
-                <Modal size="lg" show={this.state.showExecuteWaybill} onHide={this.handleClose}>
+                <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
                     <Modal.Header closeButton>
                         <Modal.Title>Добавление продукта</Modal.Title>
                     </Modal.Header>

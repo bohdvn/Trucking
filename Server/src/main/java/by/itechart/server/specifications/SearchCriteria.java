@@ -1,74 +1,52 @@
 package by.itechart.server.specifications;
 
-import by.itechart.server.annotations.CriteriaAnnotation;
-import by.itechart.server.entity.User;
-import by.itechart.server.interfaces.FieldsInterface;
-
-import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
-public class SearchCriteria<T extends FieldsInterface> {
-    private Object value;
+public class SearchCriteria<T extends GetPathInterface> {
 
-    private List<Field> fields;
-
+    private Map<List<String>, Object> conditions;
     private Class<T> classType;
+    private String query;
 
-    private User.Role role;
-
-    private int companyId;
-
-    public User.Role getRole() {
-        return role;
-    }
-
-    public SearchCriteria<T> setRole(final User.Role role) {
-        this.role = role;
-        return this;
-    }
-
-    public int getCompanyId() {
-        return companyId;
-    }
-
-    public SearchCriteria<T> setCompanyId(final int companyId) {
-        this.companyId = companyId;
-        return this;
-    }
-
-    public SearchCriteria(final Object value, final User.Role role, final int companyId, Class<T> classType) {
-        this.value = value;
-        fields = T.getFields(classType, CriteriaAnnotation.class);
+    public SearchCriteria(final Map<List<String>, Object> conditions, final Class<T> classType,
+                          final String query) {
+        this.conditions = conditions;
         this.classType = classType;
-        this.companyId = companyId;
-        this.role = role;
+        this.query = query;
+    }
 
+    public SearchCriteria(final Class<T> classType, final String query) {
+        this.classType = classType;
+        this.query = query;
+    }
 
+    public SearchCriteria(final Map<List<String>, Object> conditions, final Class<T> classType) {
+        this.conditions = conditions;
+        this.classType = classType;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(final String query) {
+        this.query = query;
     }
 
     public Class<T> getClassType() {
         return classType;
     }
 
-    public SearchCriteria<T> setClassType(final Class<T> classType) {
+    public void setClassType(final Class<T> classType) {
         this.classType = classType;
-        return this;
     }
 
-    public List<Field> getFields() {
-        return fields;
+    public Map<List<String>, Object> getConditions() {
+        return conditions;
     }
 
-    public void setFields(final List<Field> fields) {
-        this.fields = fields;
-    }
-
-
-    public Object getValue() {
-        return value;
-    }
-
-    public void setValue(final Object value) {
-        this.value = value;
+    public void setConditions(final Map<List<String>, Object> conditions) {
+        this.conditions = conditions;
     }
 }

@@ -86,24 +86,24 @@ public class WayBillController {
     }
 
     @PreAuthorize("hasAuthority('DRIVER') or hasAuthority('SYSADMIN')")
-    @GetMapping("/list")
+    @GetMapping("/list/")
     public ResponseEntity<Page<WayBillDto>> getAll(@CurrentUser UserPrincipal user, Pageable pageable) {
         LOGGER.info("REST request. Path:/waybill method: GET.");
         final Page<WayBillDto> wayBillsDto =
                 wayBillService.findAllByInvoiceRequestDriverIdAndStatus(user.getId(), WayBill.Status.STARTED, pageable);
         LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
-        return wayBillsDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
+        return new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/list/{query}")
-    public ResponseEntity<Page<WayBillDto>> getAll(Pageable pageable, @PathVariable("query") String query) {
+    public ResponseEntity<Page<WayBillDto>> getAll(@CurrentUser UserPrincipal user, Pageable pageable,
+                                                   @PathVariable("query") String query) {
         LOGGER.info("REST request. Path:/waybill method: GET.");
-        final Page<WayBillDto> wayBillsDto = wayBillService.findAllByQuery(pageable, query);
+        final Page<WayBillDto> wayBillsDto = wayBillService.findAllByInvoiceRequestDriverIdAndStatus(user.getId(),
+                WayBill.Status.STARTED, pageable, query);
         LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
-        return wayBillsDto.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
+        return new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

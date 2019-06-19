@@ -5,15 +5,20 @@ import by.itechart.server.entity.WayBill;
 import by.itechart.server.repository.WayBillRepository;
 import by.itechart.server.service.InvoiceService;
 import by.itechart.server.service.WayBillService;
+import by.itechart.server.specifications.CustomSpecification;
 import by.itechart.server.specifications.SearchCriteria;
-import by.itechart.server.specifications.WayBillSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,18 +54,14 @@ public class WayBillServiceImpl implements WayBillService {
     }
 
     @Override
-    public Page<WayBillDto> findAll(final Pageable pageable) {
-        final Page<WayBill> wayBills = wayBillRepository.findAll(pageable);
-        return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
-                .sorted(Comparator.comparing(WayBillDto::getDateFrom))
-                .collect(Collectors.toList()), pageable, wayBills.getTotalElements());
-    }
+    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, final WayBill.Status status, final Pageable pageable, final String query) {
+        final Map<List<String>, Object> conditions = new HashMap<>();
+        conditions.put(Arrays.asList("invoice", "request", "id"), id);
+        conditions.put(Arrays.asList("status"), status);
 
-    @Override
-    public Page<WayBillDto> findAllByQuery(final Pageable pageable, final String query) {
-        final WayBillSpecification wayBillSpecification = new WayBillSpecification(
-                new SearchCriteria(query, null, -1, WayBillDto.class));
-        final Page<WayBill> wayBills = wayBillRepository.findAll(wayBillSpecification, pageable);
+        final SearchCriteria<WayBill> newSearchCriteria = new SearchCriteria(conditions, WayBill.class, query);
+        final Specification<WayBill> specification = new CustomSpecification<>(newSearchCriteria);
+        final Page<WayBill> wayBills = wayBillRepository.findAll(specification, pageable);
         return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
                 .sorted(Comparator.comparing(WayBillDto::getDateFrom))
                 .collect(Collectors.toList()), pageable, wayBills.getTotalElements());

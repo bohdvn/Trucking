@@ -84,34 +84,27 @@ public class RequestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-//    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
-//    @GetMapping("/list/{query}")
-//    public ResponseEntity<Page<RequestDto>> getAll(Pageable pageable, @PathVariable("query") String query) {
-//        LOGGER.info("REST request. Path:/request method: GET.");
-//        final Page<RequestDto> requestDtos = requestService.findAllByQuery(pageable, query);
-//        return new ResponseEntity<>(requestDtos, HttpStatus.OK);
-//    }
-//
-//    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
-//    @GetMapping("/list/")
-//    public ResponseEntity<Page<RequestDto>> getAllWithoutQuery(Pageable pageable) {
-//        LOGGER.info("REST request. Path:/request method: GET.");
-//        final Page<RequestDto> requestDtos = requestService.findAll(pageable);
-//        return new ResponseEntity<>(requestDtos, HttpStatus.OK);
-//    }
-
     @PreAuthorize("hasAuthority('OWNER')")
-    @GetMapping("/list")
+    @GetMapping("/list/")
     public ResponseEntity<Page<RequestDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/request method: GET.");
         final Page<RequestDto> requestDtos = requestService
                 .findAllByClientCompanyFromId(userPrincipal.getClientCompanyId(), pageable);
-        return requestDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(requestDtos, HttpStatus.OK);
+        return new ResponseEntity<>(requestDtos, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/list/{query}")
+    public ResponseEntity<Page<RequestDto>> getAll(@CurrentUser UserPrincipal userPrincipal, Pageable pageable,
+                                                   @PathVariable("query") String query) {
+        LOGGER.info("REST request. Path:/request method: GET.");
+        final Page<RequestDto> requestDtos = requestService
+                .findAllByClientCompanyFromId(userPrincipal.getClientCompanyId(), pageable, query);
+        return new ResponseEntity<>(requestDtos, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('DISPATCHER')")
-    @GetMapping("/notviewed")
+    @GetMapping("/notviewed/")
     public ResponseEntity<Page<RequestDto>> getNotViewed(@CurrentUser UserPrincipal userPrincipal, Pageable pageable) {
         LOGGER.info("REST request. Path:/request method: GET.");
         final Page<RequestDto> requestDtos = requestService
@@ -119,8 +112,21 @@ public class RequestController {
                         userPrincipal.getClientCompanyId(),
                         Request.Status.NOT_VIEWED,
                         pageable);
-        return requestDtos.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) :
-                new ResponseEntity<>(requestDtos, HttpStatus.OK);
+        return new ResponseEntity<>(requestDtos, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('DISPATCHER')")
+    @GetMapping("/notviewed/{query}")
+    public ResponseEntity<Page<RequestDto>> getNotViewed(@CurrentUser UserPrincipal userPrincipal, Pageable pageable,
+                                                         @PathVariable("query") String query) {
+        LOGGER.info("REST request. Path:/request method: GET.");
+        final Page<RequestDto> requestDtos = requestService
+                .findAllByClientCompanyFromIdAndStatus(
+                        userPrincipal.getClientCompanyId(),
+                        Request.Status.NOT_VIEWED,
+                        pageable,
+                        query);
+        return new ResponseEntity<>(requestDtos, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

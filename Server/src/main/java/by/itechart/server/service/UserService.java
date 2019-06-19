@@ -19,8 +19,6 @@ public interface UserService {
 
     List<UserDto> findAllByRolesContains(final User.Role role);
 
-    Page<UserDto> findAll(final Pageable pageable);
-
     void save(final UserDto userDto);
 
     UserDto findById(int id);

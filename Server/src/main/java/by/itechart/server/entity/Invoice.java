@@ -1,6 +1,8 @@
 package by.itechart.server.entity;
 
+import by.itechart.server.annotations.SearchCriteriaAnnotation;
 import by.itechart.server.dto.InvoiceDto;
+import by.itechart.server.specifications.GetPathInterface;
 import by.itechart.server.transformers.ToDtoTransformer;
 import lombok.Data;
 
@@ -17,12 +19,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Data
 @Entity
 @Table(name = "invoice")
-public class Invoice implements ToDtoTransformer {
+public class Invoice implements ToDtoTransformer, GetPathInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -62,6 +63,7 @@ public class Invoice implements ToDtoTransformer {
      */
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "request_id")
+    @SearchCriteriaAnnotation(path = "car name; driver surname; driver name; driver patronymic")
     private Request request;
 
     @Override

@@ -208,17 +208,17 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/list/{query}")
     public ResponseEntity<Page<UserDto>> getAll(final Pageable pageable, final @PathVariable("query") String query) {
-        LOGGER.info("REST request. Path:/car method: GET.");
+        LOGGER.info("REST request. Path:/user method: GET.");
         final Page<UserDto> userDtos = userService.findAllByQuery(pageable, query);
-        LOGGER.info("Return carList.size:{}", userDtos.getNumber());
+        LOGGER.info("Return userList.size:{}", userDtos.getNumber());
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
     @GetMapping("/list/")
     public ResponseEntity<Page<UserDto>> getAllWithoutQuery(final Pageable pageable) {
-        LOGGER.info("REST request. Path:/car method: GET.");
+        LOGGER.info("REST request. Path:/user method: GET.");
         final Page<UserDto> userDtos = userService.findAll(pageable);
-        LOGGER.info("Return carList.size:{}", userDtos.getNumber());
+        LOGGER.info("Return userList.size:{}", userDtos.getNumber());
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
 }

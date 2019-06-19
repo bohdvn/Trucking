@@ -4,9 +4,7 @@ import createBrowserHistory from './helpers/history';
 import UserComponent from "./components/forms/UserComponent";
 import CarComponent from "./components/forms/CarComponent";
 import CarListComponent from "./components/pages/CarListComponent";
-import ProductListComponent from "./components/pages/ProductListComponent";
 import UserListComponent from "./components/pages/UserListComponent";
-import ProductComponent from "./components/forms/ProductComponent";
 import ClientComponent from "./components/forms/ClientComponent";
 import LoginForm from "./components/forms/LoginForm";
 import Home from "./components/home/Home"
@@ -25,6 +23,7 @@ import Navigation from './components/Navigation'
 import ReportComponent from './components/forms/ReportComponent';
 import SendEmail from "./components/forms/SendEmail";
 import * as ROLE from './constants/userConstants';
+import TemplateComponent from "./components/forms/TemplateComponent";
 
 class App extends React.Component {
     constructor(props) {
@@ -44,6 +43,7 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/car/:id" allowed={[ROLE.SYSADMIN]} component={CarComponent}/>
                 <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
                 <ProtectedRoute exact path='/report' allowed={[ROLE.SYSADMIN]} component={ReportComponent}/>
+                <ProtectedRoute exact path='/template' allowed={[ROLE.SYSADMIN]} component={TemplateComponent}/>
 
 
                 {/*ADMIN*/}

@@ -87,7 +87,9 @@ class TempCheckpointComponent extends React.Component {
         console.log(currentTime());
         const checkpointId=checkpoint.id;
         return (
-            <Container className="col-3">
+            <Container className="col-3" style={{
+                'max-width': '100%'
+            }}>
                 <h1>Контрольная точка</h1>
                 <Form>
                     <FormGroup>

@@ -109,15 +109,14 @@ class InvoiceListComponent extends React.Component {
                 <td>{this.carStatusMap[invoice.request.car.status]}</td>
                 <td>{this.invoiceStatusMap[invoice.status]}</td>
                 <td>{invoice.request.driver.name}</td>
-                {roles.includes(MANAGER) && invoice.request.status==='ISSUED' && invoice.status === 'COMPLETED' ?
-                    <td>
+                <td>
+                    {roles.includes(MANAGER) && invoice.request.status === 'ISSUED' && invoice.status === 'COMPLETED' ?
                         <ButtonGroup>
                             <Button size="sm" color="primary" tag={Link}
                                     onClick={() => this.handleShow(invoice.id)}>Проверить</Button>
                         </ButtonGroup>
-                    </td>
-                    : null}
-
+                        : null}
+                </td>
             </tr>
         });
 
@@ -186,6 +185,7 @@ class InvoiceListComponent extends React.Component {
                                 <th width="16%">Статус машины</th>
                                 <th>Статус ТТН</th>
                                 <th width="16%">Водитель</th>
+                                <th width="10%"></th>
                             </tr>
                             </thead>
                             <tbody>

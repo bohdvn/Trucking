@@ -2,11 +2,13 @@ import React from 'react';
 import {Button, ButtonGroup, Container, Form, FormGroup, Input, Label, Table} from 'reactstrap';
 import Modal from 'react-bootstrap/Modal';
 import TempCheckpointComponent from "./TempCheckpointComponent";
+import TempRouteComponent from "./TempRouteComponent";
 import {Link} from "react-router-dom";
 import {currentTime} from "../../utils/currentTime";
 import {connect} from "react-redux";
 import * as ROLE from "../../constants/userConstants";
 import axios from 'axios';
+import Geocode from "react-geocode";
 
 class WaybillComponent extends React.Component {
 
@@ -38,6 +40,7 @@ class WaybillComponent extends React.Component {
             roles: props.loggedIn.claims.roles,
             waybill: this.emptyWaybill,
             show: false,
+            showRoute: false,
             checkpoint: this.emptyCheckpoint,
             checkpointToEdit: this.emptyCheckpoint,
         };
@@ -47,7 +50,9 @@ class WaybillComponent extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleShow = this.handleShow.bind(this);
+        this.handleShowRoute = this.handleShowRoute.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.handleCloseRoute = this.handleCloseRoute.bind(this);
     }
 
 
@@ -62,6 +67,10 @@ class WaybillComponent extends React.Component {
 
     handleClose() {
         this.setState({show: false});
+    }
+
+    handleCloseRoute() {
+        this.setState({showRoute: false});
     }
 
     saveCheckpoint = () => {
@@ -101,6 +110,39 @@ class WaybillComponent extends React.Component {
 
     handleShow() {
         this.setState({show: true, checkpoint: this.emptyCheckpoint, checkpointToEdit: this.emptyCheckpoint});
+    }
+
+    componentWillMount() {
+        const addressFrom = this.state.waybill.invoice.request.clientCompanyFrom.address;
+        const addressTo = this.state.waybill.invoice.request.address;
+        Geocode.setApiKey('AIzaSyB2JLf08WBJ9takbdrl8DQhoS-mBK_XA_0');
+        Geocode.fromAddress(addressFrom.city + ' ' + addressFrom.street + ' ' + addressFrom.building).then(
+            response => {
+                const {lat, lng} = response.results[0].geometry.location;
+                this.setState({
+                    origin: {lat: lat, lng: lng}
+                });
+            },
+            error => {
+                console.error(error);
+            },
+        );
+
+        Geocode.fromAddress(addressTo.city + ' ' + addressTo.street + ' ' + addressTo.building).then(
+            response => {
+                const {lat, lng} = response.results[0].geometry.location;
+                this.setState({
+                    destination: {lat: lat, lng: lng}
+                });
+            },
+            error => {
+                console.error(error);
+            }
+        );
+    }
+
+    handleShowRoute() {
+        this.setState({showRoute: true});
     }
 
     passCheckpoint = () => {
@@ -157,7 +199,8 @@ class WaybillComponent extends React.Component {
                 <td>{checkpoint.date}</td>
                 <td>{this.checkpointStatusMap[checkpoint.status]}</td>
 
-                {checkpoint.id?<td>
+                {checkpoint.id ?
+                <td>
                     <ButtonGroup>
                         <Button size="sm" color="primary" onClick={() => this.editCheckpoint(checkpoint)}
                         >Редактировать</Button>
@@ -165,7 +208,8 @@ class WaybillComponent extends React.Component {
                                 onClick={() => this.removeCheckpoint(checkpoint)}
                         >Удалить</Button>
                     </ButtonGroup>
-                </td> : null}
+                </td>
+                : null}
 
                 {checkpoint.id && checkpoint.status === 'NOT_PASSED' ? <td>
                     <Button disabled={array[index - 1] && array[index - 1].status === 'NOT_PASSED'}
@@ -192,15 +236,16 @@ class WaybillComponent extends React.Component {
         const {waybill, roles} = this.state;
         const {checkpoints} = waybill;
         return (!roles.includes(ROLE.DRIVER) && !waybill.id)
-        || (checkpoints[checkpoints.length - 1] === 'NOT_PASSED');
+            || (checkpoints[checkpoints.length - 1] === 'NOT_PASSED');
     };
 
     render() {
         const {waybill, roles} = this.state;
-        const check=this.finishWaybillCheck();
+        const check = this.finishWaybillCheck();
         console.log(check);
         return (
-            <Container className="col-3">
+            <Container className="col-3" style={{
+            }}>
                 <h1>Путевой лист</h1>
                 <Form onSubmit={this.handleSubmit}>
 
@@ -255,6 +300,12 @@ class WaybillComponent extends React.Component {
                             : null}
                     </FormGroup>
                     <FormGroup>
+                        {roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER) ?
+                            <Button color="primary" onClick={this.handleShowRoute}>Показать маршрут</Button>
+                            : null}
+
+                    </FormGroup>
+                    <FormGroup>
                         <Button color="primary" type="submit">Сохранить</Button>{' '}
                     </FormGroup>
 
@@ -288,6 +339,23 @@ class WaybillComponent extends React.Component {
                             </Button>
                             : null}
                     </Modal.Footer>
+                </Modal>
+
+                <Modal size="lg" show={this.state.showRoute} onHide={this.handleCloseRoute}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Маршрут</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <FormGroup>
+                            <TempRouteComponent
+                                name="RouteComponent"
+                                id="RouteComponent"
+                                origin={this.state.origin}
+                                destination={this.state.destination}
+                                checkpoints={this.state.waybill.checkpoints}
+                            />
+                        </FormGroup>
+                    </Modal.Body>
                 </Modal>
             </Container>
 

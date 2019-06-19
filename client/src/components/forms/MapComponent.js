@@ -27,15 +27,6 @@ class WrappedMapComponent extends React.Component {
                     },
                 }
             ],
-            onMapMounted: ref => {
-                refs.map = ref;
-            },
-            onBoundsChanged: () => {
-                this.setState({
-                    bounds: refs.map.getBounds(),
-                    center: refs.map.getCenter(),
-                })
-            },
             onSearchBoxMounted: ref => {
                 refs.searchBox = ref;
             },
@@ -87,8 +78,6 @@ class WrappedMapComponent extends React.Component {
 
     render() {
         const {
-            onMapMounted,
-            onBoundsChanged,
             onSearchBoxMounted,
             bounds,
             center,
@@ -97,10 +86,8 @@ class WrappedMapComponent extends React.Component {
         } = this.state;
         return (
             <GoogleMap
-                ref={onMapMounted}
                 zoom={10}
                 center={center}
-                onBoundsChanged={onBoundsChanged}
                 onClick={(e) => this.state.handleClick(e)}
             >
                 <SearchBox
@@ -117,8 +104,8 @@ class WrappedMapComponent extends React.Component {
                             boxSizing: `border-box`,
                             border: `1px solid transparent`,
                             width: `240px`,
-                            height: `32px`,
-                            marginTop: `27px`,
+                            height: `40px`,
+                            marginTop: `10px`,
                             padding: `0 12px`,
                             borderRadius: `3px`,
                             boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`,
@@ -150,7 +137,7 @@ MapComponent.defaultProps = {
     containerElement:
         <div style={{height: `400px`}}/>,
     mapElement:
-        <div style={{height: `100%`, width: `250%`, padding: `0`}}/>,
+        <div style={{height: `100%`, width: `100%`, padding: `0`}}/>,
 };
 
 export default MapComponent;

@@ -52,3 +52,28 @@
 .formErrors {
     color: red;
 }
+
+.color-picker-container {
+    position: relative;
+}
+
+.color-picker-palette {
+    position: absolute;
+    z-index: 100;
+}
+
+.color-picker-cover {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    bottom: 0px;
+    right: 0px;
+}
+
+.color-picker-color-background {
+    position: relative;
+    height: 35px;
+    width: 35px;
+    background-color: #999999;
+    float: left;
+}

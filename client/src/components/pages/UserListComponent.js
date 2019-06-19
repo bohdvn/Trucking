@@ -139,7 +139,7 @@ class UserListComponent extends React.Component {
             for (let selected = 0; selected < selectedIds.length; selected++) {
                 for (let userId = 0; userId < users.length; userId++) {
                     const user = users[userId];
-                    if (selectedIds[selected] === user.id) {
+                    if (selectedIds[selected] == user.id) {
                         selectedUsers.push(user);
                     }
                 }

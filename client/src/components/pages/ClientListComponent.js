@@ -3,8 +3,6 @@ import {Button, ButtonGroup, Container, FormGroup, Input, Table} from 'reactstra
 import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
-import {ACCESS_TOKEN} from "../../constants/auth";
-
 
 class ClientListComponent extends React.Component {
 
@@ -42,6 +40,7 @@ class ClientListComponent extends React.Component {
 
     handleChange = e => {
         const id = e.target.id;
+        console.log(this.state);
         this.setState(prevState => {
             return {
                 clients: prevState.clients.map(
@@ -104,7 +103,7 @@ class ClientListComponent extends React.Component {
                 <td><Input
                     type="checkbox"
                     id={client.id || ''}
-                    name="selected_clients"
+                    name="selectedClients"
                     value={client.id || ''}
                     checked={client.value || ''}
                     onChange={this.handleChange}/></td>
@@ -138,13 +137,17 @@ class ClientListComponent extends React.Component {
         });
     }
 
-    async removeChecked() {
-        const selectedClients = Array.apply(null,
-            document.clients.selected_clients).filter(function (el) {
+    getSelected=()=>{
+        return Array.apply(this,
+            document.getElementsByName("selectedClients")).filter(function (el) {
             return el.checked === true
         }).map(function (el) {
             return el.value
         });
+    };
+
+    async removeChecked() {
+        const selectedClients = this.getSelected();
         console.log(selectedClients);
         await fetch(`/client/${selectedClients}`, {
             method: 'DELETE',
@@ -164,7 +167,7 @@ class ClientListComponent extends React.Component {
     render() {
         const check = !this.state.clients.length;
         return (
-            <Container fluid>
+            <Container className="text-center" fluid>
                 <FormGroup>
                     <Input type="text" name="searchQuery" id="searchQuery" value={this.state.query}
                            onChange={this.handleQueryChange} autoComplete="searchQuery"/>
@@ -180,7 +183,7 @@ class ClientListComponent extends React.Component {
                         <Table className="mt-4">
                             <thead>
                             <tr>
-                                <th></th>
+                                <th width="5%"></th>
                                 <th width="30%">Название</th>
                                 <th width="30%">Тип</th>
                                 <th>Статус</th>

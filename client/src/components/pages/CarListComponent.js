@@ -81,6 +81,28 @@ class CarListComponent extends React.Component {
         this.queryTimeout = setTimeout(this.changeQuery, 1000);
     }
 
+    getSelected=()=>{
+        return Array.apply(this,
+            document.getElementsByName("selectedСars")).filter(function (el) {
+            return el.checked === true
+        }).map(function (el) {
+            return el.value
+        });
+    };
+
+    handleChange = e => {
+        const id = e.target.id;
+        console.log(this.state);
+        this.setState(prevState => {
+            return {
+                cars: prevState.cars.map(
+                    car => (car.id === +id ? {
+                        ...car, value: !car.value
+                    } : car)
+                )
+            }
+        })
+    };
 
     populateRowsWithData = () => {
         const cars = this.state.cars.map(car => {
@@ -88,15 +110,13 @@ class CarListComponent extends React.Component {
                 <td><Input
                     type="checkbox"
                     id={car.id || ''}
-                    name="selected_cars"
+                    name="selectedСars"
                     value={car.id || ''}
                     checked={car.value || ''}
                     onChange={this.handleChange}/></td>
                 <td style={{whiteSpace: 'nowrap'}}><Link to={"/car/" + car.id}>{car.name}</Link></td>
-                <td style={{whiteSpace: 'nowrap'}}>{car.name}</td>
                 <td>{this.carTypeMap[car.carType]}</td>
                 <td>{car.consumption}</td>
-                <td>{this.carStatusMap[car.status]}</td>
                 <td>
                     <ButtonGroup>
                         <Button size="sm" color="primary" tag={Link} to={"/car/" + car.id}>Редактировать</Button>
@@ -123,12 +143,7 @@ class CarListComponent extends React.Component {
     }
 
     async removeChecked() {
-        const selectedCars = Array.apply(null,
-            document.cars.selected_cars).filter(function (el) {
-            return el.checked === true
-        }).map(function (el) {
-            return el.value
-        });
+        const selectedCars = this.getSelected();
         console.log(selectedCars);
         await fetch(`/car/${selectedCars}`, {
             method: 'DELETE',
@@ -164,11 +179,10 @@ class CarListComponent extends React.Component {
                         <Table className="mt-4">
                             <thead>
                             <tr>
-                                <th></th>
+                                <th width="5%"></th>
                                 <th width="20%">Название</th>
                                 <th width="20%">Тип</th>
                                 <th width="20%">Расход топлива</th>
-                                <th>Статус</th>
                                 <th width="10%"></th>
                             </tr>
                             </thead>

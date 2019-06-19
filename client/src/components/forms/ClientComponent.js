@@ -21,7 +21,6 @@ class ClientComponent extends React.Component {
             address: '',
             type: CLIENT.LEGAL,
             status: CLIENT.ACTIVE,
-            companyType: CLIENT.CLIENT,
         },
         formErrors: {name: ''},
     };
@@ -163,15 +162,6 @@ class ClientComponent extends React.Component {
                                onChange={this.handleChange} autoComplete="status">
                             <option value={CLIENT.ACTIVE}>{CLIENT.ACTIVE_RU}</option>
                             <option value={CLIENT.BLOCKED}>{CLIENT.BLOCKED_RU}</option>
-                        </Input>
-                    </FormGroup>
-
-                    <FormGroup>
-                        <Label htmlFor="status">Тип компании</Label>
-                        <Input type="select" name="companyType" id="companyType" value={client.companyType || ''}
-                               onChange={this.handleChange} autoComplete="companyType">
-                            <option value={CLIENT.CLIENT}>{CLIENT.CLIENT_RU}</option>
-                            <option value={CLIENT.WAREHOUSE}>{CLIENT.WAREHOUSE_RU}</option>
                         </Input>
                     </FormGroup>
 

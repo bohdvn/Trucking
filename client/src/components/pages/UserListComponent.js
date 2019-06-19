@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import axios from 'axios';
 import Pagination from "react-js-pagination";
 import {ACCESS_TOKEN} from "../../constants/auth";
-import {getSelected} from "../../utils/APIUtils";
+import * as ROLE from "../../constants/userConstants";
 
 class UserListComponent extends React.Component {
 
@@ -121,6 +121,7 @@ class UserListComponent extends React.Component {
 
     handleChange = e => {
         const id = e.target.id;
+        console.log(this.state);
         this.setState(prevState => {
             return {
                 users: prevState.users.map(
@@ -132,15 +133,24 @@ class UserListComponent extends React.Component {
         })
     };
 
+    getSelected=()=>{
+        return Array.apply(this,
+            document.getElementsByName("selectedUsers")).filter(function (el) {
+            return el.checked === true
+        }).map(function (el) {
+            return el.value
+        });
+    };
+
     sendEmail = () => {
-        const selectedIds = getSelected();
+        const selectedIds = this.getSelected();
         if (selectedIds.length > 0) {
             const selectedUsers = [];
             const {users} = this.state;
             for (let selected = 0; selected < selectedIds.length; selected++) {
                 for (let userId = 0; userId < users.length; userId++) {
                     const user = users[userId];
-                    if (selectedIds[selected] == user.id) {
+                    if (selectedIds[selected] === user.id) {
                         selectedUsers.push(user);
                     }
                 }
@@ -158,19 +168,28 @@ class UserListComponent extends React.Component {
         }
     };
 
+    getRoles=roles=>{
+        let res='';
+        roles.forEach(role=> {
+            res+=ROLE[`${role}_RU`]+" ";
+        });
+        return res;
+    };
+
     populateRowsWithData = () => {
         const users = this.state.users.map(user => {
+            console.log(user.roles);
             return <tr key={user.id}>
                 <td><Input
                     type="checkbox"
                     id={user.id || ''}
-                    name="selected_users"
+                    name="selectedUsers"
                     value={user.id || ''}
                     checked={user.value || ''}
                     onChange={this.handleChange}/></td>
                 <td style={{whiteSpace: 'nowrap'}}><Link
                     to={`/${this.getUserUrl()}/${user.id}`}>{user.surname} {user.name} {user.patronymic}</Link></td>
-                <td>{this.userRoles[user.role]}</td>
+                <td>{this.getRoles(user.roles)}</td>
                 <td>{user.dateOfBirth}</td>
                 <td>{user.login}</td>
                 <td>
@@ -202,12 +221,13 @@ class UserListComponent extends React.Component {
     }
 
     async removeChecked() {
-        const selectedUsers = Array.apply(null,
-            document.users.selected_users).filter(function (el) {
-            return el.checked === true
-        }).map(function (el) {
-            return el.value
-        });
+        const selectedUsers = this.forceUpdate;
+        //     Array.apply(this,
+        //     document.getElementsByName("selectedUsers")).filter(function (el) {
+        //     return el.checked === true
+        // }).map(function (el) {
+        //     return el.value
+        // });
         console.log(selectedUsers);
         await fetch(`/user/${selectedUsers}`, {
             method: 'DELETE',

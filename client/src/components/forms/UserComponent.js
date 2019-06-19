@@ -2,7 +2,6 @@ import React from 'react';
 import AddressFields from "./AddressFields";
 import {Button, Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import "react-datepicker/dist/react-datepicker.css";
-import {getUserById, saveUser} from "../../utils/APIUtils";
 import {connect} from "react-redux";
 import axios from 'axios';
 import RoleSelect from "../RoleSelect";
@@ -219,7 +218,7 @@ class UserComponent extends React.Component {
             client.users = [];
             client.users.push(user);
             axios.post('/client/', client)
-                .then(() => {
+                .then(repsonse => {
                     this.props.history.push('/clients');
                 }, error => {
                     const {status, statusText} = error.response;

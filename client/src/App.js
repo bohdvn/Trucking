@@ -1,5 +1,5 @@
 import React from 'react';
-import {Route, Router} from 'react-router'
+import { Router, Route } from 'react-router';
 import createBrowserHistory from './helpers/history';
 import UserComponent from "./components/forms/UserComponent";
 import CarComponent from "./components/forms/CarComponent";
@@ -26,16 +26,12 @@ import * as ROLE from './constants/userConstants';
 import Error from './components/error/Error';
 
 class App extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         return (
             <Router history={createBrowserHistory}>
                 <Navigation/>
 
-                <Route path="/home" component={Home}/>
+                <Route exact path="/home" component={Home}/>
                 <ProtectedRoute exact path="/driver/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
                 <ProtectedRoute exact path="/drivers" allowed={[ROLE.SYSADMIN]} component={UserListComponent}/>
                 <ProtectedRoute exact path="/clients" allowed={[ROLE.SYSADMIN]} component={ClientListComponent}/>
@@ -67,9 +63,6 @@ class App extends React.Component {
 
                 {/*MANAGER*/}
 
-
-
-
                 <Route path="/login" component={LoginForm}/>
                 <Route path='/confirm/:id' component={Confirm}/>
                 <Route path='/error' component={Error}/>
@@ -81,7 +74,5 @@ class App extends React.Component {
 export default connect(
     state => ({
         loggedIn: state.loggedIn,
-    }), {
-        changeLoggedIn,
-    }
+    })
 )(App);

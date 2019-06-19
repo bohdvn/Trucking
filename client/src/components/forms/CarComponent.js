@@ -129,14 +129,14 @@ class CarComponent extends React.Component {
                             <option value="TANKER">Автоцистерна</option>
                         </Input>
                     </FormGroup>
-                    <FormGroup>
-                        <Label for="status">Статус</Label>
-                        <Input type="select" name="status" id="status" value={car.status || ''}
-                               onChange={this.handleChange} autoComplete="status">
-                            <option value="AVAILABLE">Доступно</option>
-                            <option value="UNAVAILABLE">Недоступно</option>
-                        </Input>
-                    </FormGroup>
+                    {/*<FormGroup>*/}
+                        {/*<Label for="status">Статус</Label>*/}
+                        {/*<Input type="select" name="status" id="status" value={car.status || ''}*/}
+                               {/*onChange={this.handleChange} autoComplete="status">*/}
+                            {/*<option value="AVAILABLE">Доступно</option>*/}
+                            {/*<option value="UNAVAILABLE">Недоступно</option>*/}
+                        {/*</Input>*/}
+                    {/*</FormGroup>*/}
                     <FormGroup>
                         <Button color="primary" type="submit"
                                 disabled={!this.state.formValid}>Сохранить</Button>{' '}

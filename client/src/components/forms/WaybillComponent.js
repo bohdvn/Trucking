@@ -179,14 +179,6 @@ class WaybillComponent extends React.Component {
 
 
                 </td>
-
-                {checkpoint.id && checkpoint.status === 'NOT_PASSED' ? <td>
-                    <Button disabled={array[index - 1] && array[index - 1].status === 'NOT_PASSED'}
-                            size="sm" color="primary"
-                            onClick={() => this.handleShow(checkpoint)}>
-                        Посмотреть
-                    </Button>
-                </td> : null}
             </tr>
         });
 

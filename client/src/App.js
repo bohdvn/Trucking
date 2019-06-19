@@ -23,6 +23,7 @@ import Navigation from './components/Navigation'
 import ReportComponent from './components/forms/ReportComponent';
 import SendEmail from "./components/forms/SendEmail";
 import * as ROLE from './constants/userConstants';
+import TemplateComponent from "./components/forms/TemplateComponent";
 
 class App extends React.Component {
     constructor(props) {
@@ -43,6 +44,7 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
                 <ProtectedRoute exact path='/report' allowed={[ROLE.SYSADMIN]} component={ReportComponent}/>
                 <ProtectedRoute exact path='/drivers' allowed={[ROLE.SYSADMIN]} component={UserListComponent}/>
+                <ProtectedRoute exact path='/template' allowed={[ROLE.SYSADMIN]} component={TemplateComponent}/>
 
 
                 {/*ADMIN*/}

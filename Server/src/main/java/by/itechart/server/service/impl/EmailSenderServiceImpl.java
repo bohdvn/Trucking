@@ -3,6 +3,9 @@ package by.itechart.server.service.impl;
 import by.itechart.server.entity.Email;
 import by.itechart.server.entity.User;
 import by.itechart.server.service.EmailSenderService;
+import org.antlr.stringtemplate.StringTemplate;
+import org.antlr.stringtemplate.StringTemplateGroup;
+import org.antlr.stringtemplate.language.DefaultTemplateLexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -45,24 +49,36 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     @Async
     @Override
-    public void send(Email mail) {
+    public void send(final Email mail) {
         final List<User> recipients = mail.getRecipients();
         for (User user : recipients) {
-            if (mail.getObject().equals("")) {
+            if (mail.getTemplate().equals("")) {
                 sendEmail(user.getEmail(), mail.getSubject(), mail.getMessage());
             } else {
-                sendPreparedMail(user.getEmail(), mail.getSubject(), mail.getObject(), true);
+                sendPreparedMail(
+                        user.getName(), mail.getBackgroundColor(), mail.getDate(), user.getEmail(),
+                        mail.getSubject(), mail.getTemplate(), true);
             }
         }
     }
 
-    private void sendPreparedMail(String emailTo, String subject, String message, Boolean isHtml) {
+    private void sendPreparedMail(final String username, final String color, final LocalDate date, final String emailTo,
+                                  final String subject, final String message, final Boolean isHtml) {
+        final StringTemplateGroup group = new StringTemplateGroup("myGroup",
+                "/templates", DefaultTemplateLexer.class);
+        final StringTemplate stringTemplate = group.getInstanceOf("template");
+
+        stringTemplate.setAttribute("name", username);
+        stringTemplate.setAttribute("subject", subject);
+        stringTemplate.setAttribute("color", color);
+        stringTemplate.setAttribute("date", date);
+
         try {
             MimeMessage mail = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mail, true);
             helper.setTo(emailTo);
             helper.setSubject(subject);
-            helper.setText(message, isHtml);
+            helper.setText(stringTemplate.toString(), isHtml);
             javaMailSender.send(mail);
         } catch (Exception e) {
             LOGGER.error("Problem with sending email to: {}, error message: {}", emailTo, e.getMessage());

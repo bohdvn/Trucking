@@ -32,8 +32,8 @@
             </not>
         </preConditions>
         <addColumn
-                catalogName="trucking"
-                schemaName="trucking"
+                catalogName="testingdatabase"
+                schemaName="testingdatabase"
                 tableName="client_company">
             <column name="address" type="int"/>
         </addColumn>
@@ -46,24 +46,24 @@
             </not>
         </preConditions>
         <addColumn
-                catalogName="trucking"
-                schemaName="trucking"
+                catalogName="testingdatabase"
+                schemaName="testingdatabase"
                 tableName="user">
             <column name="client_company_id" type="int"/>
         </addColumn>
     </changeSet>
 
     <changeSet id="4" author="victor.bogdan">
-        <dropColumn catalogName="trucking"
+        <dropColumn catalogName="testingdatabase"
                     columnName="invoice_id"
-                    schemaName="trucking"
+                    schemaName="testingdatabase"
                     tableName="product"/>
     </changeSet>
 
     <changeSet id="5" author="victor.bogdan">
-        <dropColumn catalogName="trucking"
+        <dropColumn catalogName="testingdatabase"
                     columnName="act_of_loss_id"
-                    schemaName="trucking"
+                    schemaName="testingdatabase"
                     tableName="product"/>
     </changeSet>
 
@@ -74,8 +74,8 @@
             </not>
         </preConditions>
         <addColumn
-                catalogName="trucking"
-                schemaName="trucking"
+                catalogName="testingdatabase"
+                schemaName="testingdatabase"
                 tableName="product">
             <column name="request_id" type="int"/>
         </addColumn>
@@ -88,24 +88,24 @@
             </not>
         </preConditions>
         <addColumn
-                catalogName="trucking"
-                schemaName="trucking"
+                catalogName="testingdatabase"
+                schemaName="testingdatabase"
                 tableName="product">
             <column name="lost_amount" type="int"/>
         </addColumn>
     </changeSet>
 
     <changeSet id="8" author="victor.bogdan">
-        <dropColumn catalogName="trucking"
+        <dropColumn catalogName="testingdatabase"
                     columnName="client_company_id"
-                    schemaName="trucking"
+                    schemaName="testingdatabase"
                     tableName="waybill"/>
     </changeSet>
 
     <changeSet id="9" author="victor.bogdan">
-        <dropColumn catalogName="trucking"
+        <dropColumn catalogName="testingdatabase"
                     columnName="address_from"
-                    schemaName="trucking"
+                    schemaName="testingdatabase"
                     tableName="waybill"/>
     </changeSet>
 

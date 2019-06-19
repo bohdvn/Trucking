@@ -27,7 +27,8 @@ class SendEmail extends Component {
         recipients: this.props.location.state.users,
         subject: '',
         message: '',
-        template: 'template',
+        // template: 'template',
+        template: '',
         backgroundColor: '#ADFF2F',
     };
 
@@ -163,7 +164,7 @@ class SendEmail extends Component {
     };
 
     render() {
-        console.log(this.state.email.recipients);
+        console.log(this.props);
         return (
             <Container>
                 <Form className="Email" onSubmit={this.handleSubmit}>

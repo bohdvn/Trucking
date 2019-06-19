@@ -81,9 +81,11 @@ class TemplateComponent extends Component {
         const {email} = {...this.state};
         const currentState = email;
         const {name, value} = event.target;
-        currentState[name] = value;
-
-        this.setState({email: currentState});
+        const template=TEMPLATES[value];
+        currentState.template=template.template;
+        currentState.message=template.text;
+        currentState.subject=template.subject;
+        this.setState({email:currentState})
     }
 
     validateField(fieldName, value) {
@@ -253,7 +255,7 @@ class TemplateComponent extends Component {
                     <Input readOnly
                            type="textarea"
                            name="message"
-                           value={TEMPLATES[email.template] ? TEMPLATES[email.template].text : ''}
+                           value={email.message}
                            rows={5}/>
                 </FormGroup>
 

@@ -65,7 +65,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
     private void sendPreparedMail(final String username, final String color, final LocalDate date, final String emailTo,
                                   final String subject, final String message, final Boolean isHtml) {
         final StringTemplateGroup group = new StringTemplateGroup("myGroup",
-                "/templates", DefaultTemplateLexer.class);
+                getClass().getClassLoader().getResource("templates").getFile(), DefaultTemplateLexer.class);
         final StringTemplate stringTemplate = group.getInstanceOf("template");
 
         stringTemplate.setAttribute("name", username);

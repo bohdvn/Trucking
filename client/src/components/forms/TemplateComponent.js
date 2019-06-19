@@ -145,6 +145,7 @@ class TemplateComponent extends Component {
     async handleSubmit(event) {
         event.preventDefault();
         const {email} = this.state;
+        console.log(email);
         await fetch('/email', {
                 method: 'POST',
                 headers: {
@@ -182,6 +183,7 @@ class TemplateComponent extends Component {
     onChangeColorPicker = color => {
         const email = {...this.state.email};
         email.backgroundColor = color.hex;
+        console.log(email);
         this.setState({email});
         this.setState({color: color.rgb, changeColor: color.hex}, () =>
             console.log(this.state.changeColor));
@@ -211,6 +213,8 @@ class TemplateComponent extends Component {
                            onChange={this.handleTemplateSelect}>
                         <option value="UNAVAILABLE">{TEMPLATE.UNAVAILABLE}</option>
                         <option value="HAPPY_BIRTHDAY">{TEMPLATE.HAPPY_BIRTHDAY}</option>
+                        <option value="MEETING">{TEMPLATE.MEETING}</option>
+                        <option value="INTERVIEW">{TEMPLATE.INTERVIEW}</option>
                     </Input>
                 </FormGroup>
                 <FormGroup>

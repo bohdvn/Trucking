@@ -151,8 +151,7 @@ class WaybillComponent extends React.Component {
         const {checkpoints} = this.state.waybill;
         return checkpoints.map((checkpoint, index, array) => {
             return <tr key={checkpoint.id}>
-                <td style={{whiteSpace: 'nowrap'}}><Link
-                    onClick={() => this.editCheckpoint(checkpoint)}>{checkpoint.name}</Link></td>
+                <td>{checkpoint.name}</td>
                 <td>{checkpoint.latitude}</td>
                 <td>{checkpoint.longitude}</td>
                 <td>{checkpoint.date}</td>
@@ -184,10 +183,11 @@ class WaybillComponent extends React.Component {
 
     };
 
-    async componentDidMount() {
+    componentDidMount() {
         if (this.props.match.params.id !== 'create') {
-            await axios.get(`/waybill/${this.props.match.params.id}`)
+            axios.get(`/waybill/${this.props.match.params.id}`)
                 .then(response => {
+                    console.log(response.data);
                     this.setState({waybill: response.data})
                 }, error => {
                     const {status, statusText} = error.response;
@@ -200,8 +200,12 @@ class WaybillComponent extends React.Component {
     finishWaybillCheck = () => {
         const {waybill, roles} = this.state;
         const {checkpoints} = waybill;
+        console.log(checkpoints);
+        console.log(!roles.includes(ROLE.DRIVER) && !waybill.id);
+        console.log(checkpoints[checkpoints.length - 1]);
+        console.log(checkpoints[checkpoints.length - 1] === 'PASSED');
         return (!roles.includes(ROLE.DRIVER) && !waybill.id)
-            || (checkpoints[checkpoints.length - 1] === 'NOT_PASSED');
+            || (checkpoints.length && checkpoints[checkpoints.length - 1].status === 'NOT_PASSED');
     };
 
     render() {
@@ -232,10 +236,10 @@ class WaybillComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="dateTo">Дата окончания</Label>
-                        <Input readOnly={check}
+                        <Input readOnly
                                type="date" name="dateTo"
                                id="dateTo"
-                               value={waybill.dateTo || ''}
+                               value={!check?currentTime():''}
                                onChange={this.handleChange} autoComplete="dateTo"/>
                     </FormGroup>
                     <FormGroup>

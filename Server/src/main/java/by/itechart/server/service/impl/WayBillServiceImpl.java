@@ -45,21 +45,19 @@ public class WayBillServiceImpl implements WayBillService {
     }
 
     @Override
-    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, final WayBill.Status status,
-                                                                     final Pageable pageable) {
+    public Page<WayBillDto> findAllByInvoiceRequestDriverId(final int id, final Pageable pageable) {
         final Page<WayBill> wayBills =
-                wayBillRepository.findAllByInvoiceRequestDriverIdAndStatus(id, status, pageable);
+                wayBillRepository.findAllByInvoiceRequestDriverId(id, pageable);
         return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
                 .sorted(Comparator.comparing(WayBillDto::getDateFrom))
                 .collect(Collectors.toList()), pageable, wayBills.getTotalElements());
     }
 
     @Override
-    public Page<WayBillDto> findAllByInvoiceRequestDriverIdAndStatus(final int id, final WayBill.Status status,
-                                                                     final Pageable pageable, final String query) {
+    public Page<WayBillDto> findAllByInvoiceRequestDriverId(final int id, final Pageable pageable, final String query) {
         final Map<List<String>, Object> conditions = new HashMap<>();
         conditions.put(Arrays.asList("invoice", "request", "id"), id);
-        conditions.put(Arrays.asList("status"), status);
+//        conditions.put(Arrays.asList("status"), status);
 
         final SearchCriteria<WayBill> newSearchCriteria = new SearchCriteria(conditions, WayBill.class, query);
         final Specification<WayBill> specification = new CustomSpecification<>(newSearchCriteria);

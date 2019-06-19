@@ -68,6 +68,8 @@ class RequestListComponent extends React.Component {
                         totalItemsCount: totalItemsCount,
                         itemsCountPerPage: itemsCountPerPage,
                         requests: response.data.content || []
+                    }, () => {
+                        console.log(this.state);
                     });
                 }, error => {
                     const {status, statusText} = error.response;

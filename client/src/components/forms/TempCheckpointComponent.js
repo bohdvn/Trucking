@@ -1,6 +1,7 @@
 import React from 'react';
 import {Container, Form, FormGroup, Input, Label} from 'reactstrap';
 import MapComponent from "./MapComponent";
+import {currentTime} from "../../utils/currentTime";
 
 
 class TempCheckpointComponent extends React.Component {
@@ -16,6 +17,8 @@ class TempCheckpointComponent extends React.Component {
             dateValid: false,
             formValid: false
         };
+        const {checkpoint} = this.state;
+        checkpoint.date=checkpoint.id?currentTime():'';
         this.handleChange = this.handleChange.bind(this);
     }
 
@@ -81,6 +84,7 @@ class TempCheckpointComponent extends React.Component {
     render() {
         const {checkpoint} = this.state;
         console.log(checkpoint);
+        console.log(currentTime());
         const checkpointId=checkpoint.id;
         return (
             <Container className="col-3">
@@ -97,7 +101,7 @@ class TempCheckpointComponent extends React.Component {
 
                     <FormGroup>
                         <Label for="date">Дата прохождения</Label>
-                        <Input readOnly={!checkpointId} type="date" name="date" id="date" value={checkpoint.date || ''}
+                        <Input readOnly type="date" name="date" id="date" value={checkpoint.date||''}
                                onChange={this.handleChange} autoComplete="date" min="1"/>
                         <p className={'error-message'}>{(this.state.formErrors.date === '') ? ''
                             : 'Дата прохождения' + this.state.formErrors.date}</p>

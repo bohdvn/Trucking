@@ -110,7 +110,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/driverList/")
-    public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, final Pageable pageable) {
+    public ResponseEntity<Page<UserDto>> getDrivers(final Pageable pageable) {
         LOGGER.info("REST request. Path:/user method: GET.");
         Page<UserDto> drivers = userService.findAllByRolesContains(User.Role.DRIVER, pageable);
         LOGGER.info("Return userList.size:{}", drivers.getNumber());
@@ -119,8 +119,7 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('SYSADMIN')")
     @GetMapping("/driverList/{query}")
-    public ResponseEntity<Page<UserDto>> getDrivers(@CurrentUser UserPrincipal userPrincipal, Pageable pageable,
-                                                    @PathVariable("query") String query) {
+    public ResponseEntity<Page<UserDto>> getDrivers(Pageable pageable, @PathVariable("query") String query) {
         LOGGER.info("REST request. Path:/user method: GET.");
         Page<UserDto> drivers = userService.findAllByRolesContains(User.Role.DRIVER, pageable, query);
         LOGGER.info("Return userList.size:{}", drivers.getNumber());

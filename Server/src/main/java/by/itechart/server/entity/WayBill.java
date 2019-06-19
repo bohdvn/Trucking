@@ -41,8 +41,8 @@ public class WayBill implements ToDtoTransformer, GetPathInterface {
      * One waybill can only belong to one invoice.
      * In one invoice can be only one waybill.
      */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @MapsId
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+//    @MapsId
     @JoinColumn(name = "invoice_id")
     @SearchCriteriaAnnotation(path = "request car name; request driver surname; request driver name;" +
             " request driver patronymic")
@@ -52,7 +52,6 @@ public class WayBill implements ToDtoTransformer, GetPathInterface {
     @Column(name = "date_from")
     private LocalDate dateFrom;
 
-    @NotNull(message = "Date to cannot be null")
     @Column(name = "date_to")
     private LocalDate dateTo;
 
@@ -64,7 +63,8 @@ public class WayBill implements ToDtoTransformer, GetPathInterface {
 
     public enum Status {
         STARTED,
-        FINISHED
+        FINISHED,
+        EXECUTED
     }
 
     @Override

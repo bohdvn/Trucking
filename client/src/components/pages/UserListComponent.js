@@ -7,17 +7,6 @@ import {ACCESS_TOKEN} from "../../constants/auth";
 import * as ROLE from "../../constants/userConstants";
 
 class UserListComponent extends React.Component {
-
-    userRoles = [
-        'Системный администратор',
-        'Администратор',
-        'Менеджер',
-        'Диспетчер',
-        'Водитель',
-        'Владелец',
-        'Администратор склада'
-    ];
-
     constructor(props) {
         super(props);
         this.state = {

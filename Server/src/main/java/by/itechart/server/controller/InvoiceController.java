@@ -80,7 +80,7 @@ public class InvoiceController {
     }
 
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER') or hasAuthority('SYSADMIN')")
     @GetMapping("/list/{query}")
     public ResponseEntity<Page<InvoiceDto>> getAll(Pageable pageable, @PathVariable("query") String query) {
         LOGGER.info("REST request. Path:/invoice method: GET.");

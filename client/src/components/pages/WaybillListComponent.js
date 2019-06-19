@@ -4,7 +4,6 @@ import {Link} from 'react-router-dom';
 import Modal from 'react-bootstrap/Modal';
 import Pagination from "react-js-pagination";
 import axios from 'axios';
-import {ACCESS_TOKEN} from "../../constants/auth";
 import CheckProductsComponent from "../forms/CheckProductsComponent";
 import ActOfLossComponent from "../forms/ActOfLossComponent";
 
@@ -33,29 +32,24 @@ class WaybillListComponent extends React.Component {
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchURL = this.fetchURL.bind(this);
-        this.remove = this.remove.bind(this);
         this.handleShowExecuteWaybill = this.handleShowExecuteWaybill.bind(this);
         this.handleCloseExecuteWaybill = this.handleCloseExecuteWaybill.bind(this);
         this.handleShowActOfLoss = this.handleShowActOfLoss.bind(this);
         this.handleCloseActOfLoss = this.handleCloseActOfLoss.bind(this);
-        this.updateWayBill = this.updateWayBill.bind(this);
+        // this.updateWayBill = this.updateWayBill.bind(this);
         this.queryTimeout = -1;
         this.handleQueryChange = this.handleQueryChange.bind(this);
         this.changeQuery = this.changeQuery.bind(this);
     }
 
+    handleError=error=>{
+        const {status, statusText} = error.response;
+        const data = {status, statusText};
+        this.props.history.push('/error', {error: data});
+    };
+
     fetchURL(page, query) {
-        axios.get(`/waybill/list/${query}?page=${page}&size=5`, {
-            proxy: {
-                host: 'http://localhost',
-                port: 8080
-            },
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            }
-        })
+        axios.get(`/waybill/list/${query}?page=${page}&size=5`)
             .then(response => {
                     const totalPages = response.data.totalPages;
                     const itemsCountPerPage = response.data.size;
@@ -67,11 +61,8 @@ class WaybillListComponent extends React.Component {
                         itemsCountPerPage: itemsCountPerPage,
                         waybills: response.data.content || []
                     });
-                }, error => {
-                    const {status, statusText} = error.response;
-                    const data = {status, statusText};
-                    this.props.history.push('/error', {error: data});
-                }
+                }, error => this.handleError(error)
+
             );
     }
 
@@ -89,46 +80,37 @@ class WaybillListComponent extends React.Component {
         this.fetchURL(0, this.state.query);
     }
 
-    async handleShowExecuteWaybill(id) {
-        const waybill = await (await
-                fetch(`/waybill/${id}`,
-                    {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
-        ).json();
-        this.setState({showExecuteWaybill: true, waybill: waybill});
+    handleShowExecuteWaybill(id) {
+        axios.get(`/waybill/${id}`)
+            .then(response => {
+                this.setState({showExecuteWaybill: true, waybill: response.data})
+            }, error => this.handleError(error));
     }
 
     handleCloseExecuteWaybill() {
         this.setState({showExecuteWaybill: false});
     }
 
-    async handleShowActOfLoss(id) {
-        const waybill = await (await
-                fetch(`/waybill/${id}`,
-                    {headers: {'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)}})
-        ).json();
-        this.setState({showActOfLoss: true, waybill: waybill});
+    handleShowActOfLoss(id) {
+        axios.get(`/waybill/${id}`)
+            .then(response => {
+                this.setState({showActOfLoss: true, waybill: response.data})
+            }, error => this.handleError(error));
     }
 
     handleCloseActOfLoss() {
         this.setState({showActOfLoss: false});
     }
 
-    async updateWayBill() {
+    updateWayBill = () => {
         let waybill = this.state.waybill;
         waybill.status = 'EXECUTED';
         this.setState({showExecuteWaybill: false});
-        await fetch(`/waybill/`, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
-            },
-            body: JSON.stringify(waybill)
-        });
-        this.setState({waybill: ''});
-        window.location.reload();
-    }
+        axios.put(`/waybill/`, waybill)
+            .then(() => {
+                window.location.reload();
+            }, error => this.handleError(error));
+    };
 
     validationHandler = (formValid) => {
         this.setState({productFormValid: formValid});
@@ -155,9 +137,11 @@ class WaybillListComponent extends React.Component {
                 <td>{this.waybillStatusMap[waybill.status]}</td>
                 <td>
                     <ButtonGroup>
-                        <Button size="sm" color="primary" tag={Link}
-                                to={"/waybill/" + waybill.id}>Редактировать</Button>
-                        <Button size="sm" color="danger" onClick={() => this.remove(waybill.id)}>Удалить</Button>
+                        {waybill.status === 'STARTED' ?
+                            <Button size="sm" color="primary" tag={Link}
+                                    to={"/waybill/" + waybill.id}>Редактировать
+                            </Button>
+                            : null}
                         {waybill.status === 'FINISHED' ?
                             <Button
                                 size="sm" color="primary" onClick={() => this.handleShowExecuteWaybill(waybill.id)}>Оформить
@@ -177,20 +161,6 @@ class WaybillListComponent extends React.Component {
 
         return waybills;
     };
-
-    async remove(id) {
-        await fetch(`/waybill/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        }).then(() => {
-            let updateWaybills = [...this.state.waybills].filter(i => i.id !== id);
-            this.setState({waybills: updateWaybills});
-        });
-    }
-
 
     render() {
         const check = !this.state.waybills.length;

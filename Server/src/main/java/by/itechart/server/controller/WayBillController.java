@@ -2,7 +2,6 @@ package by.itechart.server.controller;
 
 import by.itechart.server.dto.UserDto;
 import by.itechart.server.dto.WayBillDto;
-import by.itechart.server.entity.WayBill;
 import by.itechart.server.security.CurrentUser;
 import by.itechart.server.security.UserPrincipal;
 import by.itechart.server.service.InvoiceService;
@@ -18,16 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Objects;
@@ -88,18 +78,18 @@ public class WayBillController {
     public ResponseEntity<Page<WayBillDto>> getAll(@CurrentUser UserPrincipal user, Pageable pageable) {
         LOGGER.info("REST request. Path:/waybill method: GET.");
         final Page<WayBillDto> wayBillsDto =
-                wayBillService.findAllByInvoiceRequestDriverIdAndStatus(user.getId(), WayBill.Status.STARTED, pageable);
+                wayBillService.findAllByInvoiceRequestDriverId(user.getId(), pageable);
         LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
         return new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('SYSADMIN')")
+    @PreAuthorize("hasAuthority('DRIVER') or hasAuthority('SYSADMIN')")
     @GetMapping("/list/{query}")
     public ResponseEntity<Page<WayBillDto>> getAll(@CurrentUser UserPrincipal user, Pageable pageable,
                                                    @PathVariable("query") String query) {
         LOGGER.info("REST request. Path:/waybill method: GET.");
-        final Page<WayBillDto> wayBillsDto = wayBillService.findAllByInvoiceRequestDriverIdAndStatus(user.getId(),
-                WayBill.Status.STARTED, pageable, query);
+        final Page<WayBillDto> wayBillsDto = wayBillService.findAllByInvoiceRequestDriverId(user.getId(),
+                pageable, query);
         LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
         return new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
     }

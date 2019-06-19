@@ -109,7 +109,7 @@ class InvoiceListComponent extends React.Component {
                 <td>{this.carStatusMap[invoice.request.car.status]}</td>
                 <td>{this.invoiceStatusMap[invoice.status]}</td>
                 <td>{invoice.request.driver.name}</td>
-                {roles.includes(MANAGER) && invoice.status === 'COMPLETED' ?
+                {roles.includes(MANAGER) && invoice.request.status==='ISSUED' && invoice.status === 'COMPLETED' ?
                     <td>
                         <ButtonGroup>
                             <Button size="sm" color="primary" tag={Link}

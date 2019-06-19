@@ -14,12 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,13 +63,45 @@ public class WayBillServiceImpl implements WayBillService {
     }
 
     @Override
+    public Page<WayBillDto> findAllByInvoiceRequestClientCompanyFromId(final int id,
+                                                                       final Pageable pageable, final String query) {
+
+        final Map<List<String>, Object> conditions = new HashMap<>();
+        conditions.put(Arrays.asList("invoice", "request", "clientCompany", "id"), id);
+//        conditions.put(Arrays.asList("status"), status);
+
+        final SearchCriteria<WayBill> newSearchCriteria = new SearchCriteria(conditions, WayBill.class, query);
+        final Specification<WayBill> specification = new CustomSpecification<>(newSearchCriteria);
+        final Page<WayBill> wayBills = wayBillRepository.findAllByInvoiceRequestClientCompanyFromId(id, pageable);
+        return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
+                .sorted(Comparator.comparing(WayBillDto::getDateFrom))
+                .collect(Collectors.toList()), pageable, wayBills.getTotalElements());
+    }
+
+    @Override
+    public Page<WayBillDto> findAllByInvoiceRequestClientCompanyFromId(int id, Pageable pageable) {
+        final Page<WayBill> wayBills = wayBillRepository.findAllByInvoiceRequestClientCompanyFromId(id, pageable);
+        return new PageImpl<>(wayBills.stream().map(WayBill::transformToDto)
+                .sorted(Comparator.comparing(WayBillDto::getDateFrom))
+                .collect(Collectors.toList()), pageable, wayBills.getTotalElements());
+    }
+
+    @Override
     public WayBillDto findById(final int id) {
         return wayBillRepository.findById(id).isPresent() ? wayBillRepository.findById(id).get().transformToDto() : null;
     }
 
     @Override
-    public WayBillDto findByIdAndInvoiceRequestDriverId(final int id, final int driverId) {
-        Optional<WayBill> optionalWayBill = wayBillRepository.findByIdAndInvoiceRequestDriverId(id, driverId);
+    public WayBillDto findByIdAndInvoiceRequestDriverId(final int id, final Integer driverId) {
+        Optional<WayBill> optionalWayBill = wayBillRepository
+                .findByIdAndInvoiceRequestDriverId(id, driverId);
+        return optionalWayBill.isPresent() ? optionalWayBill.get().transformToDto() : null;
+    }
+
+    @Override
+    public WayBillDto findByIdAndInvoiceRequestClientCompanyFromId(final int id, final Integer clientId) {
+        Optional<WayBill> optionalWayBill = wayBillRepository
+                .findByIdAndInvoiceRequestClientCompanyFromId(id, clientId);
         return optionalWayBill.isPresent() ? optionalWayBill.get().transformToDto() : null;
     }
 

@@ -11,7 +11,14 @@ public interface WayBillService {
 
     Page<WayBillDto> findAllByInvoiceRequestDriverId(final int id, final Pageable pageable, final String query);
 
-    WayBillDto findByIdAndInvoiceRequestDriverId(final int id, final int driverId);
+    Page<WayBillDto> findAllByInvoiceRequestClientCompanyFromId(final int id, final Pageable pageable);
+
+    Page<WayBillDto> findAllByInvoiceRequestClientCompanyFromId(final int id,
+                                                                final Pageable pageable, final String query);
+
+    WayBillDto findByIdAndInvoiceRequestDriverId(final int id, final Integer driverId);
+
+    WayBillDto findByIdAndInvoiceRequestClientCompanyFromId(final int id, final Integer clientId);
 
     void save(final WayBillDto wayBillDto);
 

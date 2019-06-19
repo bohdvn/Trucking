@@ -210,13 +210,7 @@ class UserListComponent extends React.Component {
     }
 
     async removeChecked() {
-        const selectedUsers = this.forceUpdate;
-        //     Array.apply(this,
-        //     document.getElementsByName("selectedUsers")).filter(function (el) {
-        //     return el.checked === true
-        // }).map(function (el) {
-        //     return el.value
-        // });
+        const selectedUsers = this.getSelected();
         console.log(selectedUsers);
         await fetch(`/user/${selectedUsers}`, {
             method: 'DELETE',

@@ -53,25 +53,25 @@ public class WayBillController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('DRIVER')")
+    @PreAuthorize("hasAuthority('DRIVER') or hasAuthority('OWNER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable("id") int id) {
         LOGGER.info("REST request. Path:/waybill/{} method: GET.", id);
-        final WayBillDto wayBillDto = wayBillService.findByIdAndInvoiceRequestDriverId(id, userPrincipal.getId());
+        final WayBillDto wayBillDto = wayBillService
+                .findByIdAndInvoiceRequestDriverId(id, userPrincipal.getId());
         return Objects.nonNull(wayBillDto) ?
                 ResponseEntity.ok().body(wayBillDto) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-//    @DeleteMapping("/{selectedWaybills}")
-//    public ResponseEntity<?> remove(@PathVariable("selectedWaybills") String selectedWaybills) {
-//        LOGGER.info("REST request. Path:/waybill/{} method: DELETE.", selectedWaybills);
-//        final String delimeter = ",";
-//        final String[] waybillsId = selectedWaybills.split(delimeter);
-//        for (String id : waybillsId) {
-//            wayBillService.deleteById(Integer.valueOf(id));
-//        }
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/our/{id}")
+    public ResponseEntity<?> getClients(@CurrentUser UserPrincipal userPrincipal, @PathVariable("id") int id) {
+        LOGGER.info("REST request. Path:/waybill/{} method: GET.", id);
+        final WayBillDto wayBillDto = wayBillService
+                .findByIdAndInvoiceRequestClientCompanyFromId(id, userPrincipal.getClientCompanyId());
+        return Objects.nonNull(wayBillDto) ?
+                ResponseEntity.ok().body(wayBillDto) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
     @PreAuthorize("hasAuthority('DRIVER') or hasAuthority('SYSADMIN')")
     @GetMapping("/list/")
@@ -89,6 +89,29 @@ public class WayBillController {
                                                    @PathVariable("query") String query) {
         LOGGER.info("REST request. Path:/waybill method: GET.");
         final Page<WayBillDto> wayBillsDto = wayBillService.findAllByInvoiceRequestDriverId(user.getId(),
+                pageable, query);
+        LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
+        return new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/clients/")
+    public ResponseEntity<Page<WayBillDto>> getClientsWayBills(@CurrentUser UserPrincipal user, Pageable pageable) {
+        LOGGER.info("REST request. Path:/waybill method: GET.");
+        final Page<WayBillDto> wayBillsDto =
+                wayBillService.findAllByInvoiceRequestClientCompanyFromId(user.getClientCompanyId(),
+                        pageable);
+        LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
+        return new ResponseEntity<>(wayBillsDto, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('OWNER')")
+    @GetMapping("/clients/{query}")
+    public ResponseEntity<Page<WayBillDto>> getClientsWayBills(@CurrentUser UserPrincipal user, Pageable pageable,
+                                                               @PathVariable("query") String query) {
+        LOGGER.info("REST request. Path:/waybill method: GET.");
+        final Page<WayBillDto> wayBillsDto =
+                wayBillService.findAllByInvoiceRequestClientCompanyFromId(user.getClientCompanyId(),
                 pageable, query);
         LOGGER.info("Return waybillList.size:{}", wayBillsDto.getNumber());
         return new ResponseEntity<>(wayBillsDto, HttpStatus.OK);

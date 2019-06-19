@@ -59,11 +59,12 @@ class App extends React.Component {
                                 component={InvoiceListComponent}/>
 
                 {/*MANAGER*/}
-                <ProtectedRoute exact path="/waybill/:id" allowed={[ROLE.MANAGER, ROLE.DRIVER]}
+                <ProtectedRoute exact path="/waybill/:id" allowed={[ROLE.MANAGER, ROLE.DRIVER, ROLE.OWNER]}
                                 component={WaybillComponent}/>
 
                 {/*DRIVER*/}
-                <ProtectedRoute exact path="/waybills" allowed={ROLE.DRIVER} component={WaybillListComponent}/>
+                <ProtectedRoute exact path="/waybills" allowed={[ROLE.DRIVER, ROLE.OWNER]}
+                                component={WaybillListComponent}/>
 
                 {/*MANAGER*/}
 

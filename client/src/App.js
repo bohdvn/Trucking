@@ -4,7 +4,6 @@ import createBrowserHistory from './helpers/history';
 import UserComponent from "./components/forms/UserComponent";
 import CarComponent from "./components/forms/CarComponent";
 import CarListComponent from "./components/pages/CarListComponent";
-// import ProductListComponent from "./components/pages/ProductListComponent";
 import UserListComponent from "./components/pages/UserListComponent";
 import ClientComponent from "./components/forms/ClientComponent";
 import LoginForm from "./components/forms/LoginForm";
@@ -45,6 +44,7 @@ class App extends React.Component {
                 <ProtectedRoute exact path="/car/:id" allowed={[ROLE.SYSADMIN]} component={CarComponent}/>
                 <ProtectedRoute exact path="/admin/:id" allowed={[ROLE.SYSADMIN]} component={UserComponent}/>
                 <ProtectedRoute exact path='/report' allowed={[ROLE.SYSADMIN]} component={ReportComponent}/>
+                <ProtectedRoute exact path='/email' allowed={[ROLE.SYSADMIN,ROLE.ADMIN]} component={SendEmail}/>
 
 
                 {/*ADMIN*/}

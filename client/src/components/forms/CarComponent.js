@@ -44,7 +44,7 @@ class CarComponent extends React.Component {
                 fieldValidationErrors.name = nameValid ? '' : ' введено неверно';
                 break;
             case 'consumption':
-                consumptionValid = !!value.match(/^[1-9]([0-9]*?)$/i);
+                consumptionValid = !!value.match(/^[1-9]([0-9]*?)$/i) && parseFloat(value)<100;
                 fieldValidationErrors.consumption = consumptionValid ? '' : ' введен неверно';
                 break;
             default:

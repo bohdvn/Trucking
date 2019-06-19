@@ -41,6 +41,7 @@ class WaybillComponent extends React.Component {
             waybill: this.emptyWaybill,
             show: false,
             showRoute: false,
+            checkpointValid: false,
             checkpoint: this.emptyCheckpoint,
             checkpointToEdit: this.emptyCheckpoint,
         };
@@ -115,7 +116,7 @@ class WaybillComponent extends React.Component {
 
     componentWillMount() {
         const {waybill, roles} = this.state;
-        console.log(typeof waybill);
+        console.log(waybill);
         if (typeof waybill.invoice !== 'undefined'
             && typeof waybill.invoice.request !== 'undefined'
             && (roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER))) {
@@ -189,6 +190,7 @@ class WaybillComponent extends React.Component {
     }
 
     validationHandlerCheckpoint = (formValid) => {
+        this.setState({checkpointValid: formValid});
     };
 
     changeFieldHandler = (checkpoint) => {
@@ -235,14 +237,15 @@ class WaybillComponent extends React.Component {
             axios.get(`/waybill/${this.props.match.params.id}`)
                 .then(response => {
                     console.log(response.data);
-                    this.setState({waybill: response.data})
+                    this.setState({waybill: response.data});
                 }, error => {
                     const {status, statusText} = error.response;
                     const data = {status, statusText}
                     this.props.history.push('/error', {error: data});
                 });
         }
-    }
+    };
+
 
     finishWaybillCheck = () => {
         const {waybill, roles} = this.state;
@@ -260,7 +263,7 @@ class WaybillComponent extends React.Component {
         const check = this.finishWaybillCheck();
         console.log(check);
         return (
-            <Container className="col-3" style={{'max-width':'65%'}}>
+            <Container className="col-3" style={{'max-width': '65%'}}>
                 <h1>Путевой лист</h1>
                 <Form onSubmit={this.handleSubmit}>
 
@@ -315,7 +318,7 @@ class WaybillComponent extends React.Component {
                             : null}
                     </FormGroup>
                     <FormGroup>
-                        {!waybill.id && (roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER)) ?
+                        {(roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER)) ?
                             <Button color="primary" onClick={this.handleShowRoute}>Показать маршрут</Button>
                             : null}
                     </FormGroup>
@@ -342,7 +345,8 @@ class WaybillComponent extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         {!this.state.checkpoint.id ?
-                            <Button color="primary" onClick={this.saveCheckpoint}>
+                            <Button color="primary" disabled={!this.state.checkpointValid}
+                                    onClick={this.saveCheckpoint}>
                                 Добавить
                             </Button>
                             : null}

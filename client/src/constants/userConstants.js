@@ -10,6 +10,8 @@ export const DRIVER='DRIVER';
 
 export const OWNER='OWNER';
 
+export const SYSADMIN_RU='Системный администратор';
+
 export const ADMIN_RU='Администратор';
 
 export const MANAGER_RU='Менеджер';

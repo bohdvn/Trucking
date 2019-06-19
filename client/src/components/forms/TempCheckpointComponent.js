@@ -14,7 +14,6 @@ class TempCheckpointComponent extends React.Component {
             nameValid: false,
             latitudeValid: false,
             longitudeValid: false,
-            dateValid: false,
             formValid: false
         };
         const {checkpoint} = this.state;
@@ -41,7 +40,6 @@ class TempCheckpointComponent extends React.Component {
         let fieldValidationErrors = this.state.formErrors;
         let nameValid = this.state.nameValid;
         let latitudeValid = this.state.latitudeValid;
-        let dateValid = this.state.dateValid;
         let longitudeValid = this.state.longitudeValid;
         switch (fieldName) {
             case 'name':
@@ -51,10 +49,6 @@ class TempCheckpointComponent extends React.Component {
             case 'latitude':
                 latitudeValid = !!value.match(/^-?[0-9]+[.[0-9]+]?$/i);
                 fieldValidationErrors.latitude = latitudeValid ? '' : ' введена неверно';
-                break;
-            case 'date':
-                dateValid = !!value.match(/^[0-9]{4,}-[0-9]{2}-[0-9]{2}$/i);
-                fieldValidationErrors.date = dateValid ? '' : ' введена неверно';
                 break;
             case 'longitude':
                 longitudeValid = !!value.match(/^-?[0-9]+[.[0-9]+]?$/i);
@@ -67,14 +61,12 @@ class TempCheckpointComponent extends React.Component {
             formErrors: fieldValidationErrors,
             latitudeValid: latitudeValid,
             nameValid: nameValid,
-            dateValid: dateValid,
             longitudeValid: longitudeValid
         }, this.validateForm);
     }
 
     validateForm() {
-        let valid = this.state.nameValid && this.state.latitudeValid &&
-            this.state.dateValid && this.state.longitudeValid;
+        let valid = this.state.nameValid && this.state.latitudeValid && this.state.longitudeValid;
         this.setState({
             formValid: valid
         });

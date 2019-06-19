@@ -112,33 +112,40 @@ class WaybillComponent extends React.Component {
         this.setState({show: true, checkpoint: this.emptyCheckpoint, checkpointToEdit: this.emptyCheckpoint});
     }
 
-    componentWillMount() {
-        const addressFrom = this.state.waybill.invoice.request.clientCompanyFrom.address;
-        const addressTo = this.state.waybill.invoice.request.address;
-        Geocode.setApiKey('AIzaSyB2JLf08WBJ9takbdrl8DQhoS-mBK_XA_0');
-        Geocode.fromAddress(addressFrom.city + ' ' + addressFrom.street + ' ' + addressFrom.building).then(
-            response => {
-                const {lat, lng} = response.results[0].geometry.location;
-                this.setState({
-                    origin: {lat: lat, lng: lng}
-                });
-            },
-            error => {
-                console.error(error);
-            },
-        );
 
-        Geocode.fromAddress(addressTo.city + ' ' + addressTo.street + ' ' + addressTo.building).then(
-            response => {
-                const {lat, lng} = response.results[0].geometry.location;
-                this.setState({
-                    destination: {lat: lat, lng: lng}
-                });
-            },
-            error => {
-                console.error(error);
-            }
-        );
+    componentWillMount() {
+        const {waybill, roles} = this.state;
+        console.log(typeof waybill);
+        if (typeof waybill.invoice !== 'undefined'
+            && typeof waybill.invoice.request !== 'undefined'
+            && (roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER))) {
+            const addressFrom = waybill.invoice.request.clientCompanyFrom.address;
+            const addressTo = waybill.invoice.request.address;
+            Geocode.setApiKey('AIzaSyB2JLf08WBJ9takbdrl8DQhoS-mBK_XA_0');
+            Geocode.fromAddress(addressFrom.city + ' ' + addressFrom.street + ' ' + addressFrom.building).then(
+                response => {
+                    const {lat, lng} = response.results[0].geometry.location;
+                    this.setState({
+                        origin: {lat: lat, lng: lng}
+                    });
+                },
+                error => {
+                    console.error(error);
+                },
+            );
+
+            Geocode.fromAddress(addressTo.city + ' ' + addressTo.street + ' ' + addressTo.building).then(
+                response => {
+                    const {lat, lng} = response.results[0].geometry.location;
+                    this.setState({
+                        destination: {lat: lat, lng: lng}
+                    });
+                },
+                error => {
+                    console.error(error);
+                }
+            );
+        }
     }
 
     handleShowRoute() {
@@ -253,7 +260,7 @@ class WaybillComponent extends React.Component {
         const check = this.finishWaybillCheck();
         console.log(check);
         return (
-            <Container className="col-3" style={{}}>
+            <Container className="col-3" style={{'max-width':'65%'}}>
                 <h1>Путевой лист</h1>
                 <Form onSubmit={this.handleSubmit}>
 
@@ -308,10 +315,9 @@ class WaybillComponent extends React.Component {
                             : null}
                     </FormGroup>
                     <FormGroup>
-                        {roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER) ?
+                        {!waybill.id && (roles.includes(ROLE.OWNER) || roles.includes(ROLE.MANAGER)) ?
                             <Button color="primary" onClick={this.handleShowRoute}>Показать маршрут</Button>
                             : null}
-
                     </FormGroup>
                     <FormGroup>
                         <Button color="primary" type="submit">Сохранить</Button>{' '}
